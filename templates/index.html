@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Setup Your Radio 🎶</title>
+</head>
+<body>
+    <h1>🎧 Setup Your Personal Radio Station</h1>
+    <form method="POST" action="/save">
+        <label>Favorite News Topics (comma separated):</label><br>
+        <input type="text" name="topics"><br><br>
+
+        <label>Favorite Music Genres (comma separated):</label><br>
+        <input type="text" name="music_tastes"><br><br>
+
+        <label>Favorite Artists (comma separated):</label><br>
+        <input type="text" name="favorite_artists"><br><br>
+
+        <h3>Enter your Location (2-letter country code, e.g., us, gb, ca):</h3>
+        <input type="text" name="location" placeholder="us" value="{{ location }}"><br><br>
+
+
+        <label>Preferred News Mood:</label><br>
+        <select name="news_mood">
+            <option value="positive">Positive</option>
+            <option value="neutral">Neutral</option>
+            <option value="serious">Serious</option>
+            <option value="funny">Funny</option>
+        </select><br><br>
+
+        <input type="submit" value="Save Preferences">
+    </form>
+</body>
+</html>

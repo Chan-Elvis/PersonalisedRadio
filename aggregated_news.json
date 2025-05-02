@@ -1,0 +1,47 @@
+{
+    "top_stories": [
+        {
+            "title": "Nintendo to publish a special issue of Nintendo Magazine focusing on Switch 2 in May",
+            "content": "HQ\n\nSince its extended unveiling on 2 April, as well as the in-person events where the media (and, of course, ourselves) have been able to try it out, informati...",
+            "url": "https://www.gamereactor.eu/nintendo-to-publish-a-special-issue-of-nintendo-magazine-focusing-on-switch-2-in-may-1535243/",
+            "published_at": "2025-04-28T10:01:37.000000Z"
+        },
+        {
+            "title": "Calum Davies: Plenty of Welsh voters want rid of the Senedd - but the devocrats pretend they don't exist",
+            "content": "Calum Davies is a Conservative councillor in Cardiff and previously stood for the Senedd in 2021.\n\nDid you know that 31 per cent of the Welsh population want to...",
+            "url": "https://conservativehome.com/2025/04/28/calum-davies-plenty-of-welsh-voters-want-rid-of-the-senedd-but-the-devocrats-pretend-they-dont-exist/",
+            "published_at": "2025-04-28T10:00:13.000000Z"
+        },
+        {
+            "title": "Tom Cruise congratulates Ryan Coogler and Michael B. Jordan on Sinners",
+            "content": "HQ\n\nAs Ryan Coogler's Sinners continues to impress critics and audiences, it has also drawn praise from one of the biggest actors of our time. Tom Cruise has re...",
+            "url": "https://www.gamereactor.eu/tom-cruise-congratulates-ryan-coogler-and-michael-b-jordan-on-sinners-1535013/",
+            "published_at": "2025-04-28T09:50:00.000000Z"
+        }
+    ],
+    "aggregated_news": {
+        "technology": [
+            {
+                "source": "TheNewsAPI",
+                "title": "Ellie Cox: How technology can deliver safer streets",
+                "content": "Cllr Ellie Cox is a councillor in Merton and a former 2024 parliamentary and London Assembly candidate.\n\nPolicing is at a crossroads. While criminals exploit te...",
+                "url": "https://conservativehome.com/2025/03/20/ellie-cox-how-technology-can-deliver-safer-streets/",
+                "published_at": "2025-03-20T06:10:41.000000Z"
+            },
+            {
+                "source": "TheNewsAPI",
+                "title": "Custody photos too poor for facial recognition technology",
+                "content": "Custody photos 'too poor' for facial recognition software\n\n53 minutes ago Share Save Share Save\n\nGetty Images\n\nPhotos taken of suspects arrested in Scotland are...",
+                "url": "https://www.bbc.com/news/articles/cdrx7ry3dl4o",
+                "published_at": "2025-03-25T06:15:10.000000Z"
+            },
+            {
+                "source": "TheNewsAPI",
+                "title": "Premier League to debut semi-automated technology this season",
+                "content": "Open Extended Reactions\n\nThe Premier League will debut semi-automated VAR offside technology this weekend. Jack Thomas - WWFC/Wolves via Getty Images\n\nThe Premi...",
+                "url": "https://www.espn.co.uk/football/story/_/id/44491860/premier-league-debut-semi-automated-technology-season",
+                "published_at": "2025-04-01T23:09:54.000000Z"
+            }
+        ]
+    }
+}

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Environment variables
+.env
+
+# SQLite database
+*.sqlite
+*.db
+
+# VSCode or other editor settings (optional, but good practice)
+.vscode/
+*.swp
+*.swo
+
+# macOS junk files
+.DS_Store
+
+# Logs (if any)
+*.log
+
+# Virtual environments
+venv/
+env/

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Your Personalized Radio 🎵📰</title>
+</head>
+<body>
+    <h1>🎵 Now Playing</h1>
+    <p>{{ music_tastes|random }} song by {{ favorite_artists|random }}</p>
+
+    <hr>
+
+    <h2>🎯 Your Preferences</h2>
+    <p><strong>Favorite Topics:</strong> {{ topics|join(', ') }}</p>
+    <p><strong>Music Tastes:</strong> {{ music_tastes|join(', ') }}</p>
+    <p><strong>Favorite Artists:</strong> {{ favorite_artists|join(', ') }}</p>
+    <p><strong>Location:</strong> {{ location }}</p>
+    <p><strong>Preferred News Mood:</strong> {{ news_mood }}</p>
+
+    <hr>
+
+    <h2>📰 Personalized News:</h2>
+
+{% for topic, articles in grouped_news.items() %}
+    <h3>🗞️ {{ topic }}</h3>
+    {% for story in articles %}
+        <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+            <h4>{{ story.title }}</h4>
+            <p>{{ story.content }}</p>
+            <a href="{{ story.url }}" target="_blank">Read more</a>
+        </div>
+    {% endfor %}
+    <hr>
+{% endfor %}
+
+<hr>
+
+<h2>🌎 General Top Stories:</h2>
+
+{% for story in top_stories %}
+    <div style="border:1px solid #ccc; padding:10px; margin:10px; background-color: #f9f9f9;">
+        <h4>{{ story.title }}</h4>
+        <p>{{ story.content }}</p>
+        <a href="{{ story.url }}" target="_blank">Read more</a>
+    </div>
+{% endfor %}
+
+
+<br>
+<a href="/refresh_news">🔄 Refresh News</a> | <a href="/">⚙️ Edit Preferences</a>
+
+</body>
+</html>
