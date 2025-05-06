@@ -3,7 +3,7 @@ import sqlite3
 import json
 import random
 import subprocess
-from FetchNews import check_spelling 
+from FetchNews import check_spelling, validate_artist_with_llm
 
 import os
 from dotenv import load_dotenv
@@ -35,31 +35,70 @@ def init_db():
 @app.route('/')
 def index():
     return render_template('index.html')
-
 @app.route('/save', methods=['POST'])
 def save():
     topics = request.form.getlist('topics')
     music_tastes = request.form.getlist('music_tastes')
     favorite_artists = request.form['favorite_artists']
     news_mood = request.form['news_mood']
-    location = request.form['location']  # NEW
+    location = request.form['location']
 
-    corrected_topics = [check_spelling(topic.strip()) for topic in topics]
-    corrected_music_tastes = [check_spelling(genre.strip()) for genre in music_tastes]
+    corrections_made = []
+    corrected_topics = []
+    for topic in topics:
+        topic_clean = topic.strip()
+        corrected = check_spelling(topic_clean)
+        if corrected != topic_clean:
+            corrections_made.append(f"Topic '{topic_clean}' → '{corrected}'")
+        corrected_topics.append(corrected)
 
+    corrected_music_tastes = []
+    for genre in music_tastes:
+        genre_clean = genre.strip()
+        corrected = check_spelling(genre_clean)
+        if corrected != genre_clean:
+            corrections_made.append(f"Genre '{genre_clean}' → '{corrected}'")
+        corrected_music_tastes.append(corrected)
+
+    favorite_artists_list = [artist.strip() for artist in favorite_artists.split(',')]
+    validated_artists = []
+    has_invalid_artist = False
+
+    for artist in favorite_artists_list:
+        corrected_artist = validate_artist_with_llm(artist)
+        if corrected_artist:
+            validated_artists.append(corrected_artist)
+        else:
+            flash(f"Artist '{artist}' is not recognized.", "warning")
+            has_invalid_artist = True
+
+    if corrections_made:
+        flash("Corrections made: " + "; ".join(corrections_made), "info")
+
+    if has_invalid_artist:
+        # Return the form with pre-filled values
+        return render_template('index.html',
+                               topics=corrected_topics,
+                               music_tastes=corrected_music_tastes,
+                               favorite_artists=favorite_artists,
+                               location=location,
+                               news_mood=news_mood)
+
+    # Save to database
     topics_str = ",".join(corrected_topics)
     music_tastes_str = ",".join(corrected_music_tastes)
+    favorite_artists_str = ",".join(validated_artists)
 
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute('INSERT INTO profiles (topics, music_tastes, favorite_artists, news_mood, location) VALUES (?, ?, ?, ?, ?)', 
-              (topics_str, music_tastes_str, favorite_artists, news_mood, location))
+              (topics_str, music_tastes_str, favorite_artists_str, news_mood, location))
     conn.commit()
     conn.close()
 
-    flash(f"Saved! Corrected Topics: {topics_str} | Corrected Music Tastes: {music_tastes_str}")
-
+    flash("Preferences saved successfully!", "success")
     return redirect('/radio')
+
 
 
 @app.route('/radio')

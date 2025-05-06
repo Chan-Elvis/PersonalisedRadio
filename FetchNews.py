@@ -38,7 +38,7 @@ def get_previous_month():
 
 def check_spelling(keyword):
     prompt = f"Check the spelling of the keyword '{keyword}' and ONLY return the corrected single word. No explanation."
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model = genai.GenerativeModel('gemini-2.0-flash-lite')
     response = model.generate_content(prompt)
 
     if response and hasattr(response, 'text'):
@@ -52,7 +52,7 @@ def check_spelling(keyword):
 
 def suggest_related_keywords(keyword):
     prompt = f"Suggest broader or related keywords for '{keyword}'. Provide a comma-separated list."
-    model = genai.GenerativeModel('gemini-1.5-pro')
+    model = genai.GenerativeModel('gemini-2.0-flash-lite')
     response = model.generate_content(prompt)
 
     if response and hasattr(response, 'text'):
@@ -60,6 +60,26 @@ def suggest_related_keywords(keyword):
         suggestions = suggestions_text.split(',')
         return [s.strip() for s in suggestions]
     return [keyword]
+
+
+def validate_artist_with_llm(artist_name):
+    prompt = (
+        f"Is '{artist_name}' the name of a real, known music artist or band? "
+        "If yes, return the corrected name only. If no, return 'unknown'. "
+        "No explanation, just the word or name."
+    )
+    model = genai.GenerativeModel('gemini-2.0-flash-lite')
+    response = model.generate_content(prompt)
+
+    if response and hasattr(response, 'text'):
+        result = response.text.strip().lower()
+        if 'unknown' in result:
+            return None  # invalid artist
+        else:
+            corrected_name = response.text.strip(' "\'.')
+            return corrected_name
+    return None  # fallback if no response
+
 
 
 def fetch_top_stories(region):

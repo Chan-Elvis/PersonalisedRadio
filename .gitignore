@@ -11,7 +11,9 @@ build/
 
 # SQLite database
 *.sqlite
+*.sql
 *.db
+*.json
 
 # VSCode or other editor settings (optional, but good practice)
 .vscode/
