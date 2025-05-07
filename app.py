@@ -16,6 +16,7 @@ LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 model = genai.GenerativeModel('gemini-2.0-flash')
+model_longform = genai.GenerativeModel('gemini-2.0-flash-lite')    # for longer radio scripts
 
 ALLOWED_GENRES = [
     'rock', 'pop', 'jazz', 'blues', 'hip-hop', 'rap', 'indie', 'electronic',
@@ -152,7 +153,7 @@ def generate_radio_script(news_batches, music_batches):
         news_batch = news_batches[i]
         music_batch = music_batches[i] if i < len(music_batches) else []
         prompt = build_prompt(news_batch, music_batch)
-        response = model.generate_content(prompt)
+        response = model_longform.generate_content(prompt)
         script_text = response.text.strip() if hasattr(response, 'text') else ''
         final_script += script_text + "\n\n"
     return final_script
@@ -343,7 +344,6 @@ def generate_script():
         print(f"Error loading news: {e}")
         top_stories, aggregated_news = [], {}
 
-    # Flatten personalized stories
     personalized_stories = []
     for topic, articles in aggregated_news.items():
         for article in articles:
@@ -353,24 +353,21 @@ def generate_script():
                 'url': article['url']
             })
 
-    # Get music playlists
     trending_tracks = get_trending_tracks()
     throwback_tracks = get_throwback_tracks().get('tracks', [])
-    new_artist_recs = get_new_artist_recommendations([])  # You can pass favorite artists if needed
+    new_artist_recs = get_new_artist_recommendations([])
 
-    # Provide fallbacks if needed
     if not top_stories:
         top_stories = [{'title': 'Sample Top Story', 'content': 'Sample top story content'}]
     if not personalized_stories:
         personalized_stories = [{'title': 'Sample Personalized Story', 'content': 'Sample content'}]
     if not trending_tracks:
-        trending_tracks = [{'artist': 'Sample Trending Artist', 'title': 'Sample Song', 'url': '#'}]
+        trending_tracks = [{'artist': 'Sample Trending Artist', 'title': 'Sample Song', 'url': '#', 'duration': '180000'}]
     if not throwback_tracks:
-        throwback_tracks = [{'artist': 'Sample Throwback Artist', 'title': 'Sample Song', 'url': '#'}]
+        throwback_tracks = [{'artist': 'Sample Throwback Artist', 'title': 'Sample Song', 'url': '#', 'duration': '180000'}]
     if not new_artist_recs:
-        new_artist_recs = [{'artist': 'Sample New Artist', 'top_tracks': [{'name': 'Sample Song', 'url': '#'}]}]
+        new_artist_recs = [{'artist': 'Sample New Artist', 'top_tracks': [{'name': 'Sample Song', 'url': '#', 'duration': '180000'}]}]
 
-    # Interleave content
     max_length = max(len(top_stories), len(personalized_stories),
                      len(trending_tracks), len(throwback_tracks), len(new_artist_recs))
     combined = []
@@ -390,36 +387,47 @@ def generate_script():
                 combined.append(('song', {
                     'artist': artist['artist'],
                     'title': artist['top_tracks'][0]['name'],
-                    'url': artist['top_tracks'][0]['url']
+                    'url': artist['top_tracks'][0]['url'],
+                    'duration': artist['top_tracks'][0].get('duration', '180000')
                 }))
 
-    # Build the script
+    WORDS_PER_MINUTE = 150
     final_script = ""
+    current_time_min = 0.0
+
     for item_type, item in combined:
+        total_seconds = int(current_time_min * 60)
+        minutes = total_seconds // 60
+        seconds = total_seconds % 60
+        timestamp_str = f"[{minutes:02d}:{seconds:02d}]"
+
         if item_type == 'news':
             prompt = f"""You are a radio host. Announce this news headline:
 News: {item['title']} - {item.get('content', '')}
 Be conversational and engaging, suitable for live radio."""
+            try:
+                response = model_longform.generate_content(prompt)
+                script_text = response.text.strip() if hasattr(response, 'text') else ''
+            except Exception as e:
+                print(f"Gemini API error: {e}")
+                script_text = f"[ERROR: Gemini API failed — {e}]"
+
+            word_count = len(script_text.split())
+            duration_min = word_count / WORDS_PER_MINUTE
+            final_script += f"{timestamp_str} {script_text}\n\n"
+            current_time_min += duration_min
+
         elif item_type == 'song':
-            prompt = f"""You are a radio host. Introduce this song:
-Song: {item['artist']} - {item['title']}
-Be upbeat, fun, and conversational."""
-        else:
-            continue
+            duration_ms = item.get('duration', '180000')
+            try:
+                duration_min = int(duration_ms) / 60000 if duration_ms else 3
+            except:
+                duration_min = 3
 
-        try:
-            response = model.generate_content(prompt)
-            if response and hasattr(response, 'text'):
-                script_text = response.text.strip()
-            else:
-                script_text = "[ERROR: No script generated]"
-        except Exception as e:
-            print(f"Gemini API error: {e}")
-            script_text = f"[ERROR: Gemini API failed — {e}]"
+            song_marker = f'<span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: {item["artist"]} — {item["title"]} 🎵</span>'
+            final_script += f"{timestamp_str} {song_marker}\n\n"
+            current_time_min += duration_min
 
-        final_script += script_text + "\n\n"
-
-    # Save script
     try:
         with open('radio_script.txt', 'w') as f:
             f.write(final_script)
@@ -428,6 +436,8 @@ Be upbeat, fun, and conversational."""
         print(f"Error saving script: {e}")
 
     return redirect('/show_script')
+
+
 
 
 
