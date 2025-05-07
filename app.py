@@ -7,22 +7,24 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 
 load_dotenv()
-
-NEWS_API_KEY = os.getenv("NEWS_API_KEY")
-MUSIC_API_KEY = os.getenv("MUSIC_API_KEY")
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+model = genai.GenerativeModel('gemini-2.0-flash')
 
-# ✅ Local Gemini artist validator
+def check_spelling(word):
+    prompt = f"Correct the spelling of the word '{word}'. If already correct, return as-is. No explanation."
+    try:
+        response = model.generate_content(prompt)
+        if response and hasattr(response, 'text'):
+            return response.text.strip(' "\'.')
+    except Exception as e:
+        flash(f"Error spellchecking '{word}': {e}", "error")
+    return word
+
 def validate_artist_with_llm(artist_name):
-    model = genai.GenerativeModel('gemini-2.0-flash-lite')
-    prompt = (
-        f"Is '{artist_name}' the name of a real, known music artist or band? "
-        "If yes, return the corrected name only. If no, return 'invalid'. "
-        "No explanation, just the word or name."
-    )
+    prompt = f"Is '{artist_name}' a real music artist or band? If yes, return corrected name. If no, return 'invalid'. No explanation."
     try:
         response = model.generate_content(prompt)
         if response and hasattr(response, 'text'):
@@ -34,17 +36,26 @@ def validate_artist_with_llm(artist_name):
         flash(f"Error validating artist '{artist_name}': {e}", "error")
     return None
 
+def validate_single_genre_with_llm(genre):
+    prompt = f"Is '{genre}' a valid music genre? If yes, return corrected name. If no, return 'invalid'. No explanation."
+    try:
+        response = model.generate_content(prompt)
+        if response and hasattr(response, 'text'):
+            result = response.text.strip()
+            if result.lower() == 'invalid':
+                return None
+            return result.strip(' "\'.')
+    except Exception as e:
+        flash(f"Error validating genre '{genre}': {e}", "error")
+    return genre
+
 def init_db():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            topics TEXT,
-            music_tastes TEXT,
-            favorite_artists TEXT,
-            news_mood TEXT,
-            location TEXT
+            topics TEXT, music_tastes TEXT, favorite_artists TEXT, news_mood TEXT, location TEXT
         )
     """)
     conn.commit()
@@ -57,113 +68,80 @@ def index():
     c.execute('SELECT * FROM profiles ORDER BY id DESC LIMIT 1')
     user = c.fetchone()
     conn.close()
-
     if user:
         _, topics, music_tastes, favorite_artists, news_mood, location = user
         topics_list = [t.strip() for t in topics.split(',')]
-        music_tastes_list = [m.strip() for m in music_tastes.split(',')]
+        genres_list = [g.strip() for g in music_tastes.split(',')]
+        artists_list = [a.strip() for a in favorite_artists.split(',')]
+        return render_template('index.html',
+                               topics=', '.join(topics_list),
+                               music_tastes=', '.join(genres_list),
+                               favorite_artists=', '.join(artists_list),
+                               news_mood=news_mood,
+                               location=location)
     else:
-        topics_list = []
-        music_tastes_list = []
-        favorite_artists = ""
-        news_mood = ""
-        location = ""
-
-    return render_template('index.html',
-                           topics=topics_list,
-                           music_tastes=music_tastes_list,
-                           favorite_artists=favorite_artists,
-                           news_mood=news_mood,
-                           location=location)
+        return render_template('index.html',
+                               topics='',
+                               music_tastes='',
+                               favorite_artists='',
+                               news_mood='',
+                               location='')
 
 @app.route('/save', methods=['POST'])
 def save():
-    model = genai.GenerativeModel('gemini-2.0-flash-lite')
-
-    raw_topics = [t.strip() for t in request.form['topics'].split(',') if t.strip()]
-    raw_music_tastes = [g.strip() for g in request.form['music_tastes'].split(',') if g.strip()]
-    raw_artists = [a.strip() for a in request.form['favorite_artists'].split(',') if a.strip()]
+    raw_topics_list = [t.strip() for t in request.form['topics'].split(',') if t.strip()]
+    raw_genres_list = [g.strip() for g in request.form['music_tastes'].split(',') if g.strip()]
+    raw_artists_list = [a.strip() for a in request.form['favorite_artists'].split(',') if a.strip()]
     news_mood = request.form['news_mood']
     location = request.form['location']
 
-    corrections_made = []
-    all_valid = True
+    corrected_topics = [check_spelling(t) for t in raw_topics_list]
 
-    def correct_list_with_llm(prompt_items, category_label):
-        corrected = []
-        local_corrections = []
-        prompt = (
-            f"For each of these {category_label}: {', '.join(prompt_items)}.\n"
-            "If the item is already valid, return it exactly as given, no changes.\n"
-            "Only correct if obviously misspelled.\n"
-            "If invalid, nonsense, or unrelated, return 'invalid'.\n"
-            "Respond as a comma-separated list, same length and order, no explanation."
-        )
+    corrected_genres, genre_corrections, valid_genres = [], [], True
+    for genre in raw_genres_list:
+        validated = validate_single_genre_with_llm(genre)
+        if validated:
+            if validated.lower() != genre.lower():
+                genre_corrections.append(f"Genre '{genre}' → '{validated}'")
+            corrected_genres.append(validated)
+        else:
+            flash(f"Genre '{genre}' is invalid and was removed.", "warning")
+            valid_genres = False
 
-        try:
-            response = model.generate_content(prompt)
-            if response and hasattr(response, 'text'):
-                corrected_list = [t.strip() for t in response.text.strip().split(',')]
-                if len(corrected_list) < len(prompt_items):
-                    flash(f"⚠️ LLM returned fewer {category_label} than expected. Processing only matched items.", "warning")
-                for i in range(min(len(prompt_items), len(corrected_list))):
-                    orig = prompt_items[i]
-                    new = corrected_list[i]
-                    if new.lower() == "invalid":
-                        flash(f"{category_label[:-1].capitalize()} '{orig}' is invalid and was removed.", "warning")
-                        nonlocal all_valid
-                        all_valid = False
-                    else:
-                        if orig.lower() != new.lower():
-                            local_corrections.append(f"{category_label[:-1].capitalize()} '{orig}' → '{new}'")
-                        corrected.append(new)
-                return corrected, local_corrections
-        except Exception as e:
-            flash(f"Error validating {category_label}: {e}", "error")
-        return prompt_items, []
-
-    # ✅ Process topics
-    corrected_topics, topic_corrections = correct_list_with_llm(raw_topics, "topics")
-    corrections_made.extend(topic_corrections)
-
-    # ✅ Process music genres
-    corrected_music_tastes, genre_corrections = correct_list_with_llm(raw_music_tastes, "music genres")
-    corrections_made.extend(genre_corrections)
-
-    # ✅ Process artists (individual checks)
-    validated_artists = []
-    for artist in raw_artists:
-        corrected_artist = validate_artist_with_llm(artist)
-        if corrected_artist:
-            if corrected_artist.lower() != artist.lower():
-                corrections_made.append(f"Artist '{artist}' → '{corrected_artist}'")
-            validated_artists.append(corrected_artist)
+    corrected_artists, valid_artists, artist_corrections = [], True, []
+    for artist in raw_artists_list:
+        validated = validate_artist_with_llm(artist)
+        if validated:
+            if validated.lower() != artist.lower():
+                artist_corrections.append(f"Artist '{artist}' → '{validated}'")
+            corrected_artists.append(validated)
         else:
             flash(f"Artist '{artist}' is invalid and was removed.", "warning")
-            all_valid = False
+            valid_artists = False
 
-    if not all_valid:
-        flash("Some invalid entries were removed. Please review and resubmit.", "warning")
+    if not (valid_genres and valid_artists):
+        flash("Some invalid inputs were removed. Please review and resubmit.", "warning")
         return render_template('index.html',
-                               topics=corrected_topics,
-                               music_tastes=corrected_music_tastes,
-                               favorite_artists=', '.join(validated_artists),
-                               location=location,
-                               news_mood=news_mood)
+                               topics=', '.join(corrected_topics),
+                               music_tastes=', '.join(corrected_genres),
+                               favorite_artists=', '.join(corrected_artists),
+                               news_mood=news_mood,
+                               location=location)
 
-    if corrections_made:
-        flash("Corrections made: " + "; ".join(corrections_made), "info")
+    all_corrections = genre_corrections + artist_corrections
+    if all_corrections:
+        flash("Corrections made: " + "; ".join(all_corrections), "info")
     else:
-        flash("All entries were valid. Preferences saved successfully!", "success")
-
-    topics_str = ",".join(corrected_topics)
-    music_tastes_str = ",".join(corrected_music_tastes)
-    favorite_artists_str = ",".join(validated_artists)
+        flash("Preferences saved successfully!", "success")
 
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute('INSERT INTO profiles (topics, music_tastes, favorite_artists, news_mood, location) VALUES (?, ?, ?, ?, ?)',
-              (topics_str, music_tastes_str, favorite_artists_str, news_mood, location))
+              (",".join(corrected_topics),
+               ",".join(corrected_genres),
+               ",".join(corrected_artists),
+               news_mood,
+               location))
     conn.commit()
     conn.close()
 
@@ -173,37 +151,27 @@ def save():
 def radio():
     with open('aggregated_news.json', 'r') as f:
         news_data = json.load(f)
-
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute('SELECT * FROM profiles ORDER BY id DESC LIMIT 1')
     user = c.fetchone()
     conn.close()
-
     if user:
         _, topics, music_tastes, favorite_artists, news_mood, location = user
         topics_list = [t.strip() for t in topics.split(',')]
-        music_tastes_list = [m.strip() for m in music_tastes.split(',')]
-        favorite_artists_list = [a.strip() for a in favorite_artists.split(',')]
-
-        grouped_news = {}
-        for topic in topics_list:
-            topic_lower = topic.lower()
-            if topic_lower in news_data.get("aggregated_news", {}):
-                grouped_news[topic] = news_data["aggregated_news"][topic_lower]
-
-        top_stories = news_data.get("top_stories", [])
-
+        genres_list = [g.strip() for g in music_tastes.split(',')]
+        artists_list = [a.strip() for a in favorite_artists.split(',')]
+        grouped_news = {topic: news_data.get('aggregated_news', {}).get(topic.lower(), [])
+                        for topic in topics_list}
         return render_template('radio.html',
                                grouped_news=grouped_news,
-                               top_stories=top_stories,
-                               music_tastes=music_tastes_list,
-                               favorite_artists=favorite_artists_list,
+                               top_stories=news_data.get('top_stories', []),
+                               music_tastes=genres_list,
+                               favorite_artists=artists_list,
                                topics=topics_list,
                                news_mood=news_mood,
                                location=location)
-    else:
-        return "No user profile found. Please set up your profile first."
+    return "No profile found."
 
 @app.route('/refresh_news')
 def refresh_news():

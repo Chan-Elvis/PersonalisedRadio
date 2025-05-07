@@ -37,10 +37,10 @@
     <h1>🎧 Setup Your Personal Radio Station</h1>
     <form method="POST" action="/save">
         <label>Favorite News Topics (comma separated):</label><br>
-        <input type="text" name="topics" value="{{ topics | join(', ') if topics else '' }}"><br><br>
+        <input type="text" name="topics" value="{{topics if topics else '' }}"><br><br>
 
         <label>Favorite Music Genres (comma separated):</label><br>
-        <input type="text" name="music_tastes" value="{{ music_tastes | join(', ') if music_tastes else '' }}"><br><br>
+        <input type="text" name="music_tastes" value="{{ music_tastes if music_tastes else '' }}"><br><br>
 
         <label>Favorite Artists (comma separated):</label><br>
         <input type="text" name="favorite_artists" value="{{ favorite_artists if favorite_artists else '' }}"><br><br>

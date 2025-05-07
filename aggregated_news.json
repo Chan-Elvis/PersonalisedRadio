@@ -1,46 +1,69 @@
 {
     "top_stories": [
         {
-            "title": "Bristol street sex workers help police to stop child abuse",
-            "content": "How street sex workers are helping police stop child abuse\n\n13 minutes ago Share Save Rachel Stonehouse BBC West Investigations Reporting fromBristol Emma Halle...",
-            "url": "https://www.bbc.com/news/articles/c625yk01772o",
-            "published_at": "2025-05-06T23:10:18.000000Z"
+            "title": "UEFA Champions League live updates: Inter vs. Barcelona",
+            "content": "Open Extended Reactions\n\nWe are down to the final four! It's the first day of the second legs in the semifinals of the 2024-25 UEFA Champions League season.\n\nEn...",
+            "url": "https://www.espn.co.uk/football/story/_/id/44822411/uefa-champions-league-live-updates-internazionale-vs-barcelona",
+            "published_at": "2025-05-07T01:09:36.000000Z"
         },
         {
-            "title": "Lincolnshire council took months to fix abuse victim's door lock",
-            "content": "Abuse victim fled ex but council left her in unsecure home\n\n15 minutes ago Share Save Leanne Crawford BBC Yorkshire and Lincolnshire Investigations Share Save\n\n...",
-            "url": "https://www.bbc.com/news/articles/cvgnxj41v0lo",
-            "published_at": "2025-05-06T23:08:05.000000Z"
+            "title": "New VE Day law to stop Churchill statue sacrilege",
+            "content": "Climbing of Winston Churchill statue to become a crime\n\nThese will include the Cenotaph in Whitehall, the Royal Artillery Memorial in Hyde Park, and many other ...",
+            "url": "https://www.bbc.com/news/articles/cdded9rqd2do",
+            "published_at": "2025-05-07T00:51:36.000000Z"
         },
         {
-            "title": "Bobby Sands statue investigated by Belfast council planners",
-            "content": "Bobby Sands statue investigated by council planners\n\n20 minutes ago Share Save Brendan Hughes BBC News NI political reporter Share Save\n\nGoogle The statue was u...",
-            "url": "https://www.bbc.com/news/articles/cly1yj27pemo",
-            "published_at": "2025-05-06T23:01:55.000000Z"
+            "title": "Newspaper headlines: 'Two-tier' deal and 'Labour turmoil' over winter fuel",
+            "content": "'Two-tier' trade deal and 'Labour turmoil' over winter fuel\n\n11 minutes ago Share Save Share Save\n\nSeveral newspapers lead with stories on a new trade deal wort...",
+            "url": "https://www.bbc.com/news/articles/cpdzde38671o",
+            "published_at": "2025-05-06T23:51:13.000000Z"
         }
     ],
     "aggregated_news": {
-        "technology": [
+        "sports": [
             {
                 "source": "TheNewsAPI",
-                "title": "Elizabeth Line: New technology shows which carriages are busy",
-                "content": "Elizabeth Line station screens show busy carriages\n\nNew technology on the Elizabeth line shows commuters which carriages are quietest\n\nPassengers at some Elizab...",
-                "url": "https://www.bbc.com/news/articles/cjeww5x4vl9o",
-                "published_at": "2025-04-11T05:02:09.000000Z"
+                "title": "Saudi Arabia: Which sports events are happening there in 2025?",
+                "content": "The Kingdom of Saudi Arabia has no plans to scale back its rapidly growing sports portfolio.\n\nSince 2019, Saudi Arabia has hosted more than 100 elite internatio...",
+                "url": "https://www.bbc.com/sport/articles/c209vp7p9r9o",
+                "published_at": "2025-04-16T14:00:30.000000Z"
             },
             {
                 "source": "TheNewsAPI",
-                "title": "Nintendo confirms: Joy-Con 2 joysticks lack Hall Effect technology",
-                "content": "HQ\n\nDrifting sticks are something that has been a recurring problem among many modern controllers. Not least the Switch whose Joy-Cons were downright infamous f...",
-                "url": "https://www.gamereactor.eu/nintendo-confirms-joy-con-2-joysticks-lack-hall-effect-technology-1525823/",
-                "published_at": "2025-04-08T06:33:05.000000Z"
+                "title": "EA Sports FC 25 Team of the Season schedule revealed",
+                "content": "Open Extended Reactions\n\nA perennial favorite among EA Sports FC fans, the Team of the Season (TOTS) program will be available soon in EA FC 25 for a total of s...",
+                "url": "https://www.espn.co.uk/gaming/story/_/id/44799249/ea-fc-25-team-season-full-schedule",
+                "published_at": "2025-04-22T20:44:18.000000Z"
             },
             {
                 "source": "TheNewsAPI",
-                "title": "Audio technology group Waves hello to \u00a3300m London float",
-                "content": "An audio technology business used by many of the world's leading musicians is plotting a \u00a3300m City flotation in a boost to London's flagging stock market.\n\nSk...",
-                "url": "https://news.sky.com/story/lse-13354693",
-                "published_at": "2025-04-24T09:01:00.000000Z"
+                "title": "The Laureus Awards are handed tonight: all the nominees of the \"sports Oscars\"",
+                "content": "HQ\n\nAmong all sports awards, the one that most resembles a a \"Sports Oscar\", honouring every sport at the same level, are the Laureus World Sports Awards. They ...",
+                "url": "https://www.gamereactor.eu/the-laureus-awards-are-handed-tonight-all-the-nominees-of-the-sports-oscars-1531553/",
+                "published_at": "2025-04-21T10:18:43.000000Z"
+            }
+        ],
+        "politics": [
+            {
+                "source": "TheNewsAPI",
+                "title": "Vicki Young Announced as New Politics Live Presenter",
+                "content": "After Jo Coburn\u2019s departure Young will start in June. The BBC says:\n\n\u201cVicki is well known to audiences as the BBC\u2019s Deputy Political Editor, a role she ha...",
+                "url": "https://order-order.com/2025/04/03/vicki-young-announced-as-new-politics-live-presenter/",
+                "published_at": "2025-04-03T13:24:47.000000Z"
+            },
+            {
+                "source": "TheNewsAPI",
+                "title": "Multi-party politics heightens danger for muddled Labour",
+                "content": "This article is an on-site version of our Inside Politics newsletter. Subscribers can sign up here to get the newsletter delivered every weekday. If you\u2019re no...",
+                "url": "https://www.ft.com/content/593e8e6c-8d08-47a5-8550-9920cc7a211a",
+                "published_at": "2025-05-02T08:52:34.000000Z"
+            },
+            {
+                "source": "TheNewsAPI",
+                "title": "\u2018We Are Witnessing the Slow Death of Two Party Politics\u2019",
+                "content": "Byline Times is an independent, reader-funded investigative newspaper, outside of the system of the established press, reporting on \u2018what the papers don\u2019t s...",
+                "url": "https://bylinetimes.com/2025/04/23/we-are-witnessing-the-slow-death-of-two-party-politics/",
+                "published_at": "2025-04-23T09:02:54.000000Z"
             }
         ]
     }
