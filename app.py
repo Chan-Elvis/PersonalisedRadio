@@ -332,30 +332,37 @@ def radio():
 def refresh_news():
     subprocess.run(["python", "FetchNews.py"])
     return redirect('/radio')
-
 @app.route('/generate_script')
 def generate_script():
     try:
         with open('aggregated_news.json', 'r') as f:
             news_data = json.load(f)
-        local_news = news_data.get('local', [])
-        international_news = news_data.get('international', [])
         top_stories = news_data.get('top_stories', [])
+        aggregated_news = news_data.get('aggregated_news', {})
     except Exception as e:
-        local_news, international_news, top_stories = [], [], []
         print(f"Error loading news: {e}")
+        top_stories, aggregated_news = [], {}
 
+    # Flatten personalized stories
+    personalized_stories = []
+    for topic, articles in aggregated_news.items():
+        for article in articles:
+            personalized_stories.append({
+                'title': f"[{topic}] {article['title']}",
+                'content': article['content'],
+                'url': article['url']
+            })
+
+    # Get music playlists
     trending_tracks = get_trending_tracks()
     throwback_tracks = get_throwback_tracks().get('tracks', [])
-    new_artist_recs = get_new_artist_recommendations([])  # pass favorite artists if needed
+    new_artist_recs = get_new_artist_recommendations([])  # You can pass favorite artists if needed
 
-    # fallback if empty
-    if not local_news:
-        local_news = [{'title': 'Sample Local News', 'content': 'Sample local content'}]
-    if not international_news:
-        international_news = [{'title': 'Sample International News', 'content': 'Sample international content'}]
+    # Provide fallbacks if needed
     if not top_stories:
         top_stories = [{'title': 'Sample Top Story', 'content': 'Sample top story content'}]
+    if not personalized_stories:
+        personalized_stories = [{'title': 'Sample Personalized Story', 'content': 'Sample content'}]
     if not trending_tracks:
         trending_tracks = [{'artist': 'Sample Trending Artist', 'title': 'Sample Song', 'url': '#'}]
     if not throwback_tracks:
@@ -363,39 +370,40 @@ def generate_script():
     if not new_artist_recs:
         new_artist_recs = [{'artist': 'Sample New Artist', 'top_tracks': [{'name': 'Sample Song', 'url': '#'}]}]
 
-    # interleave content
-    combined = []
-    max_length = max(len(local_news), len(international_news), len(top_stories), 
+    # Interleave content
+    max_length = max(len(top_stories), len(personalized_stories),
                      len(trending_tracks), len(throwback_tracks), len(new_artist_recs))
+    combined = []
 
     for i in range(max_length):
-        if i < len(local_news):
-            combined.append(('news', local_news[i]))
-        if i < len(international_news):
-            combined.append(('news', international_news[i]))
         if i < len(top_stories):
             combined.append(('news', top_stories[i]))
+        if i < len(personalized_stories):
+            combined.append(('news', personalized_stories[i]))
         if i < len(trending_tracks):
             combined.append(('song', trending_tracks[i]))
         if i < len(throwback_tracks):
             combined.append(('song', throwback_tracks[i]))
         if i < len(new_artist_recs):
             artist = new_artist_recs[i]
-            # Flatten new artist to top track
             if artist.get('top_tracks'):
-                combined.append(('song', {'artist': artist['artist'], 'title': artist['top_tracks'][0]['name'], 'url': artist['top_tracks'][0]['url']}))
+                combined.append(('song', {
+                    'artist': artist['artist'],
+                    'title': artist['top_tracks'][0]['name'],
+                    'url': artist['top_tracks'][0]['url']
+                }))
 
+    # Build the script
     final_script = ""
-
     for item_type, item in combined:
         if item_type == 'news':
             prompt = f"""You are a radio host. Announce this news headline:
-            News: {item['title']} - {item.get('content', '')}
-            Be conversational and engaging, suitable for live radio."""
+News: {item['title']} - {item.get('content', '')}
+Be conversational and engaging, suitable for live radio."""
         elif item_type == 'song':
             prompt = f"""You are a radio host. Introduce this song:
-            Song: {item['artist']} - {item['title']}
-            Be upbeat, fun, and conversational."""
+Song: {item['artist']} - {item['title']}
+Be upbeat, fun, and conversational."""
         else:
             continue
 
