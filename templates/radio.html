@@ -46,13 +46,58 @@
     <p><strong>Preferred News Mood:</strong> {{ news_mood }}</p>
 
     <hr>
+    <h2>🎵 Top Songs from Your Favorite Artists and Genres</h2>
+    {% if top_tracks_playlist %}
+        {% for track in top_tracks_playlist %}
+            <div>
+                <strong>{{ track.artist }}</strong> — {{ track.title }} <a href="{{ track.url }}" target="_blank">Play</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No top songs available.</p>
+    {% endif %}
+    
+    <h2>🔥 Trending Tracks</h2>
+    {% if trending_playlist %}
+        {% for track in trending_playlist %}
+            <div>
+                <strong>{{ track.artist }}</strong> — {{ track.title }} <a href="{{ track.url }}" target="_blank">Play</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No trending tracks available.</p>
+    {% endif %}
 
-    <h2>🎶 Recommended Playlist</h2>
-    <ul>
-    {% for track in recommended_tracks %}
-        <li><a href="{{ track.url }}" target="_blank">{{ track.artist }} — {{ track.title }}</a></li>
+    <h2>🎸 Throwback Classics ({{ throwback_playlist.tag|capitalize }})</h2>
+{% if throwback_playlist.tracks %}
+    {% for track in throwback_playlist.tracks %}
+        <div>
+            <strong>{{ track.artist }}</strong> — {{ track.title }} <a href="{{ track.url }}" target="_blank">Play</a>
+        </div>
     {% endfor %}
-    </ul>
+{% else %}
+    <p>No throwback tracks available.</p>
+{% endif %}
+
+    <h2>🌱 Related Artist Recommendations</h2>
+{% if new_artist_playlist %}
+    {% for artist_data in new_artist_playlist %}
+        <h3>{{ artist_data.artist }}</h3>
+        {% if artist_data.tracks %}
+            <ul>
+            {% for track in artist_data.tracks %}
+                <li>{{ track.title }} <a href="{{ track.url }}" target="_blank">Play</a></li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>No top tracks available.</p>
+        {% endif %}
+    {% endfor %}
+{% else %}
+    <p>No related artist recommendations available.</p>
+{% endif %}
+
+    
 
     <hr>
 
@@ -82,5 +127,18 @@
     <br>
     <a href="/refresh_news">🔄 Refresh News</a> | <a href="/">⚙️ Edit Preferences</a>
 
+    <a href="/generate_script" style="
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 10px 0;
+">🎙️ Generate Radio Host Script</a>
+
+
 </body>
 </html>
+
+

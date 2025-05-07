@@ -6,6 +6,8 @@ import os
 import requests
 import google.generativeai as genai
 from dotenv import load_dotenv
+import random
+import datetime
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -14,7 +16,6 @@ LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 model = genai.GenerativeModel('gemini-2.0-flash')
-
 
 ALLOWED_GENRES = [
     'rock', 'pop', 'jazz', 'blues', 'hip-hop', 'rap', 'indie', 'electronic',
@@ -55,7 +56,6 @@ def get_recommended_tracks(artists, genres):
             top_tracks = data.get('toptracks', {}).get('track', [])[:3]
             for track in top_tracks:
                 tracks.append({'artist': artist, 'title': track['name'], 'url': track['url']})
-
     for genre in genres:
         url = f"http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={genre}&api_key={LASTFM_API_KEY}&format=json"
         response = requests.get(url)
@@ -64,20 +64,145 @@ def get_recommended_tracks(artists, genres):
             top_tracks = data.get('tracks', {}).get('track', [])[:3]
             for track in top_tracks:
                 tracks.append({'artist': track['artist']['name'], 'title': track['name'], 'url': track['url']})
-
     return tracks[:20]
+
+def get_trending_tracks():
+    url = f"http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key={LASTFM_API_KEY}&format=json"
+    response = requests.get(url)
+    if response.status_code == 200:
+        tracks = response.json()['tracks']['track']
+        return [{'artist': t['artist']['name'], 'title': t['name'], 'url': t['url']} for t in tracks[:5]]
+    return []
+
+def get_throwback_tracks():
+    throwback_tags = ['70s', '80s', '90s', 'classic rock', 'oldies']
+    selected_tag = random.choice(throwback_tags)
+    url = f"http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={selected_tag}&api_key={LASTFM_API_KEY}&format=json"
+    response = requests.get(url)
+    tracks = []
+    if response.status_code == 200:
+        data = response.json()
+        top_tracks = data.get('tracks', {}).get('track', [])[:5]
+        for track in top_tracks:
+            tracks.append({'artist': track['artist']['name'], 'title': track['name'], 'url': track['url']})
+    return {'tag': selected_tag, 'tracks': tracks}
+
+def get_new_artist_recommendations(favorite_artists):
+    recommendations = []
+    seen_artists = set()
+    for artist in favorite_artists:
+        url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist={artist}&api_key={LASTFM_API_KEY}&format=json"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            similar_artists = [a['name'] for a in data.get('similarartists', {}).get('artist', [])][:3]
+            for similar_artist in similar_artists:
+                if similar_artist not in seen_artists:
+                    seen_artists.add(similar_artist)
+                    # Get top tracks for this similar artist
+                    track_url = f"http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist={similar_artist}&api_key={LASTFM_API_KEY}&format=json"
+                    track_resp = requests.get(track_url)
+                    top_tracks = []
+                    if track_resp.status_code == 200:
+                        track_data = track_resp.json()
+                        tracks = track_data.get('toptracks', {}).get('track', [])[:3]
+                        for track in tracks:
+                            top_tracks.append({'title': track['name'], 'url': track['url']})
+                    recommendations.append({'artist': similar_artist, 'tracks': top_tracks})
+    return recommendations
+
+def filter_unused_articles(news_data):
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute('SELECT article_title FROM covered_articles')
+    covered = set([row[0] for row in c.fetchall()])
+    conn.close()
+    return [article for article in news_data if article['title'] not in covered]
+
+def filter_unused_songs(songs):
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute('SELECT song_title FROM played_songs')
+    played = set([row[0] for row in c.fetchall()])
+    conn.close()
+    return [song for song in songs if song['title'] not in played]
+
+def create_batches(items, batch_size):
+    return [items[i:i + batch_size] for i in range(0, len(items), batch_size)]
+
+def build_prompt(news_batch, music_batch):
+    news_text = "\n".join([f"- {n['title']}: {n['content']}" for n in news_batch])
+    music_text = "\n".join([f"- {m['artist']} — {m['title']}" for m in music_batch])
+    prompt = f"""
+You are a lively radio host.
+Create a ~3-minute radio script segment introducing:
+News:
+{news_text}
+
+Songs:
+{music_text}
+
+Make it engaging, fun, with smooth transitions, comments, and occasional humor.
+"""
+    return prompt
+
+def generate_radio_script(news_batches, music_batches):
+    final_script = ""
+    for i in range(len(news_batches)):
+        news_batch = news_batches[i]
+        music_batch = music_batches[i] if i < len(music_batches) else []
+        prompt = build_prompt(news_batch, music_batch)
+        response = model.generate_content(prompt)
+        script_text = response.text.strip() if hasattr(response, 'text') else ''
+        final_script += script_text + "\n\n"
+    return final_script
+
+def mark_articles_and_songs_used(news_batch, music_batch):
+    timestamp = datetime.datetime.now().isoformat()
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    for n in news_batch:
+        c.execute('INSERT INTO covered_articles (article_title, url, timestamp) VALUES (?, ?, ?)', 
+                  (n['title'], n['url'], timestamp))
+    for m in music_batch:
+        c.execute('INSERT INTO played_songs (song_title, artist, timestamp) VALUES (?, ?, ?)', 
+                  (m['title'], m['artist'], timestamp))
+    conn.commit()
+    conn.close()
+
 
 def init_db():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
+    # Existing table
     c.execute("""
         CREATE TABLE IF NOT EXISTS profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            topics TEXT, music_tastes TEXT, favorite_artists TEXT, news_mood TEXT, location TEXT
+            topics TEXT, music_tastes TEXT, favorite_artists TEXT,
+            news_mood TEXT, location TEXT, music_pref TEXT
+        )
+    """)
+    # NEW: Track played songs
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS played_songs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            song_title TEXT,
+            artist TEXT,
+            timestamp TEXT
+        )
+    """)
+    # NEW: Track covered articles
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS covered_articles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            article_title TEXT,
+            url TEXT,
+            timestamp TEXT
         )
     """)
     conn.commit()
     conn.close()
+
 
 @app.route('/')
 def index():
@@ -87,16 +212,18 @@ def index():
     user = c.fetchone()
     conn.close()
     if user:
-        _, topics, music_tastes, favorite_artists, news_mood, location = user
+        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref = user
         topics_list = [t.strip() for t in topics.split(',')]
         genres_list = [g.strip() for g in music_tastes.split(',')]
         artists_list = [a.strip() for a in favorite_artists.split(',')]
+        pref_list = music_pref.split(',') if music_pref else []
         return render_template('index.html',
                                topics=', '.join(topics_list),
                                music_tastes=genres_list,
                                favorite_artists=', '.join(artists_list),
                                news_mood=news_mood,
                                location=location,
+                               music_pref=pref_list,
                                allowed_genres=ALLOWED_GENRES)
     else:
         return render_template('index.html',
@@ -105,6 +232,7 @@ def index():
                                favorite_artists='',
                                news_mood='',
                                location='',
+                               music_pref=[],
                                allowed_genres=ALLOWED_GENRES)
 
 @app.route('/save', methods=['POST'])
@@ -114,6 +242,8 @@ def save():
     raw_artists_list = [a.strip() for a in request.form['favorite_artists'].split(',') if a.strip()]
     news_mood = request.form['news_mood']
     location = request.form['location']
+    music_pref_list = request.form.getlist('music_pref')
+    music_pref = ','.join(music_pref_list)
 
     corrected_topics = [check_spelling(t) for t in raw_topics_list]
     corrected_genres = raw_genres_list
@@ -137,6 +267,7 @@ def save():
                                favorite_artists=', '.join(corrected_artists),
                                news_mood=news_mood,
                                location=location,
+                               music_pref=music_pref_list,
                                allowed_genres=ALLOWED_GENRES)
 
     if artist_corrections:
@@ -146,12 +277,13 @@ def save():
 
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute('INSERT INTO profiles (topics, music_tastes, favorite_artists, news_mood, location) VALUES (?, ?, ?, ?, ?)',
+    c.execute('INSERT INTO profiles (topics, music_tastes, favorite_artists, news_mood, location, music_pref) VALUES (?, ?, ?, ?, ?, ?)',
               (",".join(corrected_topics),
                ",".join(corrected_genres),
                ",".join(corrected_artists),
                news_mood,
-               location))
+               location,
+               music_pref))
     conn.commit()
     conn.close()
 
@@ -167,15 +299,20 @@ def radio():
     c.execute('SELECT * FROM profiles ORDER BY id DESC LIMIT 1')
     user = c.fetchone()
     conn.close()
+
     if user:
-        _, topics, music_tastes, favorite_artists, news_mood, location = user
+        _, topics, music_tastes, favorite_artists, news_mood, location, _ = user
         topics_list = [t.strip() for t in topics.split(',')]
         genres_list = [g.strip() for g in music_tastes.split(',')]
         artists_list = [a.strip() for a in favorite_artists.split(',')]
 
+        top_tracks_playlist = get_recommended_tracks(artists_list, genres_list)
+        trending_playlist = get_trending_tracks()
+        throwback_playlist = get_throwback_tracks()
+        new_artist_playlist = get_new_artist_recommendations(artists_list)
+
         grouped_news = {topic: news_data.get('aggregated_news', {}).get(topic.lower(), [])
                         for topic in topics_list}
-        recommended_tracks = get_recommended_tracks(artists_list, genres_list)
 
         return render_template('radio.html',
                                grouped_news=grouped_news,
@@ -185,7 +322,10 @@ def radio():
                                topics=topics_list,
                                news_mood=news_mood,
                                location=location,
-                               recommended_tracks=recommended_tracks)
+                               top_tracks_playlist=top_tracks_playlist,
+                               trending_playlist=trending_playlist,
+                               throwback_playlist=throwback_playlist,
+                               new_artist_playlist=new_artist_playlist)
     return "No profile found."
 
 @app.route('/refresh_news')
@@ -193,7 +333,107 @@ def refresh_news():
     subprocess.run(["python", "FetchNews.py"])
     return redirect('/radio')
 
+@app.route('/generate_script')
+def generate_script():
+    try:
+        with open('aggregated_news.json', 'r') as f:
+            news_data = json.load(f)
+        local_news = news_data.get('local', [])
+        international_news = news_data.get('international', [])
+        top_stories = news_data.get('top_stories', [])
+    except Exception as e:
+        local_news, international_news, top_stories = [], [], []
+        print(f"Error loading news: {e}")
+
+    trending_tracks = get_trending_tracks()
+    throwback_tracks = get_throwback_tracks().get('tracks', [])
+    new_artist_recs = get_new_artist_recommendations([])  # pass favorite artists if needed
+
+    # fallback if empty
+    if not local_news:
+        local_news = [{'title': 'Sample Local News', 'content': 'Sample local content'}]
+    if not international_news:
+        international_news = [{'title': 'Sample International News', 'content': 'Sample international content'}]
+    if not top_stories:
+        top_stories = [{'title': 'Sample Top Story', 'content': 'Sample top story content'}]
+    if not trending_tracks:
+        trending_tracks = [{'artist': 'Sample Trending Artist', 'title': 'Sample Song', 'url': '#'}]
+    if not throwback_tracks:
+        throwback_tracks = [{'artist': 'Sample Throwback Artist', 'title': 'Sample Song', 'url': '#'}]
+    if not new_artist_recs:
+        new_artist_recs = [{'artist': 'Sample New Artist', 'top_tracks': [{'name': 'Sample Song', 'url': '#'}]}]
+
+    # interleave content
+    combined = []
+    max_length = max(len(local_news), len(international_news), len(top_stories), 
+                     len(trending_tracks), len(throwback_tracks), len(new_artist_recs))
+
+    for i in range(max_length):
+        if i < len(local_news):
+            combined.append(('news', local_news[i]))
+        if i < len(international_news):
+            combined.append(('news', international_news[i]))
+        if i < len(top_stories):
+            combined.append(('news', top_stories[i]))
+        if i < len(trending_tracks):
+            combined.append(('song', trending_tracks[i]))
+        if i < len(throwback_tracks):
+            combined.append(('song', throwback_tracks[i]))
+        if i < len(new_artist_recs):
+            artist = new_artist_recs[i]
+            # Flatten new artist to top track
+            if artist.get('top_tracks'):
+                combined.append(('song', {'artist': artist['artist'], 'title': artist['top_tracks'][0]['name'], 'url': artist['top_tracks'][0]['url']}))
+
+    final_script = ""
+
+    for item_type, item in combined:
+        if item_type == 'news':
+            prompt = f"""You are a radio host. Announce this news headline:
+            News: {item['title']} - {item.get('content', '')}
+            Be conversational and engaging, suitable for live radio."""
+        elif item_type == 'song':
+            prompt = f"""You are a radio host. Introduce this song:
+            Song: {item['artist']} - {item['title']}
+            Be upbeat, fun, and conversational."""
+        else:
+            continue
+
+        try:
+            response = model.generate_content(prompt)
+            if response and hasattr(response, 'text'):
+                script_text = response.text.strip()
+            else:
+                script_text = "[ERROR: No script generated]"
+        except Exception as e:
+            print(f"Gemini API error: {e}")
+            script_text = f"[ERROR: Gemini API failed — {e}]"
+
+        final_script += script_text + "\n\n"
+
+    # Save script
+    try:
+        with open('radio_script.txt', 'w') as f:
+            f.write(final_script)
+        print("✅ Script saved to radio_script.txt")
+    except Exception as e:
+        print(f"Error saving script: {e}")
+
+    return redirect('/show_script')
+
+
+
+
+@app.route('/show_script')
+def show_script():
+    try:
+        with open('radio_script.txt', 'r') as f:
+            script = f.read()
+    except FileNotFoundError:
+        script = "No script has been generated yet. Please click 'Generate Radio Host Script' first."
+    return render_template('show_script.html', script=script)
+
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
-

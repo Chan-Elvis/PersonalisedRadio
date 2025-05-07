@@ -50,6 +50,12 @@
         <label>Favorite Artists (comma separated):</label><br>
         <input type="text" name="favorite_artists" value="{{ favorite_artists if favorite_artists else '' }}"><br><br>
 
+        <label>Music Preferences (choose none, one, or more):</label><br>
+        <input type="checkbox" name="music_pref" value="trending" {% if 'trending' in music_pref %}checked{% endif %}> Trending<br>
+        <input type="checkbox" name="music_pref" value="throwback" {% if 'throwback' in music_pref %}checked{% endif %}> Throwback<br>
+        <input type="checkbox" name="music_pref" value="new_recs" {% if 'new_recs' in music_pref %}checked{% endif %}> New Artist Recommendations<br><br>
+
+
         <h3>Enter your Location (2-letter country code, e.g., us, gb, ca):</h3>
         <input type="text" name="location" value="{{ location if location else '' }}"><br><br>
 
