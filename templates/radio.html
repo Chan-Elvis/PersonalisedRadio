@@ -6,7 +6,6 @@
 </head>
 <body>
 
-    <!-- Flash messages block -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         <ul style="list-style-type: none; padding: 0;">
@@ -48,8 +47,16 @@
 
     <hr>
 
-    <h2>📰 Personalized News:</h2>
+    <h2>🎶 Recommended Playlist</h2>
+    <ul>
+    {% for track in recommended_tracks %}
+        <li><a href="{{ track.url }}" target="_blank">{{ track.artist }} — {{ track.title }}</a></li>
+    {% endfor %}
+    </ul>
 
+    <hr>
+
+    <h2>📰 Personalized News:</h2>
     {% for topic, articles in grouped_news.items() %}
         <h3>🗞️ {{ topic }}</h3>
         {% for story in articles %}
@@ -62,10 +69,7 @@
         <hr>
     {% endfor %}
 
-    <hr>
-
     <h2>🌎 General Top Stories:</h2>
-
     {% for story in top_stories %}
         <div style="border:1px solid #ccc; padding:10px; margin:10px; background-color: #f9f9f9;">
             <h4>{{ story.title }}</h4>

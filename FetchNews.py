@@ -29,6 +29,10 @@ def fetch_top_stories(region):
     params = {"api_token": THENEWS_API_KEY, "locale": region, "language": "en", "published_after": get_previous_month()}
     return fetch_news(url, params)
 
+def fetch_global_stories():
+    return fetch_top_stories("xx")  # "xx" means international/global headlines in TheNewsAPI
+
+
 def process_news():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()

@@ -39,8 +39,13 @@
         <label>Favorite News Topics (comma separated):</label><br>
         <input type="text" name="topics" value="{{topics if topics else '' }}"><br><br>
 
-        <label>Favorite Music Genres (comma separated):</label><br>
-        <input type="text" name="music_tastes" value="{{ music_tastes if music_tastes else '' }}"><br><br>
+        <label>Favorite Music Genres:</label><br>
+        {% for genre in allowed_genres %}
+        <input type="checkbox" name="music_tastes" value="{{ genre }}"
+        {% if genre in music_tastes %}checked{% endif %}> {{ genre | capitalize }}<br>
+        {% endfor %}
+        <br>
+
 
         <label>Favorite Artists (comma separated):</label><br>
         <input type="text" name="favorite_artists" value="{{ favorite_artists if favorite_artists else '' }}"><br><br>
