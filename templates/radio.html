@@ -33,8 +33,8 @@
       {% endif %}
     {% endwith %}
 
-    <h1>🎵 Now Playing</h1>
-    <p>{{ music_tastes|random }} song by {{ favorite_artists|random }}</p>
+    <h1>🎵 Welcome to {{ station_name }} with your host {{ host_name }}!</h1>
+    <p> Currently shuffling {{ music_tastes|random }} songs</p>
 
     <hr>
 
@@ -44,6 +44,7 @@
     <p><strong>Favorite Artists:</strong> {{ favorite_artists|join(', ') }}</p>
     <p><strong>Location:</strong> {{ location }}</p>
     <p><strong>Preferred News Mood:</strong> {{ news_mood }}</p>
+
 
     <hr>
     <h2>🎵 Top Songs from Your Favorite Artists and Genres</h2>

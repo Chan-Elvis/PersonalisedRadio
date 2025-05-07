@@ -35,7 +35,14 @@
     {% endwith %}
 
     <h1>🎧 Setup Your Personal Radio Station</h1>
+
+
     <form method="POST" action="/save">
+        <label>Station Name:</label><br>
+        <input type="text" name="station_name" value="{{ station_name if station_name else '' }}"><br><br>
+
+        <label>Host Name:</label><br>
+        <input type="text" name="host_name" value="{{ host_name if host_name else '' }}"><br><br>
         <label>Favorite News Topics (comma separated):</label><br>
         <input type="text" name="topics" value="{{topics if topics else '' }}"><br><br>
 

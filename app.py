@@ -175,15 +175,14 @@ def mark_articles_and_songs_used(news_batch, music_batch):
 def init_db():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    # Existing table
     c.execute("""
         CREATE TABLE IF NOT EXISTS profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             topics TEXT, music_tastes TEXT, favorite_artists TEXT,
-            news_mood TEXT, location TEXT, music_pref TEXT
+            news_mood TEXT, location TEXT, music_pref TEXT,
+            station_name TEXT, host_name TEXT
         )
     """)
-    # NEW: Track played songs
     c.execute("""
         CREATE TABLE IF NOT EXISTS played_songs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -192,7 +191,6 @@ def init_db():
             timestamp TEXT
         )
     """)
-    # NEW: Track covered articles
     c.execute("""
         CREATE TABLE IF NOT EXISTS covered_articles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -213,28 +211,35 @@ def index():
     user = c.fetchone()
     conn.close()
     if user:
-        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref = user
+        user = list(user) + [None] * (9 - len(user))
+        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name = user
         topics_list = [t.strip() for t in topics.split(',')]
         genres_list = [g.strip() for g in music_tastes.split(',')]
         artists_list = [a.strip() for a in favorite_artists.split(',')]
         pref_list = music_pref.split(',') if music_pref else []
         return render_template('index.html',
-                               topics=', '.join(topics_list),
-                               music_tastes=genres_list,
-                               favorite_artists=', '.join(artists_list),
-                               news_mood=news_mood,
-                               location=location,
-                               music_pref=pref_list,
-                               allowed_genres=ALLOWED_GENRES)
+                       topics=', '.join(topics_list),
+                       music_tastes=genres_list,
+                       favorite_artists=', '.join(artists_list),
+                       news_mood=news_mood,
+                       location=location,
+                       station_name=station_name,
+                       host_name=host_name,
+                       music_pref=pref_list,
+                       allowed_genres=ALLOWED_GENRES)
+
     else:
         return render_template('index.html',
-                               topics='',
-                               music_tastes=[],
-                               favorite_artists='',
-                               news_mood='',
-                               location='',
-                               music_pref=[],
-                               allowed_genres=ALLOWED_GENRES)
+                       topics='',
+                       music_tastes=[],
+                       favorite_artists='',
+                       news_mood='',
+                       location='',
+                       station_name='',
+                       host_name='',
+                       music_pref=[],
+                       allowed_genres=ALLOWED_GENRES)
+
 
 @app.route('/save', methods=['POST'])
 def save():
@@ -243,6 +248,8 @@ def save():
     raw_artists_list = [a.strip() for a in request.form['favorite_artists'].split(',') if a.strip()]
     news_mood = request.form['news_mood']
     location = request.form['location']
+    station_name = request.form['station_name']
+    host_name = request.form['host_name']
     music_pref_list = request.form.getlist('music_pref')
     music_pref = ','.join(music_pref_list)
 
@@ -268,6 +275,8 @@ def save():
                                favorite_artists=', '.join(corrected_artists),
                                news_mood=news_mood,
                                location=location,
+                               station_name=station_name,
+                               host_name=host_name,
                                music_pref=music_pref_list,
                                allowed_genres=ALLOWED_GENRES)
 
@@ -278,13 +287,16 @@ def save():
 
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute('INSERT INTO profiles (topics, music_tastes, favorite_artists, news_mood, location, music_pref) VALUES (?, ?, ?, ?, ?, ?)',
-              (",".join(corrected_topics),
-               ",".join(corrected_genres),
-               ",".join(corrected_artists),
-               news_mood,
-               location,
-               music_pref))
+    c.execute('INSERT INTO profiles (topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          (",".join(corrected_topics),
+           ",".join(corrected_genres),
+           ",".join(corrected_artists),
+           news_mood,
+           location,
+           music_pref,
+           station_name,
+           host_name))
+
     conn.commit()
     conn.close()
 
@@ -302,7 +314,7 @@ def radio():
     conn.close()
 
     if user:
-        _, topics, music_tastes, favorite_artists, news_mood, location, _ = user
+        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name = user
         topics_list = [t.strip() for t in topics.split(',')]
         genres_list = [g.strip() for g in music_tastes.split(',')]
         artists_list = [a.strip() for a in favorite_artists.split(',')]
@@ -316,25 +328,37 @@ def radio():
                         for topic in topics_list}
 
         return render_template('radio.html',
-                               grouped_news=grouped_news,
-                               top_stories=news_data.get('top_stories', []),
-                               music_tastes=genres_list,
-                               favorite_artists=artists_list,
-                               topics=topics_list,
-                               news_mood=news_mood,
-                               location=location,
-                               top_tracks_playlist=top_tracks_playlist,
-                               trending_playlist=trending_playlist,
-                               throwback_playlist=throwback_playlist,
-                               new_artist_playlist=new_artist_playlist)
+                       grouped_news=grouped_news,
+                       top_stories=news_data.get('top_stories', []),
+                       music_tastes=genres_list,
+                       favorite_artists=artists_list,
+                       topics=topics_list,
+                       news_mood=news_mood,
+                       location=location,
+                       station_name=station_name,
+                       host_name=host_name,
+                       top_tracks_playlist=top_tracks_playlist,
+                       trending_playlist=trending_playlist,
+                       throwback_playlist=throwback_playlist,
+                       new_artist_playlist=new_artist_playlist)
+
     return "No profile found."
 
 @app.route('/refresh_news')
 def refresh_news():
     subprocess.run(["python", "FetchNews.py"])
     return redirect('/radio')
+
 @app.route('/generate_script')
 def generate_script():
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute('SELECT station_name, host_name FROM profiles ORDER BY id DESC LIMIT 1')
+    row = c.fetchone()
+    conn.close()
+    station_name = row[0] if row else "Your Radio Station"
+    host_name = row[1] if row else "Your Host"
+
     try:
         with open('aggregated_news.json', 'r') as f:
             news_data = json.load(f)
@@ -402,7 +426,7 @@ def generate_script():
         timestamp_str = f"[{minutes:02d}:{seconds:02d}]"
 
         if item_type == 'news':
-            prompt = f"""You are a radio host. Announce this news headline:
+            prompt = f"""You are {host_name}, the host of {station_name}. Announce this news headline:
 News: {item['title']} - {item.get('content', '')}
 Be conversational and engaging, suitable for live radio."""
             try:
@@ -424,8 +448,34 @@ Be conversational and engaging, suitable for live radio."""
             except:
                 duration_min = 3
 
+            # ✨ LLM artist/song intro
+            intro_prompt = f"""You are {host_name}, the host of {station_name}. Give a 1-2 sentence fun introduction to this artist or song before it plays:
+Artist: {item['artist']}
+Song: {item['title']}
+Be enthusiastic, light, and conversational."""
+
+            try:
+                intro_response = model.generate_content(intro_prompt)
+                intro_text = intro_response.text.strip() if hasattr(intro_response, 'text') else ''
+            except Exception as e:
+                print(f"Gemini API error: {e}")
+                intro_text = f"[ERROR: Gemini API failed on intro — {e}]"
+
+            intro_word_count = len(intro_text.split())
+            intro_duration_min = intro_word_count / WORDS_PER_MINUTE
+
             song_marker = f'<span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: {item["artist"]} — {item["title"]} 🎵</span>'
-            final_script += f"{timestamp_str} {song_marker}\n\n"
+
+            final_script += f"{timestamp_str} {intro_text}\n\n"
+            current_time_min += intro_duration_min
+
+            # Recalculate timestamp after intro
+            total_seconds = int(current_time_min * 60)
+            minutes = total_seconds // 60
+            seconds = total_seconds % 60
+            song_timestamp = f"[{minutes:02d}:{seconds:02d}]"
+
+            final_script += f"{song_timestamp} {song_marker}\n\n"
             current_time_min += duration_min
 
     try:
@@ -436,6 +486,7 @@ Be conversational and engaging, suitable for live radio."""
         print(f"Error saving script: {e}")
 
     return redirect('/show_script')
+
 
 
 
