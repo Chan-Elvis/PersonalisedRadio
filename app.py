@@ -8,6 +8,10 @@ import google.generativeai as genai
 from dotenv import load_dotenv
 import random
 import datetime
+from similar_songs import get_similar_tracks
+from FetchNews import fetch_similar_articles
+from db_utils import get_liked_articles, get_disliked_articles, get_liked_songs, get_disliked_songs
+
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -118,6 +122,14 @@ def get_new_artist_recommendations(favorite_artists):
                     recommendations.append({'artist': similar_artist, 'tracks': top_tracks})
     return recommendations
 
+def get_similar_songs_from_liked():
+    liked_songs = get_liked_songs()  # list of (title, artist)
+    all_similar = []
+    for title, artist in liked_songs:
+        similar = get_similar_tracks(title, artist)
+        all_similar.extend(similar)
+    return all_similar
+
 def filter_unused_articles(news_data):
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
@@ -169,8 +181,9 @@ def mark_articles_and_songs_used(news_batch, music_batch):
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     for n in news_batch:
-        c.execute('INSERT INTO covered_articles (article_title, url, timestamp) VALUES (?, ?, ?)', 
-                  (n['title'], n['url'], timestamp))
+        uuid = n.get('uuid', None)
+        c.execute('INSERT INTO covered_articles (article_title, url, timestamp, uuid) VALUES (?, ?, ?, ?)', 
+              (n['title'], n['url'], timestamp, uuid))
     for m in music_batch:
         c.execute('INSERT INTO played_songs (song_title, artist, timestamp) VALUES (?, ?, ?)', 
                   (m['title'], m['artist'], timestamp))
@@ -372,7 +385,9 @@ def radio():
         throwback_playlist = get_throwback_tracks()
         new_artist_playlist = get_new_artist_recommendations(artists_list)
 
-        grouped_news = {}
+        liked_uuids = get_liked_articles()
+        similar_articles = fetch_similar_articles(liked_uuids, location)
+        similar_songs = get_similar_songs_from_liked()
 
         grouped_news = {}
 
@@ -391,6 +406,19 @@ def radio():
         news_categories_list = user[9].split(',') if user[9] else []
         news_categories = user[9] if len(user) > 9 else ""
 
+        # 🧠 Fetch liked/disliked articles and songs
+        conn = sqlite3.connect('user_profiles.db')
+        c = conn.cursor()
+
+        # Fetch feedback on articles
+        c.execute("SELECT article_title, feedback FROM covered_articles WHERE feedback IS NOT NULL")
+        news_feedback = c.fetchall()  # → List of tuples: [(title1, 'like'), (title2, 'dislike'), ...]
+
+        # Fetch feedback on songs
+        c.execute("SELECT song_title, artist, feedback FROM played_songs WHERE feedback IS NOT NULL")
+        song_feedback = c.fetchall()  # → List of tuples: [(title1, artist1, 'like'), ...]
+
+        conn.close()
 
 
         return render_template('radio.html',
@@ -408,8 +436,11 @@ def radio():
                        throwback_playlist=throwback_playlist,
                        new_artist_playlist=new_artist_playlist, 
                        selected_categories=news_categories_list,
-                        allowed_categories=ALLOWED_CATEGORIES)
-
+                        allowed_categories=ALLOWED_CATEGORIES,
+                        news_feedback=news_feedback,
+                        song_feedback=song_feedback,
+                        similar_articles=similar_articles,
+                        similar_songs=similar_songs)
     return "No profile found."
 
 @app.route('/refresh_news')
@@ -442,8 +473,10 @@ def generate_script():
             personalized_stories.append({
                 'title': f"[{topic}] {article['title']}",
                 'content': article['content'],
-                'url': article['url']
+                'url': article['url'],
+                'uuid': article.get('uuid')  # ✅ Preserve UUID here
             })
+
 
     trending_tracks = get_trending_tracks()
     throwback_tracks = get_throwback_tracks().get('tracks', [])

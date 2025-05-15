@@ -130,6 +130,49 @@
         </div>
     {% endfor %}
 
+    <h2>👍 Your Liked News Articles</h2>
+    {% for title, feedback in news_feedback if feedback == 'like' %}
+        <p>✅ {{ title }}</p>
+    {% endfor %}
+
+    <h2>👎 Your Disliked News Articles</h2>
+    {% for title, feedback in news_feedback if feedback == 'dislike' %}
+        <p>🚫 {{ title }}</p>
+    {% endfor %}
+
+    <h2>🎧 Your Liked Songs</h2>
+    {% for title, artist, feedback in song_feedback if feedback == 'like' %}
+        <p>✅ {{ artist }} — {{ title }}</p>
+    {% endfor %}
+
+    <h2>❌ Your Disliked Songs</h2>
+    {% for title, artist, feedback in song_feedback if feedback == 'dislike' %}
+        <p>🚫 {{ artist }} — {{ title }}</p>
+    {% endfor %}
+
+    <h2>📰 Similar News Articles Based on Your Likes</h2>
+    {% if similar_articles %}
+        {% for article in similar_articles %}
+            <div style="border:1px solid #ccc; padding:10px; margin:10px;">
+                <h4>{{ article.title }}</h4>
+                <p>{{ article.content }}</p>
+                <a href="{{ article.url }}" target="_blank">Read more</a>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No similar articles found yet. </p>
+    {% endif %}
+
+
+    <h2>🎵 Similar Songs You Might Like</h2>
+    {% for track in similar_songs %}
+        <div>
+            <strong>{{ track.artist }}</strong> — {{ track.title }} <a href="{{ track.url }}" target="_blank">Play</a>
+        </div>
+    {% endfor %}
+
+
+
     <br>
     <a href="/refresh_news">🔄 Refresh News</a> | <a href="/">⚙️ Edit Preferences</a>
 

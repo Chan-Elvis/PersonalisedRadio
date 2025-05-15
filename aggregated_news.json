@@ -1,43 +1,93 @@
 {
     "top_stories": [
         {
-            "title": "Eric Dier 'can't wait to get started' after Monaco move confirmed",
-            "content": "Open Extended Reactions\n\nEric Dier will officially join Monaco when his Bayern Munich contract expires in the summer, the Ligue 1 club announced on Wednesday.\n\n...",
-            "url": "https://www.espn.co.uk/football/story/_/id/45149254/eric-dier-cant-wait-get-started-monaco-move-confirmed",
-            "published_at": "2025-05-15T04:05:56.000000Z"
+            "title": "'Calling it a housing emergency isn't helping anyone'",
+            "content": "'Calling it a housing emergency isn't helping anyone'\n\n8 minutes ago Share Save Georgina Hayes and Chris Clements BBC Scotland News Share Save\n\nBBC Laura and he...",
+            "url": "https://www.bbc.com/news/articles/clygxj13xxpo",
+            "published_at": "2025-05-15T05:21:54.000000Z",
+            "uuid": "23564610-f202-42fc-b33f-f9c5207fb3c1"
         },
         {
-            "title": "Paul Clement to rejoin Carlo Ancelotti at Brazil",
-            "content": "Open Extended Reactions\n\nCarlo Ancelotti is to hire former Chelsea and Real Madrid assistant manager Paul Clement as part of his coaching staff with the Brazil ...",
-            "url": "https://www.espn.co.uk/football/story/_/id/45147167/paul-clement-rejoin-carlo-ancelotti-brazil-sources",
-            "published_at": "2025-05-15T03:07:51.000000Z"
+            "title": "Gareth Bacon: The future for transport has to reflect that it's always been about more than getting from A to B",
+            "content": "",
+            "url": "https://conservativehome.com/2025/05/15/gareth-bacon-the-future-for-transport-has-to-reflect-that-its-always-been-about-more-than-getting-from-a-to-b/",
+            "published_at": "2025-05-15T05:20:25.000000Z",
+            "uuid": "3fb406a5-1ac3-4a88-acc1-cfe4c0e435bb"
         },
         {
-            "title": "SNK boss is stepping down after the failed launch of Fatal Fury: City of the Wolves",
-            "content": "HQ\n\nLast month we reviewed Fatal Fury: City of the Wolves, the first new game in the series in over two decades. Although our rating was fairly high, it wasn't ...",
-            "url": "https://www.gamereactor.eu/snk-boss-is-stepping-down-after-the-failed-launch-of-fatal-fury-city-of-the-wolves-1543563/",
-            "published_at": "2025-05-15T02:17:23.000000Z"
+            "title": "Erling Haaland: FA Cup final, Kevin de Bruyne and Neil Warnock",
+            "content": "Manchester City striker Erling Haaland says the team want to give departing midfielder Kevin de Bruyne the FA Cup send-off he deserves - and tells Kelly Somers ...",
+            "url": "https://www.bbc.com/sport/football/videos/cy0k9j2e190o",
+            "published_at": "2025-05-15T05:20:03.000000Z",
+            "uuid": "5dc80f82-c2fb-4375-9629-b3817d777b9a"
         }
     ],
     "aggregated_news": {
+        "similar_liked": [
+            {
+                "title": "The Dichotomous Nature of Pruritus",
+                "content": "The sensation of itch, and the subsequent act of scratching, presents a complex interplay of positive and negative consequences. While scratching provides tempo...",
+                "url": "https://commstrader.com/science/the-dichotomous-nature-of-pruritus/",
+                "published_at": "2025-01-30T19:48:42.000000Z",
+                "uuid": "029bc104-6ec0-40b1-ba87-ae7233deee74"
+            },
+            {
+                "title": "Dr. Oz says probiotic supplements have wide-ranging health benefits. Here\u2019s what science says",
+                "content": "Click to discover leading experts on 50,000+ topics for media, events & more.\n\nOur bodies\u2014and guts, specifically\u2014depend on a balance of bacteria to \u201cmaint...",
+                "url": "https://biztoc.com/x/0dd2ab7ec327554d?ref=ff",
+                "published_at": "2025-03-14T20:20:12.000000Z",
+                "uuid": "3910bd0d-e807-4f37-b7fc-06b0b99e04b6"
+            },
+            {
+                "title": "Students and the science of feedback",
+                "content": "Feedback for students should be constructive, positive, and timely to augment the interlinked, symbiotic relationship between learning and teaching.\n\nFeedback f...",
+                "url": "https://www.thehindu.com/education/students-and-the-science-of-feedback/article65529151.ece",
+                "published_at": "2022-06-18T07:34:57.000000Z",
+                "uuid": "5d1c120c-fd11-4ab6-a3bb-75f03d587b7f"
+            },
+            {
+                "title": "Avianca mulls 5 new routes from US to Latin America in 2025",
+                "content": "Colombian airline Avianca is plotting a big U.S. expansion in 2025.\n\nThe Bogota-based carrier announced five new proposed routes Thursday, each of which would b...",
+                "url": "https://thepointsguy.com/news/avianca-new-routes-florida-latin-america/",
+                "published_at": "2024-12-27T17:00:42.000000Z",
+                "uuid": "9c9121a0-6b98-4ce0-8c7b-2c184256401a"
+            },
+            {
+                "title": "Avianca Launches Two New Routes Connecting South Florida to Guatemala and Nicaragua",
+                "content": "Photo Courtesy of Avianca\n\nAvianca (Colombia) \u2013 TACA Airbus A320-214 N567AV (msn 4567) (TACA) LAX (Michael B. Ing). Image: 962446.\n\nWith the launch of the new...",
+                "url": "https://worldairlinenews.com/2025/05/14/avianca-launches-two-new-routes-connecting-south-florida-to-guatemala-and-nicaragua/",
+                "published_at": "2025-05-14T15:17:41.000000Z",
+                "uuid": "b3d6bdf1-4475-4e9d-824a-207b1ad7537a"
+            },
+            {
+                "title": "Frontier Airlines Adds 18 New Nonstop Routes and Two Destinations",
+                "content": "This post may contain affiliate links; please read our advertiser disclosure for more information.\n\nFrontier Airlines Adds 18 New Nonstop Routes and Two Destina...",
+                "url": "https://milestomemories.com/frontier-new-routes/",
+                "published_at": "2021-12-03T20:19:42.000000Z",
+                "uuid": "62be7a35-e4e1-4763-b3eb-ff9e306bd6d2"
+            }
+        ],
         "nature": [
             {
                 "title": "Science of Nature",
                 "content": "Science of Nature\n\nThe Story of the Lost World Disrupting the Twin Balance of Virus Bacteria and the Negative Positive Relationship of Twin Minerals\n\nThe Story ...",
                 "url": "https://www.rakimuniversity.com/blog/science-of-nature",
-                "published_at": "2025-05-06T00:18:54.000000Z"
+                "published_at": "2025-05-06T00:18:54.000000Z",
+                "uuid": "b77a1be9-641c-48e3-a4f1-4a23fb128ca6"
             },
             {
                 "title": "Nature is beautiful",
                 "content": "I Can Has Cheezburger?\n\nI Can Has Cheezburger?",
                 "url": "https://cheezburger.com/9871667456/nature-is-beautiful",
-                "published_at": "2025-05-05T22:00:00.000000Z"
+                "published_at": "2025-05-05T22:00:00.000000Z",
+                "uuid": "e27ec578-5f3a-48d0-9049-529e9d62d9d6"
             },
             {
                 "title": "Celebrating Art and Nature",
                 "content": "In a time of accelerating climate anxiety and ecological crisis, The Power of Trees invites us to pause, look closely and reconnect with the natural world \u2013 n...",
                 "url": "https://aestheticamagazine.com/celebrating-art-and-nature/",
-                "published_at": "2025-05-02T08:00:40.000000Z"
+                "published_at": "2025-05-02T08:00:40.000000Z",
+                "uuid": "8cc77bb0-a9fb-4cf8-b81d-ce27a90d0cbc"
             }
         ],
         "gaming": [
@@ -45,59 +95,68 @@
                 "title": "Inside Gaming: Las Vegas gaming company launches new partnership, more gaming news",
                 "content": "Las Vegas-based Golden Entertainment reported year-over-year declines from the company\u2019s continued operations stemming almost entirely from the lack of Super ...",
                 "url": "https://www.reviewjournal.com/business/casinos-gaming/inside-gaming-las-vegas-gaming-company-launches-new-partnership-more-gaming-news-3371651/",
-                "published_at": "2025-05-13T13:00:34.000000Z"
+                "published_at": "2025-05-13T13:00:34.000000Z",
+                "uuid": "1b4c72bf-2499-4c41-83b8-342792f2a25f"
             },
             {
                 "title": "ASUS Announces TUF Gaming T500 Gaming PC",
                 "content": "Powered by up to an Intel Core i7-13620H processor with six Performance cores and eight Efficiency cores and a max boost of 5.0GHz, T500 can drive incredible ga...",
                 "url": "https://www.vortez.net/news_story/asus_announces_tuf_gaming_t500_gaming_pc.html",
-                "published_at": "2025-05-02T14:13:13.000000Z"
+                "published_at": "2025-05-02T14:13:13.000000Z",
+                "uuid": "f1857131-e9de-4fb8-b931-5a9445cca3c2"
             },
             {
                 "title": "Gaming Upgrade",
                 "content": "Author(s): Pete Metcalfe\n\nAdding custom firmware to a handheld gaming device enhances your gaming experience and lets you write custom apps. We show you how wit...",
                 "url": "https://www.linux-magazine.com/Issues/2025/295/Onion-OS",
-                "published_at": "2025-05-05T12:10:36.000000Z"
+                "published_at": "2025-05-05T12:10:36.000000Z",
+                "uuid": "9cad7589-baf3-47d6-a7db-7c3721fe020c"
             }
         ],
         "business": [
             {
-                "title": "Q&A: Selling During Volatility and Visualizing Net Working Capital",
-                "content": "In this episode of the Investing for Beginners podcast, hosts Andrew and Dave tackle four intriguing listener questions gathered from various sources. They begi...",
-                "url": "https://einvestingforbeginners.com/qa-selling-during-volatility-and-visualizing-net-working-capital/",
-                "published_at": "2025-05-15T04:05:00.000000Z"
+                "title": "Amazon cuts jobs in devices and services segment - report (AMZN:NASDAQ)",
+                "content": "Search field Entering text into the input field will update the search result below\n\nEntering text into the input field will update the search result below",
+                "url": "https://seekingalpha.com/news/4448499-amazon-cuts-jobs-in-devices-and-services-segment-report",
+                "published_at": "2025-05-15T05:19:58.000000Z",
+                "uuid": "2e29421f-14c9-4b09-b94e-2cfe61a2695f"
             },
             {
-                "title": "Sai Lifesciences Gets Target Price Hike From Morgan Stanley As Growth Outpaces Industry",
-                "content": "Morgan Stanley hiked the target price of Sai Lifesciences, noting its higher-than-industry growth. The brokerage maintained an 'overweight' rating and hiked the...",
-                "url": "https://www.ndtvprofit.com/markets/sai-lifesciences-gets-target-price-hike-from-morgan-stanley-as-growth-outpaces-industry",
-                "published_at": "2025-05-15T03:57:18.000000Z"
+                "title": "Afrimat CEO on earnings collapse, Lafarge turnaround, and rare earths opportunity",
+                "content": "Sign up for your early morning brew of the BizNews Insider to keep you up to speed with the content that matters. The newsletter will land in your inbox at 5:30...",
+                "url": "https://www.biznews.com/interviews/afrimat-ceo-earnings-collapse-lafarge-turnaround-rare-earths-opportunity",
+                "published_at": "2025-05-15T05:19:49.000000Z",
+                "uuid": "53ca7e9d-0980-47c5-b353-b7e98adeae79"
             },
             {
-                "title": "Eicher Motors Q4 Results Review: Growth Over Margins The Right Strategy, Say Analysts",
-                "content": "Eicher Motors Ltd.\u2019s fourth quarter results have drawn contrasting reactions from brokerages, with Morgan Stanley maintaining its \u2018underweight\u2019 rating, wh...",
-                "url": "https://www.ndtvprofit.com/quarterly-earnings/eicher-motors-q4-results-review-growth-over-margins-the-right-strategy-say-analysts",
-                "published_at": "2025-05-15T03:57:18.000000Z"
+                "title": "Oscar Health: Steep Budget Cuts In 2026 Healthcare Estimates Spell Uncertainty (OSCR)",
+                "content": "I am rating Oscar Health, Inc. (NYSE: OSCR ) as a hold due to a proposed steep budget cut of $163 billion in the 2026 budget estimates. The Health and Human Ser...",
+                "url": "https://seekingalpha.com/article/4786920-oscar-health-steep-budget-cuts-in-2026-healthcare-estimates-spell-uncertainty",
+                "published_at": "2025-05-15T05:19:11.000000Z",
+                "uuid": "be93b55c-bca9-4497-b2e2-dbde344cd7c1"
             }
         ],
         "travel": [
             {
-                "title": "Q&A with gategroup: Masters of multicultural cuisine",
-                "content": "Q&A with gategroup: Masters of multicultural cuisine\n\nThis is a special feature from the May 2025 Post-WTCE/Awards issue of PAX International on page 20.\n\n\n\nCar...",
-                "url": "https://www.pax-intl.com/passenger-services%2Fcatering%2F2025%2F05%2F14%2Fq-and-a-with-gategroup-masters-of-multicultural-cuisine%2F",
-                "published_at": "2025-05-15T03:43:00.000000Z"
+                "title": "Buy Leaders Club Points With up to a 100% Bonus [Until June 20]",
+                "content": "Looking for a luxury hotel stay and want to save money? Buying points for your upcoming reservation might help you save money.\n\nLeading Hotels of the World is a...",
+                "url": "https://upgradedpoints.com/news/buy-leaders-club-points/",
+                "published_at": "2025-05-15T05:09:00.000000Z",
+                "uuid": "15347c0b-d208-4675-a103-9988c8d264bb"
             },
             {
-                "title": "\u00a31,137 business class returns from Dublin to New York on Aer Lingus, AA or BA",
-                "content": "Links on Head for Points may support the site by paying a commission. See here for all partner links.\n\nAmerican Airlines has launched some excellent business cl...",
-                "url": "https://www.headforpoints.com/2025/05/15/cheap-new-york-business-class-flights/",
-                "published_at": "2025-05-15T03:11:00.000000Z"
+                "title": "Avianca Continues U.S. Growth With 2 New Routes From Florida",
+                "content": "South American carrier Avianca has launched 2 new nonstop routes, including a fifth-freedom route, connecting South Florida to Guatemala and Nicaragua.\n\nHere\u2019...",
+                "url": "https://upgradedpoints.com/news/avianca-adds-2-new-routes-from-florida/",
+                "published_at": "2025-05-15T04:34:05.000000Z",
+                "uuid": "b592b2d9-12d9-4ed1-8906-1daa1118202a"
             },
             {
-                "title": "Thomas Cook India\u2019s Hotel Arm to Open 14 Resorts, Moves Upscale",
-                "content": "Along with everyone else, Sterling's CEO says the company is \"moving the needle\" more upscale.\n\nSterling Holiday Resorts, the leisure hotel arm of Thomas Cook I...",
-                "url": "https://skift.com/2025/05/14/thomas-cook-indias-hotel-arm-to-open-14-resorts-moves-upscale/",
-                "published_at": "2025-05-15T03:00:00.000000Z"
+                "title": "Meyer Jabara Hotels Expands Third-Party Management Footprint Westward",
+                "content": "[Danbury, Conn., May 15, 2025] \u2014 Meyer Jabara Hotels has taken over management of the 84-room Holiday Inn Express & Suites Carson City, Nev., located at 4055 ...",
+                "url": "https://www.hospitalitynet.org/news/4127211.html",
+                "published_at": "2025-05-15T04:29:10.000000Z",
+                "uuid": "64092a2c-ec5a-40c7-a755-a10912c60af3"
             }
         ]
     }

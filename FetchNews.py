@@ -7,11 +7,41 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 import urllib.parse
+from db_utils import get_liked_articles
+
 
 load_dotenv()
 
 THENEWS_API_KEY = os.getenv("THENEWS_API_KEY")
 model = genai.GenerativeModel('gemini-2.0-flash')
+
+def fetch_similar_articles(uuids, region):
+    similar_articles = []
+    seen_titles = set()
+
+    # Load titles already used
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute("SELECT article_title FROM covered_articles")
+    seen_titles = set(row[0] for row in c.fetchall())
+    conn.close()
+
+    for uuid in uuids:
+        url = f"https://api.thenewsapi.com/v1/news/similar/{uuid}"
+        params = {   
+            "api_token": THENEWS_API_KEY,
+            "locale": region
+        }
+        response = fetch_news(url, params)
+
+        if response and response.get("data"):
+            for article in extract_articles(response):
+                if article["title"] not in seen_titles:
+                    similar_articles.append(article)
+        time.sleep(0.5)
+    return similar_articles
+
+
 
 def suggest_alternative_topics(original_topic):
     prompt = f"""
@@ -88,6 +118,12 @@ def process_news():
     REGION = location if location else "us"
 
     aggregated_news = {}
+
+    liked_uuids = get_liked_articles()
+    print(f"🧠 Fetching similar articles for liked UUIDs: {liked_uuids}")
+    similar_articles = fetch_similar_articles(liked_uuids, REGION)
+    aggregated_news["similar_liked"] = similar_articles
+
 
     # 🔍 Fetch news by keyword topics
     for keyword in topics_list:
