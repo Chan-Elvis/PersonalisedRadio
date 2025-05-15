@@ -5,10 +5,27 @@ from datetime import datetime, timezone, timedelta
 import sqlite3
 import os
 from dotenv import load_dotenv
+import google.generativeai as genai
+import urllib.parse
 
 load_dotenv()
 
 THENEWS_API_KEY = os.getenv("THENEWS_API_KEY")
+model = genai.GenerativeModel('gemini-2.0-flash')
+
+def suggest_alternative_topics(original_topic):
+    prompt = f"""
+The topic '{original_topic}' returned no recent news articles. Suggest 2 to 3 alternative but related news topics that might yield more results.
+Respond as a comma-separated list, no explanation.
+"""
+    try:
+        response = model.generate_content(prompt)
+        if response and hasattr(response, 'text'):
+            return [t.strip() for t in response.text.split(',')]
+    except Exception as e:
+        print(f"LLM error suggesting alternatives for '{original_topic}': {e}")
+    return []
+
 
 def fetch_news(api_url, params):
     try:
@@ -43,11 +60,12 @@ def extract_articles(data):
 
 def fetch_top_stories(region):
     url = "https://api.thenewsapi.com/v1/news/top"
+    one_week_ago = (datetime.now(timezone.utc) - timedelta(days=7)).strftime('%Y-%m-%d')
     params = {
         "api_token": THENEWS_API_KEY,
         "locale": region,
         "language": "en",
-        "published_after": get_previous_month()
+        "published_after": one_week_ago
     }
     return fetch_news(url, params)
 
@@ -62,24 +80,46 @@ def process_news():
         print("No user profile found.")
         return False
 
-    _, topics, _, _, _, location = user
+    _, topics, _, _, _, location, _, _, _ = user
     topics_list = [t.strip() for t in topics.split(',')]
 
     REGION = location if location else "us"
 
     aggregated_news = {}
     for keyword in topics_list:
+        print(f"🔎 Searching news for topic: {keyword}")
+        
         params = {
             "api_token": THENEWS_API_KEY,
             "locale": REGION,
             "language": "en",
             "published_after": get_previous_month(),
-            "search": keyword
+            "search": f'"{keyword}"'
         }
-        news_data = fetch_news("https://api.thenewsapi.com/v1/news/top", params)
-        if news_data and "data" in news_data:
-            aggregated_news[keyword] = extract_articles(news_data)
+
+        news_data = fetch_news("https://api.thenewsapi.com/v1/news/all", params)
+
+        if news_data and news_data.get("data"):
+            aggregated_news[keyword.lower()] = extract_articles(news_data)
+        else:
+            print(f"⚠️ No results for '{keyword}', asking LLM for similar topics...")
+            alternatives = suggest_alternative_topics(keyword)
+            found = False
+            for alt in alternatives:
+                retry_params = params.copy()
+                retry_params["search"] = f'"{alt}"'
+                retry_data = fetch_news("https://api.thenewsapi.com/v1/news/all", retry_params)
+                if retry_data and retry_data.get("data"):
+                    print(f"✅ Replaced '{keyword}' with alternative topic '{alt}'")
+                    aggregated_news[keyword.lower()] = extract_articles(retry_data)
+                    found = True
+                    break
+            if not found:
+                print(f"❌ No useful results for '{keyword}' or any suggested alternatives.")
+        
         time.sleep(0.5)
+
+
 
     local_stories = fetch_top_stories(REGION)
 
@@ -94,6 +134,7 @@ def process_news():
 
     with open("aggregated_news.json", "w") as f:
         json.dump(final_data, f, indent=4)
+    print(f"📦 Saved {len(final_data['top_stories'])} top stories and {len(final_data['aggregated_news'])} topic groups.")
     print("Saved aggregated news.")
 
     return True

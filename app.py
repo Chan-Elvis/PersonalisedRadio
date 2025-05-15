@@ -253,8 +253,18 @@ def save():
     music_pref_list = request.form.getlist('music_pref')
     music_pref = ','.join(music_pref_list)
 
-    corrected_topics = [check_spelling(t) for t in raw_topics_list]
+    corrected_topics = [check_spelling(t).strip() for t in raw_topics_list]
+
+    def detect_topic_changes(original_list, corrected_list):
+        return [(orig.strip(), corr.strip()) for orig, corr in zip(original_list, corrected_list) if orig.strip().lower() != corr.strip().lower()]
+
+    topic_changes = detect_topic_changes(raw_topics_list, corrected_topics)
+    topic_corrections = [f"'{orig}' → '{corr}'" for orig, corr in topic_changes]
+
+
+
     corrected_genres = raw_genres_list
+
 
     corrected_artists, valid_artists, artist_corrections = [], True, []
     for artist in raw_artists_list:
@@ -280,10 +290,17 @@ def save():
                                music_pref=music_pref_list,
                                allowed_genres=ALLOWED_GENRES)
 
+    messages = []
+    if topic_corrections:
+        messages.append("Topic corrections: " + "; ".join(topic_corrections))
     if artist_corrections:
-        flash("Corrections made: " + "; ".join(artist_corrections), "info")
+        messages.append("Artist corrections: " + "; ".join(artist_corrections))
+
+    if messages:
+        flash("Corrections made: " + " | ".join(messages), "info")
     else:
         flash("Preferences saved successfully!", "success")
+
 
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
@@ -300,7 +317,10 @@ def save():
     conn.commit()
     conn.close()
 
+    subprocess.run(["python", "FetchNews.py"])
     return redirect('/radio')
+
+
 
 @app.route('/radio')
 def radio():
@@ -324,8 +344,11 @@ def radio():
         throwback_playlist = get_throwback_tracks()
         new_artist_playlist = get_new_artist_recommendations(artists_list)
 
-        grouped_news = {topic: news_data.get('aggregated_news', {}).get(topic.lower(), [])
-                        for topic in topics_list}
+        grouped_news = {
+            topic: news_data.get('aggregated_news', {}).get(topic.lower(), [])
+            for topic in topics_list
+        }
+
 
         return render_template('radio.html',
                        grouped_news=grouped_news,
