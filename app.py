@@ -24,6 +24,12 @@ ALLOWED_GENRES = [
     'soul', 'reggae', 'k-pop', 'r&b'
 ]
 
+ALLOWED_CATEGORIES = [
+    'general', 'science', 'sports', 'business', 'health',
+    'entertainment', 'tech', 'politics', 'food', 'travel'
+]
+
+
 def check_spelling(word):
     prompt = f"Correct the spelling of the word '{word}'. If already correct, return as-is. No explanation."
     try:
@@ -178,27 +184,18 @@ def init_db():
     c.execute("""
         CREATE TABLE IF NOT EXISTS profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            topics TEXT, music_tastes TEXT, favorite_artists TEXT,
-            news_mood TEXT, location TEXT, music_pref TEXT,
-            station_name TEXT, host_name TEXT
+            topics TEXT, 
+            music_tastes TEXT, 
+            favorite_artists TEXT,
+            news_mood TEXT, 
+            location TEXT, 
+            music_pref TEXT,
+            station_name TEXT, 
+            host_name TEXT,
+            news_categories TEXT       
         )
     """)
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS played_songs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            song_title TEXT,
-            artist TEXT,
-            timestamp TEXT
-        )
-    """)
-    c.execute("""
-        CREATE TABLE IF NOT EXISTS covered_articles (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            article_title TEXT,
-            url TEXT,
-            timestamp TEXT
-        )
-    """)
+
     conn.commit()
     conn.close()
 
@@ -212,7 +209,7 @@ def index():
     conn.close()
     if user:
         user = list(user) + [None] * (9 - len(user))
-        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name = user
+        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name, news_categories = user
         topics_list = [t.strip() for t in topics.split(',')]
         genres_list = [g.strip() for g in music_tastes.split(',')]
         artists_list = [a.strip() for a in favorite_artists.split(',')]
@@ -226,7 +223,10 @@ def index():
                        station_name=station_name,
                        host_name=host_name,
                        music_pref=pref_list,
-                       allowed_genres=ALLOWED_GENRES)
+                       allowed_genres=ALLOWED_GENRES,
+                       allowed_categories=ALLOWED_CATEGORIES,
+                        selected_categories=news_categories.split(',') if news_categories else []
+                        )
 
     else:
         return render_template('index.html',
@@ -238,7 +238,9 @@ def index():
                        station_name='',
                        host_name='',
                        music_pref=[],
-                       allowed_genres=ALLOWED_GENRES)
+                       allowed_genres=ALLOWED_GENRES,
+                       allowed_categories=ALLOWED_CATEGORIES,
+                       selected_categories=[])
 
 
 @app.route('/save', methods=['POST'])
@@ -252,6 +254,9 @@ def save():
     host_name = request.form['host_name']
     music_pref_list = request.form.getlist('music_pref')
     music_pref = ','.join(music_pref_list)
+    news_categories_list = request.form.getlist('news_categories')  # Get selected categories from form
+    news_categories = ','.join(news_categories_list)  # Convert to comma-separated string
+
 
     corrected_topics = [check_spelling(t).strip() for t in raw_topics_list]
 
@@ -288,7 +293,9 @@ def save():
                                station_name=station_name,
                                host_name=host_name,
                                music_pref=music_pref_list,
-                               allowed_genres=ALLOWED_GENRES)
+                               allowed_genres=ALLOWED_GENRES,
+                               allowed_categories=ALLOWED_CATEGORIES,
+                               selected_categories=news_categories_list)
 
     messages = []
     if topic_corrections:
@@ -304,7 +311,7 @@ def save():
 
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute('INSERT INTO profiles (topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    c.execute('INSERT INTO profiles (topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name, news_categories) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
           (",".join(corrected_topics),
            ",".join(corrected_genres),
            ",".join(corrected_artists),
@@ -312,7 +319,8 @@ def save():
            location,
            music_pref,
            station_name,
-           host_name))
+           host_name,
+           news_categories))  # ✅ New field here
 
     conn.commit()
     conn.close()
@@ -334,20 +342,36 @@ def radio():
     conn.close()
 
     if user:
-        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name = user
+        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name, news_categories = user
         topics_list = [t.strip() for t in topics.split(',')]
         genres_list = [g.strip() for g in music_tastes.split(',')]
         artists_list = [a.strip() for a in favorite_artists.split(',')]
+        news_categories_list = [c.strip() for c in news_categories.split(',')] if news_categories else []
 
         top_tracks_playlist = get_recommended_tracks(artists_list, genres_list)
         trending_playlist = get_trending_tracks()
         throwback_playlist = get_throwback_tracks()
         new_artist_playlist = get_new_artist_recommendations(artists_list)
 
-        grouped_news = {
-            topic: news_data.get('aggregated_news', {}).get(topic.lower(), [])
-            for topic in topics_list
-        }
+        grouped_news = {}
+
+        grouped_news = {}
+
+        # Add keyword-based news
+        for topic in topics_list:
+            key = topic.lower()
+            grouped_news[key] = news_data.get('aggregated_news', {}).get(key, [])
+
+        # Add category-based news
+        for category in news_categories_list:
+            key = category.lower()
+            grouped_news[key] = news_data.get('aggregated_news', {}).get(key, [])
+
+
+
+        news_categories_list = user[9].split(',') if user[9] else []
+        news_categories = user[9] if len(user) > 9 else ""
+
 
 
         return render_template('radio.html',
@@ -363,7 +387,9 @@ def radio():
                        top_tracks_playlist=top_tracks_playlist,
                        trending_playlist=trending_playlist,
                        throwback_playlist=throwback_playlist,
-                       new_artist_playlist=new_artist_playlist)
+                       new_artist_playlist=new_artist_playlist, 
+                       selected_categories=news_categories_list,
+                        allowed_categories=ALLOWED_CATEGORIES)
 
     return "No profile found."
 

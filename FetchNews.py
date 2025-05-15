@@ -80,15 +80,17 @@ def process_news():
         print("No user profile found.")
         return False
 
-    _, topics, _, _, _, location, _, _, _ = user
-    topics_list = [t.strip() for t in topics.split(',')]
+    _, topics, _, _, _, location, _, _, _, categories = user
 
+    topics_list = [t.strip() for t in topics.split(',') if t.strip()]
+    category_list = [c.strip() for c in categories.split(',') if c.strip()]
     REGION = location if location else "us"
 
     aggregated_news = {}
+
+    # 🔍 Fetch news by keyword topics
     for keyword in topics_list:
         print(f"🔎 Searching news for topic: {keyword}")
-        
         params = {
             "api_token": THENEWS_API_KEY,
             "locale": REGION,
@@ -116,11 +118,26 @@ def process_news():
                     break
             if not found:
                 print(f"❌ No useful results for '{keyword}' or any suggested alternatives.")
-        
         time.sleep(0.5)
 
+    # 📰 Fetch news for each selected category individually
+    for cat in category_list:
+        print(f"📰 Fetching news for category: {cat}")
+        params = {
+            "api_token": THENEWS_API_KEY,
+            "locale": REGION,
+            "language": "en",
+            "published_after": get_previous_month(),
+            "categories": cat
+        }
+        category_data = fetch_news("https://api.thenewsapi.com/v1/news/all", params)
+        if category_data and category_data.get("data"):
+            aggregated_news[cat.lower()] = extract_articles(category_data)
+        else:
+            print(f"❌ No results found for category '{cat}'")
+        time.sleep(0.5)
 
-
+    # 🌍 Top general stories
     local_stories = fetch_top_stories(REGION)
 
     if not local_stories or "data" not in local_stories:
@@ -134,10 +151,11 @@ def process_news():
 
     with open("aggregated_news.json", "w") as f:
         json.dump(final_data, f, indent=4)
-    print(f"📦 Saved {len(final_data['top_stories'])} top stories and {len(final_data['aggregated_news'])} topic groups.")
-    print("Saved aggregated news.")
 
+    print(f"📦 Saved {len(final_data['top_stories'])} top stories and {len(final_data['aggregated_news'])} topic groups.")
+    print("✅ Saved aggregated news.")
     return True
+
 
 if __name__ == "__main__":
     success = process_news()

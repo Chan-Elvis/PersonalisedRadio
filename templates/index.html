@@ -43,7 +43,15 @@
 
         <label>Host Name:</label><br>
         <input type="text" name="host_name" value="{{ host_name if host_name else '' }}"><br><br>
-        <label>Favorite News Topics (comma separated):</label><br>
+
+        <label>Preferred News Categories:</label><br>
+        {% for category in allowed_categories %}
+        <input type="checkbox" name="news_categories" value="{{ category }}"
+        {% if category in selected_categories %}checked{% endif %}>{{ category | capitalize }}<br>
+        {% endfor %}
+        <br>
+
+        <label>Specific News Keywords (comma separated):</label><br>
         <input type="text" name="topics" value="{{topics if topics else '' }}"><br><br>
 
         <label>Favorite Music Genres:</label><br>

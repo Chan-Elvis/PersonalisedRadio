@@ -104,7 +104,11 @@
 
     <h2>📰 Personalized News:</h2>
     {% for topic, articles in grouped_news.items() %}
-        <h3>🗞️ {{ topic }}</h3>
+        {% if topic in allowed_categories %}
+            <h3>📂 Category: {{ topic|capitalize }}</h3>
+        {% else %}
+            <h3>🗞️ Keyword: {{ topic|capitalize }}</h3>
+        {% endif %}
         {% for story in articles %}
             <div style="border:1px solid #ccc; padding:10px; margin:10px;">
                 <h4>{{ story.title }}</h4>
@@ -114,6 +118,7 @@
         {% endfor %}
         <hr>
     {% endfor %}
+
 
     <h2>🌎 General Top Stories:</h2>
 
