@@ -53,7 +53,8 @@ def extract_articles(data):
             "title": a.get("title", "No title"),
             "content": a.get("snippet", "No content"),
             "url": a.get("url", ""),
-            "published_at": a.get("published_at", "")
+            "published_at": a.get("published_at", ""),
+            "uuid": a.get("uuid", "")
         }
         for a in data["data"]
     ]

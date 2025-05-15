@@ -199,6 +199,25 @@ def init_db():
     conn.commit()
     conn.close()
 
+def update_feedback_schema():
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    try:
+        c.execute("ALTER TABLE played_songs ADD COLUMN feedback TEXT")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+    try:
+        c.execute("ALTER TABLE covered_articles ADD COLUMN feedback TEXT")
+    except sqlite3.OperationalError:
+        pass  # Column already exists
+    conn.commit()
+    conn.close()
+
+
+
+
+
+
 
 @app.route('/')
 def index():
@@ -444,6 +463,8 @@ def generate_script():
     max_length = max(len(top_stories), len(personalized_stories),
                      len(trending_tracks), len(throwback_tracks), len(new_artist_recs))
     combined = []
+    used_articles = []
+    used_songs = []
 
     for i in range(max_length):
         if i < len(top_stories):
@@ -475,6 +496,7 @@ def generate_script():
         timestamp_str = f"[{minutes:02d}:{seconds:02d}]"
 
         if item_type == 'news':
+            used_articles.append(item)
             prompt = f"""You are {host_name}, the host of {station_name}. Announce this news headline:
 News: {item['title']} - {item.get('content', '')}
 Be conversational and engaging, suitable for live radio."""
@@ -487,10 +509,19 @@ Be conversational and engaging, suitable for live radio."""
 
             word_count = len(script_text.split())
             duration_min = word_count / WORDS_PER_MINUTE
-            final_script += f"{timestamp_str} {script_text}\n\n"
+            final_script += f"""{timestamp_str} {script_text}
+            <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
+                <input type="hidden" name="title" value="{item['title']}">
+                <span style="margin-right: 10px;"><strong>📰 {item['title']}</strong></span>
+                <button type="submit" name="feedback" value="like">👍 Like</button>
+                <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
+            </form>\n\n"""
+
+
             current_time_min += duration_min
 
         elif item_type == 'song':
+            used_songs.append(item)
             duration_ms = item.get('duration', '180000')
             try:
                 duration_min = int(duration_ms) / 60000 if duration_ms else 3
@@ -515,7 +546,16 @@ Be enthusiastic, light, and conversational."""
 
             song_marker = f'<span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: {item["artist"]} — {item["title"]} 🎵</span>'
 
-            final_script += f"{timestamp_str} {intro_text}\n\n"
+            final_script += f"""{timestamp_str} {intro_text}
+            <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
+                <input type="hidden" name="title" value="{item['title']}">
+                <input type="hidden" name="artist" value="{item['artist']}">
+                <span style="margin-right: 10px;"><strong>🎵 {item['artist']} — {item['title']}</strong></span>
+                <button type="submit" name="feedback" value="like">👍 Like</button>
+                <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
+            </form>\n\n"""
+
+
             current_time_min += intro_duration_min
 
             # Recalculate timestamp after intro
@@ -534,10 +574,11 @@ Be enthusiastic, light, and conversational."""
     except Exception as e:
         print(f"Error saving script: {e}")
 
+    print("🎯 Used articles:", [a['title'] for a in used_articles])
+    print("🎵 Used songs:", [s['title'] for s in used_songs])
+
+    mark_articles_and_songs_used(used_articles, used_songs)
     return redirect('/show_script')
-
-
-
 
 
 
@@ -551,7 +592,50 @@ def show_script():
         script = "No script has been generated yet. Please click 'Generate Radio Host Script' first."
     return render_template('show_script.html', script=script)
 
+@app.route('/feedback/song', methods=['POST'])
+def feedback_song():
+    title = request.form['title']
+    artist = request.form['artist']
+    feedback = request.form['feedback']
+
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute("""
+        UPDATE played_songs
+        SET feedback = ?
+        WHERE rowid = (
+            SELECT rowid FROM played_songs
+            WHERE song_title = ? AND artist = ?
+            ORDER BY timestamp DESC
+            LIMIT 1
+        )
+    """, (feedback, title, artist))
+
+    conn.commit()
+    conn.close()
+    flash(f"You {feedback}d the song '{title}' by {artist}.", "info")
+    return redirect('/show_script')
+
+
+@app.route('/feedback/news', methods=['POST'])
+def feedback_news():
+    title = request.form['title']
+    feedback = request.form['feedback']
+
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute("""
+        UPDATE covered_articles
+        SET feedback = ?
+        WHERE article_title = ?
+    """, (feedback, title))
+    conn.commit()
+    conn.close()
+    flash(f"You {feedback}d the news article '{title}'.", "info")
+    return redirect('/show_script')
+
 
 if __name__ == '__main__':
     init_db()
+    update_feedback_schema() 
     app.run(debug=True)

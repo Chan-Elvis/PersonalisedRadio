@@ -13,6 +13,16 @@
     
 </head>
 <body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul style="list-style-type: none; padding: 0;">
+            {% for category, message in messages %}
+                <li style="padding: 10px; margin: 10px 0; background-color: #eee;">{{ message }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
     <h1>🎙️ Radio Host Script</h1>
     <pre style="white-space: pre-wrap; background: #f9f9f9; padding: 10px; border: 1px solid #ccc;">
 {{ script|safe }}
