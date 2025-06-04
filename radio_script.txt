@@ -1,24 +1,22 @@
-[00:00] **(Upbeat, cheerful intro music fades)**
+[00:00] (Upbeat, jazzy intro music fades slightly)
 
-Alright, Lovely Day listeners, Jerry here, ready to brighten your morning! And speaking of bright… we've got a headline that's absolutely *legendary*.
+Alright, alright, alright, welcome back to Lovely Day Station, your one-stop shop for good vibes and the occasional blast from the past! And speaking of blasts... we’ve got a headline that's gonna make you shout, well… you'll see!
 
-**(Slight pause, a little dramatic flair)**
+Get this: News! **Leeroy Jenkins clip celebrates its 20th anniversary - HQ!**
 
-You guys remember… internet history? Well, buckle up, buttercups, because we're talking about **LEEEEROOOY JENKINS!**
+Can you believe it, folks? Two whole decades! That's right, it's been 20 years since the world first witnessed the sheer, unadulterated, chaotic glory of "LEEEEROOOY JENKINS!" You know the one, right? The legend!
 
-**(Sound of a single, dramatic "DUN-DUN!")**
+(Short, comedic "whomp whomp" sound effect)
 
-That’s right! The legendary Leeroy Jenkins clip, the one that’s been quoted, parodied, and memed across the globe, is celebrating its… drumroll please… **20th ANNIVERSARY!**
+For those of you maybe too young to remember, or maybe just fortunate enough to have forgotten… let me refresh your memory. Back on May 11th, 2005, the guild "Pals for Life" was, shall we say, *strategizing*… in World of Warcraft. And well, let's just say Leeroy, a brave (or perhaps foolhardy) warrior, had a different idea of how to approach the task at hand. He missed the planning and charged in headfirst, yelling his name at the top of his lungs!
 
-**(Short pause, allowing for the listener to absorb the news)**
+(Short pause for listeners to chuckle)
 
-Can you believe it? Twenty years since that fateful day in World of Warcraft when a certain… *enthusiastic*… player, well, let’s just say he didn’t exactly stick to the plan! "LEEEEROOOY JENKINS!" - a battle cry that still echoes through the halls of the internet, a testament to epic fails and the unpredictable joy of online gaming. It was all the way back on May 11th, 2005, when the guild "Pals for Lif..."  (we’ll get into the full story later in the show, don’t you worry!), unleashed this cultural phenomenon upon the world.
+And the rest, as they say, is internet history. It became an instant meme, a rallying cry for impulsive decisions, and a testament to the beauty of unexpected chaos. It's a reminder that sometimes, the best plans are the ones that just *happen*!
 
-**(Slight chuckle)**
+So, happy 20th anniversary, Leeroy! May your charges always be legendary, and may your chicken never run out! We'll be playing some tunes here on Lovely Day Station, and maybe… just maybe… we’ll all embrace our inner Leeroy and do something a little… unexpected today.
 
-So, happy anniversary, Leeroy! You've given us all a lot to laugh about over the past two decades. And who knows, maybe we’ll all yell "LEEEEROOOY JENKINS!" together later today, just for old time's sake!
-
-**(Upbeat jingle plays, transitioning to the next segment)**
+(Music swells)
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="Leeroy Jenkins clip celebrates its 20th anniversary">
                 <span style="margin-right: 10px;"><strong>📰 Leeroy Jenkins clip celebrates its 20th anniversary</strong></span>
@@ -26,17 +24,17 @@ So, happy anniversary, Leeroy! You've given us all a lot to laugh about over the
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[01:30] Alright, sunshine and smiles to you all, this is Jerry, and you're tuned in to Lovely Day Station! Let's get right into our news headlines, shall we?
+[01:49] Alright, alright, good morning, sunshine! And welcome back to Lovely Day Station, your little slice of happiness right here on the dial. Jerry's your man, always here to brighten your day, one tune and one chat at a time!
 
-And today, friends, we're talking about something... well, let's just say it's a topic that REALLY hits home for a lot of us. Here we go:
+And speaking of chats... Let's get into a bit of the news, shall we? This one's… well, it’s a bit *itchy*, if you'll pardon the pun! (Chuckles)
 
-**(Sound of a gentle, inquisitive "hmmm...")**
+Here's the headline, folks, and it's a good one to ponder as you sip your morning coffee:
 
-News: The Dichotomous Nature of Pruritus - Oh boy, this one's a mouthful, but let's break it down. Basically, it's all about... the itch! The sensation of itch, that maddening urge, and the subsequent act of scratching... they present a complex interplay of positive and negative consequences. While scratching provides tempo...
+**News: [similar_liked] The Dichotomous Nature of Pruritus - The sensation of itch, and the subsequent act of scratching, presents a complex interplay of positive and negative consequences. While scratching provides tempo...**
 
-**(Jerry pauses, chuckles warmly)**
+Ooh, fancy words! Basically, they're saying this: We've all been there, right? That *unbearable* itch. And that instant urge to... scratch! (Sound of a satisfying scratch) They're saying that that itch and the scratching itself is a real mind-bender! It feels good in the moment, that sweet relief... but the science is showing it’s not all sunshine and roses. This story is going to dive into the good and the bad of that whole scratching situation. Interesting, right? Makes you think about the things we do on auto-pilot. I, for one, am already thinking about my next good scratch... (winks)
 
-See? Even the news is trying to get its scratch on! This story's diving deep into the good and the bad of that pesky itch. We're talking that sweet, sweet moment of relief when you finally *get* to scratch, and then... well, what happens *after* that? Does anyone know the answer? We'll have more on this fascinating, and let's be honest, relatable topic coming up after this short break. Don't go anywhere, folks! You're listening to Lovely Day Station, where we scratch the surface of the important stuff!
+Stay tuned, folks! We'll have more on that, and of course, more feel-good tunes, after the break. Stick around, you lovely listeners! You make my day!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[similar_liked] The Dichotomous Nature of Pruritus">
                 <span style="margin-right: 10px;"><strong>📰 [similar_liked] The Dichotomous Nature of Pruritus</strong></span>
@@ -44,7 +42,7 @@ See? Even the news is trying to get its scratch on! This story's diving deep int
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[02:51] Alright, lovebirds, get ready for some atmospheric magic! Next up is Billie Eilish with a brand new track that'll have you floating on cloud nine - it's "BIRDS OF A FEATHER!"
+[03:25] Alright folks, get ready to feel ALL the feels! Next up, we've got the whisper queen herself, Billie Eilish, with a brand new bop that'll have you soaring, it's "BIRDS OF A FEATHER!"
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="BIRDS OF A FEATHER">
                 <input type="hidden" name="artist" value="Billie Eilish">
@@ -53,37 +51,42 @@ See? Even the news is trying to get its scratch on! This story's diving deep int
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[03:04] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Billie Eilish — BIRDS OF A FEATHER 🎵</span>
+[03:38] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Billie Eilish — BIRDS OF A FEATHER 🎵</span>
 
-[06:04] Alright Lovely Day listeners, get ready to feel the sunshine! We're about to take a trip back to a time of sparkly jumpsuits and pure, unadulterated joy, because next up is ABBA with "Dancing Queen"! Let your inner disco ball shine!
+[06:38] Alright everybody, let's turn up the volume! Next up, we've got the band that changed everything, and a song that still makes us wanna thrash! Get ready to grunge, it's Nirvana with "Smells Like Teen Spirit"!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
-                <input type="hidden" name="title" value="Dancing Queen">
-                <input type="hidden" name="artist" value="ABBA">
-                <span style="margin-right: 10px;"><strong>🎵 ABBA — Dancing Queen</strong></span>
+                <input type="hidden" name="title" value="Smells Like Teen Spirit">
+                <input type="hidden" name="artist" value="Nirvana">
+                <span style="margin-right: 10px;"><strong>🎵 Nirvana — Smells Like Teen Spirit</strong></span>
                 <button type="submit" name="feedback" value="like">👍 Like</button>
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[06:20] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: ABBA — Dancing Queen 🎵</span>
+[06:53] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Nirvana — Smells Like Teen Spirit 🎵</span>
 
-[09:20] Alright music lovers, let's crank up the positivity! Get ready to bathe in some sunshine with this next track, because it's a classic from the one and only Coldplay!
+[09:53] Alright folks, let's crank up the Christmas cheer with a true legend! Get ready to jingle all the way as we blast a timeless holiday hit by the one and only Brenda Lee!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
-                <input type="hidden" name="title" value="Yellow">
-                <input type="hidden" name="artist" value="Coldplay">
-                <span style="margin-right: 10px;"><strong>🎵 Coldplay — Yellow</strong></span>
+                <input type="hidden" name="title" value="Rockin' Around The Christmas Tree">
+                <input type="hidden" name="artist" value="Brenda Lee">
+                <span style="margin-right: 10px;"><strong>🎵 Brenda Lee — Rockin' Around The Christmas Tree</strong></span>
                 <button type="submit" name="feedback" value="like">👍 Like</button>
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[09:32] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Coldplay — Yellow 🎵</span>
+[10:06] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Brenda Lee — Rockin' Around The Christmas Tree 🎵</span>
 
-[12:32] Alright, sunshine and smiles, Lovely Day listeners! Jerry here, keeping you company on this glorious... well, *lovely* day! And speaking of lovely, let's get straight to some of the headlines, shall we?
+[13:06] **(Upbeat, gentle music fades slightly)**
 
-We've got some important news coming out of, let me see here… ah, yes! **News: Germany and Philippines sign new defence pact - HQ!**
+Hey, hey, lovely listeners! Jerry here, keeping the good vibes flowing on this… well, lovely day! And speaking of lovely things, let's dive right into the news, shall we?
 
-That's right folks, Germany and the Philippines are officially putting pen to paper and solidifying their bond! Apparently, they formalized a big ol' defence cooperation agreement on Wednesday. Now, what does that mean for you and me, you ask? Well, this new agreement covers everything from… let me peek at the notes here… ah, cybersecu… cybersecurity!
+Big news out of the world today, folks! Let's get you up to speed. The headline reads: **Germany and Philippines sign new defence pact!**
 
-So, looks like they’re teaming up to tackle the digital world together, which, let's be honest, is a pretty important thing to be doing these days! We'll keep you updated as we learn more about this pact and what it entails. But for now, the big news is Germany and the Philippines are strengthening their defenses! Stay tuned, folks, and keep that dial right here on Lovely Day Station! We'll be right back after these messages...
+**(Sound of a gentle "ding" like a news ticker)**
+
+That's right! We’re seeing some significant moves on the international stage. Germany and the Philippines have, as of Wednesday, officially inked a defence cooperation agreement. Looks like they're solidifying their partnership. And, what's really interesting, is that it includes a focus on... hold your horses... cybersecurity! It’s all about protecting our digital world. We’ll be keeping a close eye on the details and bringing you all the updates as they come.
+
+So there you have it, folks! Another fascinating development. Stay tuned right here on Lovely Day Station, because we'll keep you informed and feeling good about your day! Now, let's get back to that sunshine playlist...
+**(Music swells slightly)**
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="Germany and Philippines sign new defence pact">
                 <span style="margin-right: 10px;"><strong>📰 Germany and Philippines sign new defence pact</strong></span>
@@ -91,11 +94,15 @@ So, looks like they’re teaming up to tackle the digital world together, which,
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[13:47] Alright, sunshine and smiles, it's Jerry here, your friendly voice on Lovely Day Station! And you know what they say, a happy gut is a happy you! Speaking of happy, get this headline: **News: Dr. Oz says probiotic supplements have wide-ranging health benefits. Here’s what science says!**
+[14:17] Alright, sunshine seekers and happy listeners, it's Jerry here, keeping your day bright on Lovely Day Station! Time for a little health update, and you know we always try to keep it real and helpful around here.
 
-Now, I know what you're thinking: "Jerry, probiotics? What in the world are we talking about?" Well, it seems like those little friendly bacteria that live in your gut, are getting some serious attention! The report goes on to talk about how our bodies – and especially our guts – really thrive on having a good balance of these little guys.
+So, I just saw a headline that caught my eye. Get this: **Dr. Oz is saying probiotic supplements have some pretty wide-ranging health benefits!** Now, you know we're not about blindly following everything, so the headline actually leads to an article that dives into what the science *really* says. And, it's got links to leading experts! See, it pays to do your homework!
 
-The article teases that we can find out what the experts say about 50,000+ different topics! Imagine that! So if you're curious to learn more about how those probiotics can boost your mood, your energy, or even just keep things, you know, running smoothly, click on the link for the whole scoop. Stay tuned for more lovely news, right after this song!
+They’re talking about how our bodies, especially our guts, really need a good balance of those little bacteria guys to keep things running smoothly. You know, like a well-oiled machine!
+
+Now, I'm not a doctor, folks, so I can't give you any medical advice. But it’s definitely something to think about, right? If you're curious, you should check out that link. You can find it in the show notes! Just remember to always chat with your doctor before starting any new supplements.
+
+And that’s your health headline for today! Stay tuned for more good vibes and good news right here on Lovely Day Station!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[similar_liked] Dr. Oz says probiotic supplements have wide-ranging health benefits. Here’s what science says">
                 <span style="margin-right: 10px;"><strong>📰 [similar_liked] Dr. Oz says probiotic supplements have wide-ranging health benefits. Here’s what science says</strong></span>
@@ -103,7 +110,7 @@ The article teases that we can find out what the experts say about 50,000+ diffe
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[14:55] Alright, party people, get ready for a SERVE! We're about to blast off with the reigning Queen of Hot Mess Anthem, Chappell Roan. Get ready to scream-sing along to her latest slice of pure pop perfection, this is "Good Luck, Babe!"
+[15:38] Alright, music lovers! Up next, we've got the queen of glitter and heartbreak herself, Chappell Roan! Get ready to scream-sing your lungs out to "Good Luck, Babe!" because this one's about to be stuck in your head all day!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="Good Luck, Babe!">
                 <input type="hidden" name="artist" value="Chappell Roan">
@@ -112,30 +119,37 @@ The article teases that we can find out what the experts say about 50,000+ diffe
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[15:11] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Chappell Roan — Good Luck, Babe! 🎵</span>
+[15:54] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Chappell Roan — Good Luck, Babe! 🎵</span>
 
-[18:11] Alright, music lovers, get ready to rock! Because next up, we're diving headfirst into pure, unadulterated genius with Queen's "Bohemian Rhapsody"—a song so epic, it's practically its own mini-opera!
+[18:54] Alright music lovers, let's dive into some angst-ridden brilliance! Up next, we've got Radiohead with a little ditty about feeling like you don't quite fit in, but in a totally awesome way - it's "Creep"!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
-                <input type="hidden" name="title" value="Bohemian Rhapsody">
-                <input type="hidden" name="artist" value="Queen">
-                <span style="margin-right: 10px;"><strong>🎵 Queen — Bohemian Rhapsody</strong></span>
+                <input type="hidden" name="title" value="Creep">
+                <input type="hidden" name="artist" value="Radiohead">
+                <span style="margin-right: 10px;"><strong>🎵 Radiohead — Creep</strong></span>
                 <button type="submit" name="feedback" value="like">👍 Like</button>
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[18:23] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Queen — Bohemian Rhapsody 🎵</span>
+[19:08] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Radiohead — Creep 🎵</span>
 
-[21:23] Alright, alright, good morning, Lovely Day Station listeners! Jerry here, ready to brighten your day with some sunshine and... well, maybe some news that'll get your heart racing! 
+[22:08] Alright folks, let's get a little emotional, shall we? Next up, we've got the heart-wrenching vocals of Lewis Capaldi, guaranteed to make you feel *all the things* with "Someone You Loved!" Get ready to belt this one out!
+            <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
+                <input type="hidden" name="title" value="Someone You Loved">
+                <input type="hidden" name="artist" value="Lewis Capaldi">
+                <span style="margin-right: 10px;"><strong>🎵 Lewis Capaldi — Someone You Loved</strong></span>
+                <button type="submit" name="feedback" value="like">👍 Like</button>
+                <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
+            </form>
 
-So, let me tell you, the rumor mill is churning, folks! Our top headline today comes straight from the world of football, specifically the beautiful game!
+[22:23] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Lewis Capaldi — Someone You Loved 🎵</span>
 
-We've got a spicy one, courtesy of our HQ: News just in! Looks like the deal between Real Madrid and the young, promising defender, Dean Huijsen, is... drumroll please... *99% done*! That's right, almost in the bag!
+[25:23] Alright, alright, settle in, sunshine! It's Jerry, your friendly neighborhood host, bringing you the good vibes and the *breaking* news! You know, we love keeping you in the loop here at Lovely Day Station, and boy, do we have a juicy one today!
 
-(I can hear the Madridistas cheering from here!)
+Get this: **News! Deal between Real Madrid and Dean Huijsen is "99% done," sources say! HQ!**
 
-Real Madrid, as you probably know, are looking to bolster their squad this summer. They're facing some stiff competition, especially from our friends over at FC Barcelona, and they know they need to level up to stay at the top of the game. Apparently, the defense is where they're focusing their attention, and Huijsen, well, he’s been turning some heads! We’re talking solid foundations, good tackling, the works!
+Whoa! That's right! 99%! Seems like we're practically there! Now, for those of you who might not be football fanatics (and hey, no judgement here!), let me give you the skinny. Seems like the mighty Real Madrid, those titans of the Spanish La Liga, are gearing up for a serious summer overhaul. They’re looking to beef up their squad to take on that fierce rival, FC Barcelona, next season. And guess where they're focusing their attention? Yep, on bolstering their defence! They need to solidify that back line!
 
-This is exciting news, folks! We'll keep you updated as this story develops, of course. We'll have the latest on this, and all the big football stories, right here on Lovely Day Station! Stay tuned, you know where to find us! Now, let's get back to the music!
+This Huijsen fella…sounds like a promising young talent, if Real Madrid is knocking! So, keep those fingers crossed, Madrid fans! This could be the signing that helps you dance to the top! We'll be sure to keep you updated as this story develops, so stay tuned to Lovely Day Station – where the news is hot, the music is sweet, and the sun is always shining!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="Deal between Real Madrid and Dean Huijsen is "99% done", sources say">
                 <span style="margin-right: 10px;"><strong>📰 Deal between Real Madrid and Dean Huijsen is "99% done", sources say</strong></span>
@@ -143,19 +157,15 @@ This is exciting news, folks! We'll keep you updated as this story develops, of 
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[22:49] Alright, alright, settle in, friends, because you're tuned in to Lovely Day Station, where the sunshine is always on the horizon! This is your pal Jerry, and I've got a news headline that's gonna make you think, maybe even warm your heart a little, just like a fresh-baked batch of cookies.
+[26:48] Alright, alright, sunshine lovers! Jerry here, back at ya on Lovely Day Station, keeping those good vibes flowing! And speaking of good vibes, we've got a headline here that's got me feeling all warm and fuzzy inside!
 
-Here it is:
+Here's the news: **[similar_liked] Students and the science of feedback - Feedback for students should be constructive, positive, and timely to augment the interlinked, symbiotic relationship between learning and teaching.**
 
-**News: [similar_liked] Students and the science of feedback - Feedback for students should be constructive, positive, and timely to augment the interlinked, symbiotic relationship between learning and teaching.**
+Feedback f... oh, folks, isn't that just a beautifully put sentence? It’s all about making sure our students are getting the *right* kind of support, the kind that lifts 'em up, helps them learn, and makes the whole experience a positive one. See, it's not just about grades, it’s about building that incredible, that, dare I say, *symbiotic* relationship between teaching and learning!
 
-Feedback f... (pause, letting the listener ponder)
+Think of it like... like a beautiful flower! The student is the flower, soaking up the sun (which is the knowledge) and the teacher is the gardener, providing the perfect water and fertilizer, which is that constructive, positive, and timely feedback. It’s all about helping those little blossoms bloom, right? 
 
-That's right, folks! We're talking about the vital, the crucial, the absolutely *essential* power of feedback, and how it shapes the whole shebang of learning. It's about giving our students the kind of information, the kind of encouragement, that helps them flourish, that helps them grow, that helps them truly *learn*. Think about it – when you get helpful advice, when you get that little nudge in the right direction, doesn’t it make you feel, well, *better*? More motivated? More... capable? That’s the magic they’re talking about!
-
-So, next time you're thinking about giving some feedback, remember to keep it constructive, keep it positive, and keep it… *on time*! Because that, my friends, is the key to unlocking a truly lovely day for everyone involved in this incredible dance of learning. And that, my friends, is a recipe for a truly lovely life!
-
-Stay tuned, folks, because after this short break, we'll be right back with more good vibes and even better tunes here on Lovely Day Station!
+So let's all make sure we're spreading that positive energy, that helpful feedback, and helping all our students shine! Keep those smiles on your faces, folks, because that's the secret to a lovely day! We'll be right back with more tunes after this quick break. Don't go anywhere!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[similar_liked] Students and the science of feedback">
                 <span style="margin-right: 10px;"><strong>📰 [similar_liked] Students and the science of feedback</strong></span>
@@ -163,7 +173,7 @@ Stay tuned, folks, because after this short break, we'll be right back with more
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[24:32] Alright music lovers, let's keep the good vibes rolling! This next track is the ultimate soundtrack for a cozy night in, even if it's just you and your pizza. Get ready to swoon, 'cause it's Charli XCX with "Party 4 U"!
+[28:20] Alright folks, get ready to feel ALL the feels! Up next, we've got the queen of hyper-pop, Charli XCX, serving up a slice of pure, heartfelt synth heaven that'll make you wanna dance alone in your room... It's "Party 4 U"!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="Party 4 U">
                 <input type="hidden" name="artist" value="Charli XCX">
@@ -172,36 +182,47 @@ Stay tuned, folks, because after this short break, we'll be right back with more
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[24:48] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Charli XCX — Party 4 U 🎵</span>
+[28:36] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Charli XCX — Party 4 U 🎵</span>
 
-[27:48] Alright folks, buckle up! We're about to take a ride on the wild side with a band that knows how to rock! Get ready to crank it up to 11 with AC/DC and their anthem, "Highway to Hell!"
+[31:36] Alright, music lovers, next up we've got a band that redefined the 90s and a song that's practically an anthem for authenticity! Get ready to grunge out with Nirvana and their smash hit, "Come as You Are"!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
-                <input type="hidden" name="title" value="Highway to Hell">
-                <input type="hidden" name="artist" value="AC/DC">
-                <span style="margin-right: 10px;"><strong>🎵 AC/DC — Highway to Hell</strong></span>
+                <input type="hidden" name="title" value="Come as You Are">
+                <input type="hidden" name="artist" value="Nirvana">
+                <span style="margin-right: 10px;"><strong>🎵 Nirvana — Come as You Are</strong></span>
                 <button type="submit" name="feedback" value="like">👍 Like</button>
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[28:03] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: AC/DC — Highway to Hell 🎵</span>
+[31:51] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Nirvana — Come as You Are 🎵</span>
 
-[31:03] Alright, alright, good morning, sunshine listeners, and welcome back to Lovely Day Station! Jerry here, your friendly host, ready to brighten up your day with a little news and a whole lotta good vibes!
+[34:51] Alright music lovers, get ready for some serious feels! Up next we've got the incredibly talented, and endearingly self-deprecating, Lewis Capaldi with his heart-wrenching hit, "Before You Go." Let's all grab our tissues and sing along!
+            <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
+                <input type="hidden" name="title" value="Before You Go">
+                <input type="hidden" name="artist" value="Lewis Capaldi">
+                <span style="margin-right: 10px;"><strong>🎵 Lewis Capaldi — Before You Go</strong></span>
+                <button type="submit" name="feedback" value="like">👍 Like</button>
+                <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
+            </form>
 
-And speaking of brightening things up... how about a little travel news? This one’s got my wheels turning!
+[35:05] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Lewis Capaldi — Before You Go 🎵</span>
 
-**(Slight pause, maybe a little sound effect like a plane taking off)**
+[38:05] **(Upbeat, jazzy intro music fades)**
 
-Get this folks: **Avianca, you know, the lovely Colombian airline, is seriously planning on expanding their wings over the US!** That's right! Seems like they're looking to launch FIVE new routes from the US to Latin America in 2025! Talk about a potential for some amazing vacation possibilities!
+**Jerry:** Hey there, sunshine lovers! Jerry here, your friendly neighborhood host on Lovely Day Station, keeping the good vibes flowing! And you know, what's a lovely day without a little bit of travel news to get those wanderlust juices flowing? So let's dive right in!
 
-**(Sound of excited chatter)**
+**Jerry:** Alright, listen up, folks, because this is exciting! We've got a headline hotter than a fresh cup of Colombian coffee! Get this: **Avianca mulls 5 new routes from US to Latin America in 2025!**
 
-They're thinking big, too! From the news reports, it sounds like these new routes are going to bring even more folks to those vibrant destinations we all dream about: beautiful beaches, bustling cities, and all that fantastic culture. You know, places we’re all yearning to visit!
+**(Short musical sting - maybe a travel jingle sound effect)**
 
-So, keep an eye out, travel bugs! This could mean more options, maybe some competitive prices, and definitely more chances to say "¡Hola, mundo!" or whatever your preferred greeting is in Spanish!
+**Jerry:** That's right! Our friends at Avianca, the folks who know a thing or two about flying from the US to Latin America, are cooking up something BIG for 2025. They’re planning on adding FIVE brand new routes! Can you imagine? More ways to soak up the sun in South America, explore vibrant cities, maybe even learn a little Spanish! Sounds like a recipe for an amazing adventure, doesn't it?
 
-**(Upbeat music swells slightly)**
+**Jerry:** I tell ya, I can already picture myself... (pauses, dreamily) ...sipping a fresh juice in Medellin, or maybe strolling the streets of Buenos Aires... Oh, the possibilities!
 
-That's your news for now, folks! More details to follow as they roll in, but for now, let's get back to that *lovely* day! And, of course, we've got more sunshine and good music coming right up! Stay tuned!
+**Jerry:** We don't have all the details yet on *where* these new routes are headed, but you know we'll keep you posted right here on Lovely Day Station! So buckle up, buttercups, and get ready to dust off those passports because it sounds like Avianca's about to make your travel dreams a whole lot closer! And hey, if you've got any favorite Latin American destinations you'd love to see Avianca connect, give us a call! We'd love to hear from you!
+
+**(Upbeat, jazzy outro music begins)**
+
+**Jerry:** That's the news for now, folks! Keep those smiles bright, and those travel plans brewing! You're listening to Lovely Day Station!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[similar_liked] Avianca mulls 5 new routes from US to Latin America in 2025">
                 <span style="margin-right: 10px;"><strong>📰 [similar_liked] Avianca mulls 5 new routes from US to Latin America in 2025</strong></span>
@@ -209,7 +230,7 @@ That's your news for now, folks! More details to follow as they roll in, but for
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[32:38] Alright folks, get ready to float on a cloud of pure sunshine and dreamy vibes! Next up, we've got the one and only Tyler, the Creator teaming up with Kali Uchis for a sonic masterpiece that'll have you seeing hearts. It's "See You Again"!
+[40:06] Alright, alright, alright, folks! Get ready to float away on a cloud of sunshine because next up we have Tyler, the Creator teaming up with the dreamy Kali Uchis! Prepare for some smooth vibes and maybe a little lovestruck daze with "See You Again"!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="See You Again (feat. Kali Uchis)">
                 <input type="hidden" name="artist" value="Tyler, the Creator">
@@ -218,36 +239,36 @@ That's your news for now, folks! More details to follow as they roll in, but for
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[32:56] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Tyler, the Creator — See You Again (feat. Kali Uchis) 🎵</span>
+[40:23] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Tyler, the Creator — See You Again (feat. Kali Uchis) 🎵</span>
 
-[35:56] Alright, alright, alright, folks! Get ready to unleash your inner boogie because we're throwing it back to a time of bell bottoms and shimmering disco balls! Let's groove with the legendary Earth, Wind & Fire and get lost in the magic of "September"!
+[43:23] Alright folks, get ready to embrace your existential angst with a smile! Next up, we've got those masterminds of melancholic melodies, Radiohead, and their commentary on cosmic justice... or lack thereof! Here's "Karma Police"!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
-                <input type="hidden" name="title" value="September">
-                <input type="hidden" name="artist" value="Earth, Wind & Fire">
-                <span style="margin-right: 10px;"><strong>🎵 Earth, Wind & Fire — September</strong></span>
+                <input type="hidden" name="title" value="Karma Police">
+                <input type="hidden" name="artist" value="Radiohead">
+                <span style="margin-right: 10px;"><strong>🎵 Radiohead — Karma Police</strong></span>
                 <button type="submit" name="feedback" value="like">👍 Like</button>
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[36:13] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Earth, Wind & Fire — September 🎵</span>
+[43:37] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Radiohead — Karma Police 🎵</span>
 
-[39:13] **(Sound of gentle, upbeat music fades slightly)**
+[46:37] **(Upbeat, jazzy intro music fades out)**
 
-Hey there, Lovely Day listeners! Jerry here, keeping things bright and breezy on your radio dial. And speaking of breezy, we've got some exciting travel news coming your way!
+Good morning, sunshine, and welcome back to Lovely Day Station! Jerry here, ready to brighten your day! And speaking of brightening things up, we've got some exciting travel news to share with you!
 
-**News Flash!** Let's get you out there and exploring!
+**(Sound of a gentle chime)**
 
-Avianca… yes, *that* Avianca… the folks from Colombia, you know the ones? Well, they're spreading their wings, literally! They're soaring into new territory! We're talking... **Avianca Launches Two New Routes Connecting South Florida to Guatemala and Nicaragua!** Woohoo! More ways to explore Central America, folks!
+Here's the headline: **Avianca, that's right, the good folks over at Avianca, are spreading their wings and taking flight with two brand-new routes connecting South Florida to both Guatemala and Nicaragua!** Wonderful news for all you travel bugs out there! Think beautiful beaches, vibrant cultures, and maybe even a little bit of adventure!
 
-**(Sound of a short, upbeat jingle)**
+**(Pause for a beat, then a little chuckle)**
 
-Now, I'm picturing you all already dreaming of sun-drenched beaches, vibrant culture, and maybe even some delicious coffee… or maybe it's just me! But seriously, this is great news for anyone in South Florida looking for a quick getaway.
+Now, for those of you with a penchant for planes (like yours truly!), they're using some shiny new equipment – or, well, not *new* new, but still spiffing! We're talking Avianca (Colombia) – TACA Airbus A320-214! Imagine that sleek little birdie soaring across the sky! 
 
-And, just a little peek behind the curtain here… and this comes to us courtesy of the good folks at Avianca.  They even have a snazzy pic to prove it!  Think bright blue skies and gleaming airplanes, a real feast for the eyes!
+**(Slightly faster tempo)**
 
-So, start packing those bags, folks! Guatemala and Nicaragua, here you come! Lovely Day Station… keeping you informed, and inspiring your wanderlust!
+And here's a little bonus for the aviation enthusiasts among us: there's a fantastic photo courtesy of Avianca, showcasing one of their planes. We've got the details right here on the website and the app!
 
-**(Music swells slightly)**
+So, with the launch of these new... routes, Avianca's clearly opening up even more possibilities for travel and exploration! What a lovely day indeed! More sunshine and good news after the break! Stay tuned to Lovely Day Station!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[similar_liked] Avianca Launches Two New Routes Connecting South Florida to Guatemala and Nicaragua">
                 <span style="margin-right: 10px;"><strong>📰 [similar_liked] Avianca Launches Two New Routes Connecting South Florida to Guatemala and Nicaragua</strong></span>
@@ -255,7 +276,7 @@ So, start packing those bags, folks! Guatemala and Nicaragua, here you come! Lov
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[40:34] Alright folks, get ready to swoon because next up we have The Marías! Their music is like a warm summer night dream you just don't want to wake up from, and this one's called "No One Noticed." Let's get lost in it!
+[48:07] Alright, up next we've got a band that'll make you feel like you're floating on a cloud of velvet smoke! Let's get lost in their dreamy soundscapes with The Marías and their gorgeous track, "No One Noticed."
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="No One Noticed">
                 <input type="hidden" name="artist" value="The Marías">
@@ -264,30 +285,36 @@ So, start packing those bags, folks! Guatemala and Nicaragua, here you come! Lov
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[40:51] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: The Marías — No One Noticed 🎵</span>
+[48:22] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: The Marías — No One Noticed 🎵</span>
 
-[43:51] Alright music lovers, get ready to get a little bit melancholic, but in the best way possible! Next up, we're sending out some love across the airwaves with the timeless Pink Floyd and their heart-wrenching classic, "Wish You Were Here!"
+[51:22] Alright, folks, get ready for a little existential dread with a side of lullaby! Up next, it's Radiohead, and they're about to serve up some "No Surprises" – which is ironic, because this song is always a surprise for your feels!
             <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
-                <input type="hidden" name="title" value="Wish You Were Here">
-                <input type="hidden" name="artist" value="Pink Floyd">
-                <span style="margin-right: 10px;"><strong>🎵 Pink Floyd — Wish You Were Here</strong></span>
+                <input type="hidden" name="title" value="No Surprises">
+                <input type="hidden" name="artist" value="Radiohead">
+                <span style="margin-right: 10px;"><strong>🎵 Radiohead — No Surprises</strong></span>
                 <button type="submit" name="feedback" value="like">👍 Like</button>
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[44:07] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Pink Floyd — Wish You Were Here 🎵</span>
+[51:38] <span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: Radiohead — No Surprises 🎵</span>
 
-[47:07] Alright, alright, alright, sunshine seekers and travel bugs, welcome back to Lovely Day Station! Jerry here, always trying to keep that smile on your face and a little bit of wanderlust in your heart! And speaking of wanderlust...
+[54:38] **(Upbeat, friendly jingle fades slightly)**
 
-**BREAKING NEWS!**
+Hey there, sunshine lovers! This is Jerry, your host on Lovely Day Station, and you know what that means? Time for a little good news to brighten your morning!
 
-Get this, friends: We've got some seriously good news for all you budget-conscious adventurers out there! Our friends at Frontier Airlines are spreading their wings even further! That's right, they're adding a whopping **18 new, nonstop routes** and are opening up flights to **TWO brand-spanking-new destinations!**
+Alright folks, buckle up, 'cause this is exciting! The folks over at Frontier Airlines are making some *major* moves! Get this: **Frontier Airlines is adding a whopping 18 brand-new, nonstop routes!** That's right! More places, easier flights! And not only that, but they're also opening up service to *two* whole new destinations!
 
-(Pause for dramatic effect, maybe a little "woo-hoo!")
+**(Slight pause, excited tone)**
 
-Now, I don't have all the nitty-gritty details on which routes and destinations just yet, but trust me, the details are likely to be posted at the bottom of the article that came out. I'll be sure to check out the article and maybe it'll be the perfect time to plan that weekend getaway or that long-awaited vacation!
+Think of all the possibilities! Weekend getaways, family vacations, sunshine in your future! I'm already dreaming of where *I* might go!
 
-Keep those eyes peeled and those suitcases packed, folks! Sounds like adventure is calling! Stay tuned to Lovely Day Station for more updates as they come in. And hey, if you're planning a trip, remember to pack that sunshine and a whole lotta good vibes! You're listening to Lovely Day Station!
+**(Brief, gentle sound effect like a plane taking off)**
+
+Just a little heads-up, friends: This post might have some of those "affiliate links" everyone talks about. So, you know the drill: read the fine print, do your research, and always check out the advertiser disclosures to be fully informed. But hey, more routes, more destinations, and potentially some great deals? Sounds like a lovely day to me!
+
+**(Upbeat music swells again)**
+
+That's the scoop on Frontier Airlines! Stay tuned, because we've got more feel-good news coming your way, right here on Lovely Day Station! And remember, keep smiling!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[similar_liked] Frontier Airlines Adds 18 New Nonstop Routes and Two Destinations">
                 <span style="margin-right: 10px;"><strong>📰 [similar_liked] Frontier Airlines Adds 18 New Nonstop Routes and Two Destinations</strong></span>
@@ -295,21 +322,21 @@ Keep those eyes peeled and those suitcases packed, folks! Sounds like adventure 
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[48:28] Alright, sunshine and smiles, this is Jerry, your friendly host on Lovely Day Station, keeping those good vibes flowing! And speaking of flowing... let's flow right into the news!
+[56:02] Alright, alright, settle in, folks! Jerry here, keeping those good vibes flowing on Lovely Day Station! And speaking of vibes, we're about to dive into something a little... different. Buckle up, because we've got a headline that's gonna make your brain do a little jig!
 
-Hold onto your hats, folks, because we've got a headline that's gonna make you think! Here we go…
+Here it is, straight from the *Science of Nature* journal - yes, you heard that right, *Science of Nature*!
 
-**News: Science of Nature - Science of Nature!**
+**News: Science of Nature - Science of Nature**
 
-Now, that's a mouthful, but here's the juicy bit! We're talking...
+Okay, okay, don't let that title throw ya! The real meat of the story is this:
 
-**The Story of the Lost World Disrupting the Twin Balance of Virus Bacteria and the Negative Positive Relationship of Twin Minerals!**
+**The Story of the Lost World Disrupting the Twin Balance of Virus Bacteria and the Negative Positive Relationship of Twin Minerals**
 
-Whoa! Okay, let me try to untangle that a little. It sounds like we're diving deep into the secret world of nature! A "Lost World" causing some serious drama! We're talking about the balance of… well, everything! Viruses, bacteria, the good, the bad, the… you know. And the very important dance of minerals, the "Twin Minerals" with their *negative positive* relationship! 
+Whoa! Did you catch all that? Sounds like a real adventure movie, doesn't it? "The Story of the Lost World"? What does that even *mean*? And "Twin Balance" of *what*? Virus bacteria? Negative and positive minerals? Ooooh, intrigue!
 
-Sounds like a real adventure, doesn't it? Makes you wanna grab a microscope and a magnifying glass! 
+We’re talking a real deep dive into the mysteries of nature here, friends. Sounds like something’s thrown the entire ecosystem out of whack! I gotta admit, this one's got my curiosity piqued! We’ll have to keep our ears glued to the news wires to see what these intrepid scientists are digging up.
 
-We’ll try to find out more about that story, folks, so be sure to stick around with Lovely Day Station, for more news, more music, and all things sunny! Coming up next, a little something to make your heart sing!
+So, stay tuned, keep those minds open, and let's all just keep on enjoying this lovely day! Jerry, signing off for now, but we'll be back with more updates as they come in! Lovely Day Station, where we keep you informed, and keep you smiling!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[nature] Science of Nature">
                 <span style="margin-right: 10px;"><strong>📰 [nature] Science of Nature</strong></span>
@@ -317,26 +344,21 @@ We’ll try to find out more about that story, folks, so be sure to stick around
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[49:50] **(Upbeat, jazzy intro music fades slightly)**
+[57:40] **(Upbeat, cheerful music fades slightly)**
 
-Alright, sunshine and smiles, it's your main man Jerry, bringing you the loveliest vibes right here on Lovely Day Station! And you know, a lovely day deserves lovely news! So, let's get into it, shall we?
+Hey there, Lovely Day listeners, it's your pal Jerry, back with a little sunshine for your ears! Hope you're having a lovely day so far. Now, I just got this news bulletin... and it's... well, it's just the kind of news that makes you wanna smile!
 
-**(Sound of a gentle chime)**
+**(Slight pause for effect)**
 
-This just in, folks, and I gotta tell ya... it's a real mood booster! The headline reads... get this... **"Nature is beautiful - I Can Has Cheezburger?"**
+The headline is: **Nature is beautiful - I Can Has Cheezburger?**
 
-**(Jerry chuckles warmly)**
+**(Laughs warmly)**
 
-Yep, you heard that right! Nature is beautiful! And you know what else is beautiful? Well... a good ol' meme, apparently! Someone out there, looking at all the wonders around us, from towering mountains to babbling brooks, and just thought, "Dang, this is amazing... *I Can Has Cheezburger?*"
+Yep, you heard that right! Nature is beautiful! Now, isn't that the truth? And the… the "I Can Has Cheezburger?" part? Well, that just adds that extra little… *zing*! Gotta love it. I guess even the natural world appreciates a good meme, right? Makes you wanna go outside, take a deep breath, and maybe… just *maybe*… find yourself a nice, big, delicious… cheeseburger. (Chuckles)
 
-**(Jerry laughs again, a little louder this time)**
+Anyway, folks, take that beauty with you today! Remember to stop and smell the roses, or, you know, admire a gorgeous tree, and maybe, just maybe, think about a cheesy treat.
 
-It's a reminder, isn't it? To appreciate the little things, to find the joy in the everyday. Look up at the sky, smell the flowers, and hey... if you're feeling extra good, maybe grab yourself a grilled cheese! You deserve it! 
-
-**(Sound of a brief, playful musical sting)**
-
-So there you have it, folks! A little bit of nature, a little bit of laughter, and a whole lot of loveliness. Stay tuned for more sunshine and good times, right here on Lovely Day Station! And remember, always appreciate the beauty around you... and don't forget the cheese!
-**(Intro music swells slightly)**
+**(Music swells slightly as Jerry preps for the next segment)**
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[nature] Nature is beautiful">
                 <span style="margin-right: 10px;"><strong>📰 [nature] Nature is beautiful</strong></span>
@@ -344,25 +366,11 @@ So there you have it, folks! A little bit of nature, a little bit of laughter, a
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[51:24] (Sound of gentle acoustic guitar intro fades in and then under)
+[58:49] Alright, sunshine seekers! Jerry here, sending you all the good vibes on Lovely Day Station. You know, sometimes you gotta take a deep breath, step outside, and just *be* with nature. And speaking of nature... here's a headline that's really got me buzzing:
 
-Hey everybody, Jerry here, your host on Lovely Day Station, bringing you all the good vibes and even better news! And speaking of good vibes... let's dive right into what's happening out there in the world.
+**News:** Get this, folks! "Celebrating Art and Nature!" In a time when we're all feeling the pressure of climate anxiety and what's going on with our beautiful planet, there's something truly special brewing. It's called "The Power of Trees," and it's inviting us to do something amazing… to *pause*, to *look closely*, and to *reconnect* with the natural world!
 
-(Sound of guitar fades slightly)
-
-You know, it's a beautiful day, and sometimes… sometimes we get so caught up in the hustle and bustle, we forget to just… *breathe*. That's why this next story, I think, is just perfect. Here it is:
-
-**News:** Celebrating Art and Nature - In a time of accelerating climate anxiety and ecological crisis, **The Power of Trees** invites us to pause, look closely and reconnect with the natural world – n...
-
-(I pause, letting the music swell softly underneath)
-
-See what I mean? Beautiful! It's a reminder, isn't it, that in the face of… well, you know, the things we all worry about these days… the best medicine can often be found right outside your door. Whether it's a towering oak in the park, the tiny leaves of a sprout, or the sheer, majestic presence of a forest – nature is calling!
-
-So, take a moment, folks. Take a deep breath. Maybe, just maybe, take a walk and see what wonders you can find. Because sometimes, just reconnecting with the beauty around us is exactly what we need. And we'll bring you more on this story as it develops, here on Lovely Day Station!
-
-(Music swells slightly again)
-
-Stay lovely, everyone! We'll be right back after this break!
+Wow, isn't that just what we all need? More details to come, but that sounds like a breath of fresh air, doesn't it? We'll have more on "The Power of Trees" and how you can get involved right after this break! Stay tuned, stay lovely!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[nature] Celebrating Art and Nature">
                 <span style="margin-right: 10px;"><strong>📰 [nature] Celebrating Art and Nature</strong></span>
@@ -370,13 +378,15 @@ Stay lovely, everyone! We'll be right back after this break!
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[53:08] Alright, sunshine and smiles, it's your main man Jerry here, keeping the vibes smooth on Lovely Day Station! Time for a little peek behind the curtain... or should I say, the *casino* curtain, eh?
+[59:48] Alright, buckle up, buttercups, because it's time for a little something-something from the wild, wild world of gaming! This is Jerry, your friendly neighborhood host here at Lovely Day Station, keeping you in the loop, one headline at a time!
 
-And the news is... (drumroll please, folks!) from the bright lights of Las Vegas, we're talking about the world of gaming! Now, Golden Entertainment, a big player in the Vegas scene, just announced a new partnership. Sounds exciting, right? 
+And speaking of loops, here's what's spinning around the gaming news today!
 
-But, and here's the kicker, the news also mentions some *year-over-year declines*. Seems like things weren't quite as golden as they could be, mostly thanks to something missing... and that thing is... (you guessed it!) the Super... (I can't say it, it's too obvious!). 
+**News flash!**  Hold onto your hats, folks, because we’re heading to… Vegas, baby! That shimmering city of lights and, well, more lights!  **Inside Gaming: Las Vegas gaming company launches a brand spankin' new partnership... plus more gaming news!**
 
-So, there you have it! A bit of a mixed bag from the gaming world. New partnerships are always fun to hear about, but we'll be watching closely to see how Golden Entertainment bounces back! Stay tuned for more updates and more happy tunes on Lovely Day Station! Keep it sunny, everyone!
+Now, what's the deal?  Seems like **Golden Entertainment, those good folks based right there in the heart of Las Vegas, are talking about some... *ahem*... "year-over-year declines."**  And the main culprit, you ask? Apparently, a big chunk of this comes down to… (drumroll please!) ... **the lack of the Super...** (pause for dramatic effect) … **the lack of the Super… [I'll let your imagination fill that gap, folks! You know what I'm talking about!]**
+
+So, Vegas is feeling the pinch!  Stay tuned to Lovely Day Station for more updates as this story unfolds! We'll be sure to keep you in the know!  And hey, while we're waiting for the next Super… *whatever*… how about we spin another groovy tune? You're listening to Lovely Day Station, where the news is always hot and the music is always cool!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[gaming] Inside Gaming: Las Vegas gaming company launches new partnership, more gaming news">
                 <span style="margin-right: 10px;"><strong>📰 [gaming] Inside Gaming: Las Vegas gaming company launches new partnership, more gaming news</strong></span>
@@ -384,21 +394,17 @@ So, there you have it! A bit of a mixed bag from the gaming world. New partnersh
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[54:15] Alright, sunshine seekers, good morning and welcome back to Lovely Day Station! Jerry here, your host, ready to brighten your day with the best tunes and... well, maybe a little bit of tech talk too!
+[61:18] Alright, good day sunshine! Jerry here, keeping those good vibes flowing on Lovely Day Station! And speaking of good vibes... how about a little tech talk to get your heart racing?
 
-And speaking of things that *might* brighten your day for a whole different reason... let's dive into this headline!
+We've got a hot headline fresh off the digital presses: **ASUS is bringing the thunder!** They've just announced a brand spankin' new gaming PC... and it's a beast!
 
-**BREAKING NEWS!** *(Sound of a short, upbeat news jingle here)*
+The name's the **TUF Gaming T500**! Now, for those of you who don't speak gamer, let me translate: **powerful!** This thing is packed with some serious punch under the hood. We're talking about the latest Intel Core processors, specifically, up to an **Intel Core i7-13620H!** And get this - it's got SIX performance cores for the heavy lifting, and EIGHT efficiency cores to keep things smooth and chill! Plus, a max boost of **5.0 GHz!** Whew!
 
-Hold onto your controllers, gamers! Because ASUS, you know, the folks who make all that slick hardware, have just dropped a brand new gaming PC on us! Get this... the **ASUS TUF Gaming T500** is here, and it’s packing some serious heat!
+That means incredible gaming performance! Think crisp graphics, lightning-fast loading times, and the kind of immersive experience that'll have you glued to your seat. We'll have to wait for the full scoop, but just the name alone, TUF Gaming, tells you this thing's built tough!
 
-Listen to this, folks! This beast of a machine is powered by an Intel Core i7-13620H processor – that's a mouthful, I know! But basically, it’s got six Performance cores and eight Efficiency cores, and get this... a max boost of a whopping 5.0 GHz! Five point O! Woooo-wee!
+So, if you're dreaming of upgrading your gaming rig, keep an eye out for the ASUS TUF Gaming T500. Sounds like it's going to be a real contender in the gaming world! And hey, that's just good news for all you gamers out there. Keep those controllers charged and those thumbs ready!
 
-Now, I'm not a hardcore gamer myself, I prefer my garden gnomes and a good book, but even *I* can tell that sounds like this thing can drive some INCREDIBLE... *(trail off here with a playful "ooooh!" sound effect)* ...gaming!
-
-So, if you're in the market for a new rig that’s gonna take your gaming to the next level... keep an eye out for that ASUS TUF Gaming T500! More on this later, and we'll be sure to keep you updated on this and all the other happenings in the world of gaming.
-
-But now, let’s get back to the good vibes with some more of your favorite music, right here on Lovely Day Station! Stick around!
+We'll keep you updated with more details as they come in, right here on Lovely Day Station! Back to the music... and the good times!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[gaming] ASUS Announces TUF Gaming T500 Gaming PC">
                 <span style="margin-right: 10px;"><strong>📰 [gaming] ASUS Announces TUF Gaming T500 Gaming PC</strong></span>
@@ -406,15 +412,15 @@ But now, let’s get back to the good vibes with some more of your favorite musi
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[56:04] Alright, sunshine and smiles, welcome back to Lovely Day Station! This is Jerry, your friendly neighborhood host, here to brighten your afternoon. And you know what always brightens *my* afternoon? A little bit of gaming!
+[63:01] Alright folks, settle in, grab your morning cuppa, or maybe you're just booting up for the day - whatever you're doing, you're here with Jerry on Lovely Day Station! And you know, we love to keep you in the loop on the latest, greatest, and most interesting things happening out there.
 
-Speaking of gaming, let's get to our top headline: **[Gaming] Gaming Upgrade - Author(s): Pete Metcalfe** Now this is for all you techy folks, the tinkerers, the ones who like to push the limits!
+And speaking of interesting, we've got a headline that might just perk up the ears of all you gamers out there! It's coming to us from the gaming world, and it sounds like it's going to be a good one.
 
-Pete Metcalfe, in their report, is talkin' about leveling up your handheld gaming devices. We're talkin' **custom firmware**! Yep, that means supercharging your little buddy and opening up a whole new world of possibilities. They tell us all about how you can jazz things up, make your games run smoother, and even...get this... write your *own custom apps*! That's right, you could build your own mini-games! 
+Here it is: **"Gaming Upgrade!"** And this one comes to us from the brilliant Pete Metcalfe.
 
-Sounds pretty awesome, right? The report promises to walk us through the steps, so you can become a handheld gaming wizard. Now, I’m not the biggest tech guru, but I'm definitely intrigued. Who knows, maybe I’ll dust off my old handheld and give it a shot!
+Now, what's the upgrade, you ask? Well, get this: it's all about **adding custom firmware to your handheld gaming device!** That's right, folks, we're talking about giving your little buddy a boost! Apparently, this not only enhances your overall gaming experience, making things look better, play smoother, and all that jazz, but it also opens the door for you to write your *own* custom apps! Talk about creativity unleashed!
 
-So, if you're ready to take your gaming to the next level, be sure to check out Pete Metcalfe’s report. We’ll have a link to it on our website, lovelydaystation.com, after the break. Stay tuned, lovely listeners, we've got more sunshine coming your way!
+So, if you're looking to tinker, personalize, and squeeze even *more* fun out of your handheld, be sure to check out Pete's report. We'll be bringing you the details on how it's all done... coming up soon! Stay tuned, it sounds like an adventure! Alright, now it's time for some smooth tunes here on Lovely Day Station. You're listening to...
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[gaming] Gaming Upgrade">
                 <span style="margin-right: 10px;"><strong>📰 [gaming] Gaming Upgrade</strong></span>
@@ -422,15 +428,23 @@ So, if you're ready to take your gaming to the next level, be sure to check out 
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[57:34] Alright, sunshine seekers, it's Jerry, your pal from Lovely Day Station, here to bring you the news that's buzzing around the business world! And you know what that means? Time to put on our thinking caps, maybe grab a nice cup of coffee, and try to decipher these market mysteries!
+[64:36] **(Upbeat, mellow music fades slightly)**
 
-So, here's the headline, hot off the presses: We're talking about the *mighty* Reserve Bank of India and their dealings in the… wait for it… *Money Markets*!
+Hey there, friends! Jerry here, keeping you company on Lovely Day Station. Hope you're all having a... well, a lovely day! Let's jump into a quick peek at what's happening in the world of finance, shall we? You know, gotta keep those brain cells sharp!
 
-Get ready for a little bit of number crunching, friends. It looks like the action is centered around (deep breath!) a whopping **5,74,116.64 crore rupees**, all swirling around in the "Overnight Segment" with a weighted average rate of **5.68%**. And the good news is, the overnight segment weighted average rate range stayed healthy at **0.01-6%**!
+Here's a headline straight from the Reserve Bank of India... and buckle up, because it's a bit of a mouthful, but I'll break it down for ya!
 
-**(Pause for effect, maybe a little jingle in the background)**
+**News Flash:** The Reserve Bank of India is reporting on the MONEY MARKETS, focusing on the volume and the weighted average rates. They're showing figures... and it involves some significant numbers!
 
-Alright, folks, that's the gist of it. The market's moving, money's flowing, and the Reserve Bank is keeping a close eye on things. Now, I know those numbers can be a little dizzying, but hey, the important thing is to stay informed and stay positive, right? Remember, every day is a lovely day if you make it one! And for more updates like this, you know where to find us – Lovely Day Station, your feel-good source for all the news, all the time!
+Let's just hit the highlights, alright? For the Overnight Segment, we're talking... listen to this... **₹ 5,74,116.64 crore**... that's a *lot* of rupees! And the weighted average rate is at **5.68 per cent**, with the range sitting between **0.01 to 6**... 
+
+**(Pause for breath, perhaps a gentle chuckle)**
+
+Whew! Okay, so that's the gist of it. Basically, the Reserve Bank of India is keeping a close eye on the money flowing around, and we've got some key rates to keep track of. Remember, folks, knowledge is power! We'll keep an eye on this one and bring you more updates as things develop.
+
+**(Music swells slightly)**
+
+Alright, folks, let's get back to those good vibes! Stay tuned, because next up, we’ve got…
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[business] Reserve Bank of India">
                 <span style="margin-right: 10px;"><strong>📰 [business] Reserve Bank of India</strong></span>
@@ -438,21 +452,17 @@ Alright, folks, that's the gist of it. The market's moving, money's flowing, and
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[59:04] **(Upbeat, friendly jingle fades out)**
+[66:07] Alright, sunshine and smiles, it's Jerry here on Lovely Day Station! How's that coffee tasting this morning? Hope it's as good as the tunes we've got lined up for ya!
 
-Alright sunshine lovers, and welcome back to Lovely Day Station! Jerry here, keeping those good vibes flowing.
+Now, speaking of things that might be a bit…stronger than a cup of joe, let's dive into a little news nugget. Buckle up, buttercups, because we've got a story from the world of, well, let's just say "big business" and the very important topic of transparency!
 
-And you know, sometimes the news… well, it’s a bit… *interesting*. Speaking of which, let’s get straight to it with a headline that's got some folks buzzing.
+Here's the headline, folks: **Court rejects European Commission’s refusal to share texts between von der Leyen and Pfizer CEO during COVID pandemic!**
 
-**Here’s the news:** A court has just thrown a legal curveball! They’ve rejected the European Commission’s refusal to share those texts between the head honcho of the European Commission, that’s Ursula von der Leyen, and the big cheese over at Pfizer, the CEO, during the whole COVID pandemic situation.
+Yeah, you heard that right! Seems there's been a little bit of a dust-up over in Europe. They're wanting to see those texts! We're talking messages between the big cheese at the European Commission, von der Leyen, and the head honcho over at Pfizer during the COVID craziness. The court is saying, "Show 'em the texts!" And the European Commission...well, they weren't so keen on that idea.
 
-**(Slight pause, letting the information sink in)**
+Interesting, huh? It's a real reminder that even when we're trying to get through tough times, transparency and accountability are always important.
 
-Yeah, so that's… news! The court wants to see those texts, you know? Wonder what secrets they might hold… It’s all part of the ongoing story about transparency and accountability, folks. Always important stuff!
-
-**(Slightly lighter tone)**
-
-Alright, well that’s the lowdown on that one! We'll keep you updated on this and all the other headlines that pop up. Stay tuned for more good times, right here on Lovely Day Station! Up next, we're going to spin some tunes that'll make you wanna dance!
+And of course, this story comes to us courtesy of… (checks my notes) …Fortune Media IP Limited. All rights reserved. You know the drill, folks! Gotta mention the fine print! But hey, a little news, a little legal jargon, and a whole lotta sunshine – that's the Lovely Day Station way! Stick around, we've got more tunes to soothe your soul coming right up!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[business] Court rejects European Commission’s refusal to share texts between von der Leyen and Pfizer CEO during COVID pandemic">
                 <span style="margin-right: 10px;"><strong>📰 [business] Court rejects European Commission’s refusal to share texts between von der Leyen and Pfizer CEO during COVID pandemic</strong></span>
@@ -460,15 +470,23 @@ Alright, well that’s the lowdown on that one! We'll keep you updated on this a
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[60:20] Alright folks, welcome back to Lovely Day Station! Jerry here, keeping the good vibes flowing your way. And speaking of flowing, let's get right to a fascinating story that's making waves!
+[67:48] **(Upbeat, jazzy intro music fades out)**
 
-Coming up on our radar, we've got something truly thought-provoking, folks. Get this: The headline is... *[pause for dramatic effect]* ... **"Digital Dharma: Technology’s Role in Human Evolution and Global Consciousness!"** Whoa!
+Alright, sunshine lovers, and welcome back to Lovely Day Station! Jerry here, keeping you company as always. And you know, even on a lovely day like today, it's always good to keep that beautiful brain of yours humming! Speaking of which…
 
-Yep, you heard right. Digital Dharma! Sounds like something right out of a sci-fi flick, doesn't it? But according to this article, it's all about how our beloved technology, the phones in our pockets, the screens we stare at, the whole digital shebang... how *that* is actually shaping us, the human race. They're exploring how it might be influencing everything from our evolution to our understanding of the world and even our collective consciousness.
+**(Slight pause for dramatic effect)**
 
-Arjun followed this one, and it's a quick, four-minute read, so definitely give it a look when you have a moment. We’re talking about how we use tech, how it uses us, and where this whole journey is headed.
+We've got a fascinating headline crossing the wires right now, and it really makes you think! Are you ready for this? Okay, here it comes...
 
-So, buckle up, lovely listeners! This is one to ponder while you’re sipping your morning coffee. We'll definitely be diving into this more, but for now, "Digital Dharma" is the word! And we're going to give you a little link on our station website, so you can dive in. Alright, back with some more sunshine and tunes right after this short break! Stay lovely!
+**Newsflash!**
+
+**(With a slightly more serious, but still friendly tone)**
+
+We're looking at something called... **"Digital Dharma: Technology’s Role in Human Evolution and Global Consciousness."** Yep, you heard that right! "Digital Dharma," folks. This one's a deep dive, and it's by Arjun, a quick 4-minute read - though, let's be honest, this one might stick with you a little longer than that! They're exploring how technology is shaping us – shaping our brains, our awareness, and maybe even our whole *understanding* of the world. Think about it… everything from your phone to the internet, the apps, the… well, the *digital everything* is changing how we connect, how we learn, how we think. This piece looks to be asking the big questions about where all this is taking us, and how it's impacting our evolution as humans, and our shared consciousness on this big, beautiful planet!
+
+**(Slight chuckle)**
+
+Sounds intriguing, doesn't it? "Digital Dharma"... got a nice ring to it, don't you think? Well, we’ll get the full link in the show notes for you to check out at your own pace. But for now, just a little something to ponder as you cruise through your day! Keep those minds open, keep those hearts kind, and keep that lovely day, lovely! Back with you after these short words from our sponsors… Don't go anywhere!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[business] 🔹Digital Dharma: Technology’s Role in Human Evolution and Global Consciousness🔹">
                 <span style="margin-right: 10px;"><strong>📰 [business] 🔹Digital Dharma: Technology’s Role in Human Evolution and Global Consciousness🔹</strong></span>
@@ -476,23 +494,25 @@ So, buckle up, lovely listeners! This is one to ponder while you’re sipping yo
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[61:56] Alright, alright, settle in folks! It’s your pal Jerry, comin’ to you live on Lovely Day Station! And you know what that means, right? Time to put a little sunshine in your day!
+[69:48] **(Sound of upbeat, sunshine-y jingle fades slightly under the voice)**
 
-And speaking of sunshine… have I got news for you! Are you dreaming of crystal clear waters? Thinkin’ about maybe, *just maybe*, escaping the drizzle of old Blighty? Well, guess what?!
+"And good morning, Lovely Day Station listeners! Jerry here, and I hope you're all having a simply *lovely* day so far! Speaking of lovely... and speaking of *days*... how about escaping a little bit of the gloom, eh?
 
-**(Drumroll sound effect)**
+We've got some hot news on the travel front, folks, news that might just get you dusting off the passport! Get this...
 
-Get this! The news just in is absolutely *lovely*! We're talking **travel** news, folks! British Airways has just dropped a bombshell - a sunny, sandy, rum-punch-infused bombshell!
+**(Drumroll sound effect - very brief)**
 
-They’re offering… wait for it… **cheap flights from the UK to Saint Lucia!** And I mean *cheap*! We’re talking... are you sitting down?... We’re talking **£447!** Four hundred and forty-seven lovely, little pounds!
+British Airways, bless their cotton socks, is offering some *incredible* deals right now! We're talking… flights from the UK to the stunning, sun-soaked island of Saint Lucia, *non-stop* from London Gatwick! And the best part? The price!
 
-Yep, you heard that right! British Airways is offering *fairly priced* off-season, non-stop flights from London Gatwick Airport straight to the gorgeous shores of Saint Lucia! Forget those long layovers and cramped connections, you can be soaking up the sun in no time!
+**(Jerry leans closer to the mic, voice dropping slightly for emphasis)**
 
-£447 for a return flight? That's practically stealing! Think of it! White sand beaches, lush rainforests, maybe a little bit of snorkeling… and all for the price of a decent telly!
+We're talking about return flights, people, *return* flights, for a mere… **£447!** That's right! Four hundred and forty-seven pounds! Can you believe it?
 
-So, if you've been itching for a getaway, if you’re yearning for a little tropical escape, get yourself online, check out British Airways, and grab yourself a bargain! Saint Lucia, here you come!
+**(Brief pause for effect, then Jerry adds enthusiastically)**
 
-And remember, folks, keep it lovely! This is Jerry, signing off… for now! We'll be right back with more good news after the break!
+Off-season, non-stop flights to a tropical paradise for under five hundred quid! That's a price that's hard to beat. So, if you're dreaming of pristine beaches, crystal-clear water, and a little dose of Caribbean sunshine, then you absolutely need to check this out. We'll have the details and a link to book on our website, lovelydaystation.com, and in our show notes, of course. Get booking, before these fantastic fares vanish like ice cream on a hot day! Now, that sounds like a *lovely* plan, doesn't it?"
+
+**(Jingle swells up again)**
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[travel] Cheap British Airways flights from the UK to Saint Lucia for £447!">
                 <span style="margin-right: 10px;"><strong>📰 [travel] Cheap British Airways flights from the UK to Saint Lucia for £447!</strong></span>
@@ -500,17 +520,13 @@ And remember, folks, keep it lovely! This is Jerry, signing off… for now! We'l
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[63:39] Alright, alright, sunshine lovers! It’s Jerry, your friendly neighborhood host here at Lovely Day Station, bringing you some delightful news to brighten your afternoon.
+[71:26] Alright, sunshine seekers, it's Jerry from Lovely Day Station, here to brighten up your afternoon! And speaking of brightening things up, let's dive into a little bit of travel news that's sure to get your wanderlust buzzing!
 
-Get this, folks! Big travel news just in! Seems like the world is opening up even more! 
+You know how much we all love a good getaway, a chance to escape the everyday grind. Well, get this: **[travel]** We've got some exciting news for all you globetrotters! Seems like Hyatt is making a splash in a brand new country! They're planting their flag in Croatia with the brand new **Hyatt Regency Zadar!** That's right, folks, it's the first Hyatt branded hotel in the whole country!
 
-**We've got some exciting news for all you globetrotters and travel enthusiasts!**
+And that’s not all, this opening is part of a bigger plan! This signifies Hyatt is REALLY growing in the Balkan Peninsula. By 2027, they're aiming to grow the Hyatt Regency brand by a whopping 70%! So, expect even more stylish stays and luxurious locations coming your way!
 
-Headline time:  **Hyatt, that big name in hospitality, is making a splash in Croatia!** They've officially opened their first ever Hyatt branded hotel in the country, the **Hyatt Regency Zadar!** Now that’s a beautiful name, isn’t it?  Sounds like a getaway just waiting to happen!
-
-But wait, there's more! This isn't just a one-off opening. This is part of a much bigger plan! Hyatt's aiming to grow their Hyatt Regency brand by a whopping 70% on the Balkan Peninsula by the year 2027!  That's right, more Hyatt Regencys are coming, maybe even in a city near you!
-
-So, if you're dreaming of a Croatian adventure, or just love the idea of more beautiful hotels popping up around the world, this news is definitely something to smile about! It’s a beautiful day, and the world is getting a little bit bigger, one lovely hotel at a time.  Stay tuned for more travel updates, right here on Lovely Day Station! Now, let's cue that feel-good music, shall we?
+So, Zadar, Croatia... sounds like it's officially on the map! Who's already dreaming of crystal-clear waters, charming cobblestone streets, and now, a fantastic Hyatt experience? Yeah, me too! More on that as we get it, but for now, let's keep those travel dreams alive! You're listening to Lovely Day Station, and we'll be right back after these tunes!
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[travel] Hyatt marks brand entry into Croatia with the opening of Hyatt Regency Zadar">
                 <span style="margin-right: 10px;"><strong>📰 [travel] Hyatt marks brand entry into Croatia with the opening of Hyatt Regency Zadar</strong></span>
@@ -518,19 +534,22 @@ So, if you're dreaming of a Croatian adventure, or just love the idea of more be
                 <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
             </form>
 
-[65:07] (Upbeat, jazzy music fades slightly as I speak)
+[72:50] (Upbeat, jazzy music fades slightly)
 
-Alright, alright, alright, sunshine lovers! Jerry here, bringing you the good vibes on Lovely Day Station! And guess what's blooming in the travel world today? Some *fantastic* news to brighten your afternoon!
+Alright folks, and a very good morning to you! Jerry here, keeping your Lovely Day humming along! Let's get to the news, shall we?
 
-We've got a headline that's got us ready to pack our bags (or at least *dream* about it!). This just in: **GetJet Airlines and Tez Tour expand long-term charter partnership!**
+And hey, travel lovers, listen up! We've got some exciting news brewing in the skies! Hold onto your hats because... **GetJet Airlines and Tez Tour are taking their relationship to the next level!**
 
-Yeah, you heard that right! GetJet Airlines, those fantastic folks from Lithuania who handle all that ACMI and charter service goodness, have just signed a long-term agreement with Tez Tour! And for those of you who don’t know, Tez Tour is one of the BIGGEST travel organizers in the Bal... (pauses for effect) ...tic region!
+(Pause for dramatic effect)
 
-So what does this mean for you, our lovely listeners? Well, it could mean more convenient travel options, possibly new destinations opening up, and more opportunities to soak up the sun on a gorgeous beach somewhere! Think warm breezes, crystal-clear water, and maybe even a little umbrella in your favorite fruity drink!
+That's right! These two are expanding their long-term charter partnership. For those of you who might not know, GetJet Airlines is that Lithuanian ACMI and charter service provider – you know, the folks who help get you where you need to go! And Tez Tour, well, they're one of the big dogs, a real powerhouse when it comes to travel organization in the Baltic region. So, you know, more flights, more destinations, more vacations in the pipeline!
 
-(Music swells slightly)
+(Slightly louder and more enthusiastic)
 
-We’ll be sure to keep you updated on any exciting details as they come in, so stay tuned to Lovely Day Station for all your travel news and everything else that makes your day a little bit brighter! Now let’s get back to those sunny tunes!
+This is fantastic news, especially if you're dreaming of sunshine and sandy beaches! It sounds like they're really solidifying their partnership, which means more opportunities for smooth travels and maybe even some sweet deals on your next getaway. Keep an eye out for those flights!
+
+Alright, that's the news for now. We'll be right back after this quick break with more Lovely Day tunes to brighten your morning! Don't go anywhere!
+(Music swells)
             <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
                 <input type="hidden" name="title" value="[travel] GetJet Airlines and Tez Tour expand long-term charter partnership">
                 <span style="margin-right: 10px;"><strong>📰 [travel] GetJet Airlines and Tez Tour expand long-term charter partnership</strong></span>

@@ -39,8 +39,35 @@ def fetch_similar_articles(uuids, region):
                 if article["title"] not in seen_titles:
                     similar_articles.append(article)
         time.sleep(0.5)
+
+    # ✅ STORE them to the DB BEFORE returning
+    store_similar_articles_to_db(similar_articles)  
+
     return similar_articles
 
+# Store them in the DB
+def store_similar_articles_to_db(articles, source_prefix="similar_liked"):
+    conn = sqlite3.connect("user_profiles.db")
+    c = conn.cursor()
+    timestamp = datetime.utcnow().isoformat()
+    for article in articles:
+        try:
+            c.execute("""
+                INSERT OR IGNORE INTO articles (uuid, title, content, url, published_at, source, used, timestamp_fetched)
+                VALUES (?, ?, ?, ?, ?, ?, 0, ?)
+            """, (
+                article.get("uuid"),
+                article.get("title"),
+                article.get("content"),
+                article.get("url"),
+                article.get("published_at"),
+                source_prefix,
+                timestamp
+            ))
+        except Exception as e:
+            print(f"❌ Failed to insert similar article: {e}")
+    conn.commit()
+    conn.close()
 
 
 def suggest_alternative_topics(original_topic):

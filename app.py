@@ -12,6 +12,18 @@ from similar_songs import get_similar_tracks
 from FetchNews import fetch_similar_articles
 from db_utils import get_liked_articles, get_disliked_articles, get_liked_songs, get_disliked_songs
 
+import threading
+import time
+import json
+from queue import Queue
+
+from similar_songs import get_similar_tracks
+from FetchNews import fetch_similar_articles
+from db_utils import store_song
+
+# Global queue for batching similarity fetches
+similarity_queue = Queue()
+
 
 load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
@@ -90,20 +102,6 @@ def get_trending_tracks():
             store_song(track, source="trending")
     return tracks
 
-def store_song(track, source):
-    conn = sqlite3.connect("user_profiles.db")
-    c = conn.cursor()
-    timestamp = datetime.datetime.utcnow().isoformat()
-    try:
-        c.execute("""
-            INSERT OR IGNORE INTO songs (title, artist, url, source, timestamp_fetched)
-            VALUES (?, ?, ?, ?, ?)
-        """, (track['title'], track['artist'], track['url'], source, timestamp))
-    except Exception as e:
-        print(f"Failed to store song: {e}")
-    conn.commit()
-    conn.close()
-
 def get_throwback_tracks():
     throwback_tags = ['70s', '80s', '90s', 'classic rock', 'oldies']
     selected_tag = random.choice(throwback_tags)
@@ -153,7 +151,9 @@ def get_similar_songs_from_liked():
     all_similar = []
     for title, artist in liked_songs:
         similar = get_similar_tracks(title, artist)
-        all_similar.extend(similar)
+        for track in similar:
+            all_similar.append(track)
+            store_song(track, source=f"similar_to:{artist}:{title}")  # ✅ Save to DB
     return all_similar
 
 def get_unused_articles(limit=10):
@@ -507,6 +507,55 @@ def generate_script():
     station_name = row[0] if row else "Your Radio Station"
     host_name = row[1] if row else "Your Host"
 
+    # ✅ Check if we need to fetch more songs/articles
+    MIN_ITEMS_NEEDED = 10
+
+    if len(get_unused_articles(limit=MIN_ITEMS_NEEDED)) < MIN_ITEMS_NEEDED:
+        print("📥 Too few articles — fetching more.")
+        subprocess.run(["python", "FetchNews.py"])  # re-run fetch
+    if len(get_unused_songs(limit=MIN_ITEMS_NEEDED)) < MIN_ITEMS_NEEDED:
+        print("🎵 Too few songs — fetching more.")
+        # Trigger some fallback fetch, e.g. trending or throwback
+        get_trending_tracks()
+        get_throwback_tracks()
+
+    def no_feedback_given():
+        conn = sqlite3.connect('user_profiles.db')
+        c = conn.cursor()
+        c.execute("SELECT COUNT(*) FROM articles WHERE feedback IS NOT NULL")
+        articles_feedback = c.fetchone()[0]
+        c.execute("SELECT COUNT(*) FROM songs WHERE feedback IS NOT NULL")
+        songs_feedback = c.fetchone()[0]
+        conn.close()
+        return articles_feedback == 0 and songs_feedback == 0
+
+    # 📦 Enhanced pre-fetching logic
+    if no_feedback_given():
+        if len(get_unused_articles(limit=MIN_ITEMS_NEEDED)) < MIN_ITEMS_NEEDED:
+            print("📥 No feedback + too few articles — fetching.")
+            subprocess.run(["python", "FetchNews.py"])
+        if len(get_unused_songs(limit=MIN_ITEMS_NEEDED)) < MIN_ITEMS_NEEDED:
+            print("🎵 No feedback + too few songs — fetching.")
+            get_trending_tracks()
+            get_throwback_tracks()
+
+    all_articles = get_unused_articles(limit=15)
+    all_songs = get_unused_songs(limit=15)
+
+
+
+    # 🧠 Group into batches for chunked LLM generation
+    article_batches = create_batches(all_articles, batch_size=2)
+    song_batches = create_batches(all_songs, batch_size=2)
+
+    # 📜 Generate the multi-part script
+    final_script = generate_radio_script(article_batches, song_batches)
+
+    # ✅ Mark these articles/songs as used
+    used_articles = [item for batch in article_batches for item in batch]
+    used_songs = [item for batch in song_batches for item in batch]
+    mark_articles_and_songs_used(used_articles, used_songs)
+
     try:
         with open('aggregated_news.json', 'r') as f:
             news_data = json.load(f)
@@ -531,23 +580,29 @@ def generate_script():
     throwback_tracks = get_throwback_tracks().get('tracks', [])
     new_artist_recs = get_new_artist_recommendations([])
 
+    # ✅ Real fallback using unused articles if needed
     if not top_stories:
-        top_stories = [{'title': 'Sample Top Story', 'content': 'Sample top story content'}]
+        top_stories = get_unused_articles(limit=5)
     if not personalized_stories:
-        personalized_stories = [{'title': 'Sample Personalized Story', 'content': 'Sample content'}]
+        personalized_stories = get_unused_articles(limit=5)
+
 
     # Fetch backup songs if needed
     fallback_songs = get_unused_songs(limit=10)
 
-    if not trending_tracks and fallback_songs:
-        trending_tracks = [fallback_songs.pop()]
-    if not throwback_tracks and fallback_songs:
-        throwback_tracks = [fallback_songs.pop()]
-    if not new_artist_recs and fallback_songs:
-        # Simulate one new artist with a top track from fallback
-        fallback = fallback_songs.pop()
-        new_artist_recs = [{'artist': fallback['artist'], 'top_tracks': [{'name': fallback['title'], 'url': fallback['url'], 'duration': '180000'}]}]
-
+    # ✅ Use unused songs if any playlist is empty
+    if not trending_tracks:
+        trending_tracks = get_unused_songs(limit=5)
+    if not throwback_tracks:
+        throwback_tracks = get_unused_songs(limit=5)
+    if not new_artist_recs:
+        fallback_songs = get_unused_songs(limit=3)
+        new_artist_recs = []
+        for song in fallback_songs:
+            new_artist_recs.append({
+                'artist': song['artist'],
+                'top_tracks': [{'name': song['title'], 'url': song['url'], 'duration': '180000'}]
+            })
 
     max_length = max(len(top_stories), len(personalized_stories),
                      len(trending_tracks), len(throwback_tracks), len(new_artist_recs))
@@ -690,20 +745,24 @@ def feedback_song():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute("""
-    UPDATE songs
-    SET feedback = ?
-    WHERE rowid = (
-        SELECT rowid FROM songs
-        WHERE title = ? AND artist = ?
-        ORDER BY timestamp_fetched DESC
-        LIMIT 1
-    )
+        UPDATE songs
+        SET feedback = ?
+        WHERE rowid = (
+            SELECT rowid FROM songs
+            WHERE title = ? AND artist = ?
+            ORDER BY timestamp_fetched DESC
+            LIMIT 1
+        )
     """, (feedback, title, artist))
-
-
     conn.commit()
     conn.close()
+
     flash(f"You {feedback}d the song '{title}' by {artist}.", "info")
+
+    # ✅ Add to similarity queue if liked
+    if feedback == "like":
+        similarity_queue.put(('song', {'title': title, 'artist': artist}))
+
     return redirect('/show_script')
 
 
@@ -717,10 +776,56 @@ def feedback_news():
     c.execute("UPDATE articles SET feedback = ? WHERE title = ?", (feedback, title))
     conn.commit()
     conn.close()
+
     flash(f"You {feedback}d the news article '{title}'.", "info")
+
+    if feedback == "like":
+        # Fetch UUID and region
+        conn = sqlite3.connect('user_profiles.db')
+        c = conn.cursor()
+        c.execute("SELECT uuid, source FROM articles WHERE title = ? ORDER BY timestamp_fetched DESC LIMIT 1", (title,))
+        row = c.fetchone()
+        conn.close()
+        if row:
+            uuid, region = row
+            similarity_queue.put(('article', {'uuid': uuid, 'region': region or 'gb'}))
+
     return redirect('/show_script')
 
+def similarity_worker():
+    BATCH_INTERVAL = 60  # run every 60 seconds
+    BATCH_SIZE = 10
+    while True:
+        time.sleep(BATCH_INTERVAL)
+        seen = set()
+        song_batch = []
+        article_batch = []
 
-if __name__ == '__main__':
-    init_db()
+        while not similarity_queue.empty() and len(seen) < BATCH_SIZE:
+            item_type, payload = similarity_queue.get()
+            key = json.dumps(payload, sort_keys=True)
+            if key in seen:
+                continue
+            seen.add(key)
+            if item_type == 'song':
+                song_batch.append(payload)
+            elif item_type == 'article':
+                article_batch.append(payload)
+
+        # 🔁 Fetch in batch
+        for s in song_batch:
+            print(f"🔁 Fetching similar songs for: {s['title']} by {s['artist']}")
+            similar_tracks = get_similar_tracks(s['title'], s['artist'])
+            for track in similar_tracks:
+                store_song(track, source=f"similar_to:{s['artist']}:{s['title']}")
+
+        for a in article_batch:
+            print(f"📰 Fetching similar articles for UUID: {a['uuid']}")
+            fetch_similar_articles([a['uuid']], a['region'])
+
+
+if __name__ == "__main__":
+    init_db()  # ✅ Create tables + indexes
+    worker_thread = threading.Thread(target=similarity_worker, daemon=True)
+    worker_thread.start()  # ✅ Launch background similarity fetcher
     app.run(debug=True)
