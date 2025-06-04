@@ -63,27 +63,46 @@ def get_recommended_tracks(artists, genres):
         url = f"http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist={artist}&api_key={LASTFM_API_KEY}&format=json"
         response = requests.get(url)
         if response.status_code == 200:
-            data = response.json()
-            top_tracks = data.get('toptracks', {}).get('track', [])[:3]
+            top_tracks = response.json().get('toptracks', {}).get('track', [])[:3]
             for track in top_tracks:
-                tracks.append({'artist': artist, 'title': track['name'], 'url': track['url']})
+                t = {'artist': artist, 'title': track['name'], 'url': track['url']}
+                tracks.append(t)
+                store_song(t, source=f"artist:{artist}")
     for genre in genres:
         url = f"http://ws.audioscrobbler.com/2.0/?method=tag.gettoptracks&tag={genre}&api_key={LASTFM_API_KEY}&format=json"
         response = requests.get(url)
         if response.status_code == 200:
-            data = response.json()
-            top_tracks = data.get('tracks', {}).get('track', [])[:3]
+            top_tracks = response.json().get('tracks', {}).get('track', [])[:3]
             for track in top_tracks:
-                tracks.append({'artist': track['artist']['name'], 'title': track['name'], 'url': track['url']})
+                t = {'artist': track['artist']['name'], 'title': track['name'], 'url': track['url']}
+                tracks.append(t)
+                store_song(t, source=f"genre:{genre}")
     return tracks[:20]
 
 def get_trending_tracks():
     url = f"http://ws.audioscrobbler.com/2.0/?method=chart.gettoptracks&api_key={LASTFM_API_KEY}&format=json"
     response = requests.get(url)
+    tracks = []
     if response.status_code == 200:
-        tracks = response.json()['tracks']['track']
-        return [{'artist': t['artist']['name'], 'title': t['name'], 'url': t['url']} for t in tracks[:5]]
-    return []
+        for t in response.json()['tracks']['track'][:5]:
+            track = {'artist': t['artist']['name'], 'title': t['name'], 'url': t['url']}
+            tracks.append(track)
+            store_song(track, source="trending")
+    return tracks
+
+def store_song(track, source):
+    conn = sqlite3.connect("user_profiles.db")
+    c = conn.cursor()
+    timestamp = datetime.datetime.utcnow().isoformat()
+    try:
+        c.execute("""
+            INSERT OR IGNORE INTO songs (title, artist, url, source, timestamp_fetched)
+            VALUES (?, ?, ?, ?, ?)
+        """, (track['title'], track['artist'], track['url'], source, timestamp))
+    except Exception as e:
+        print(f"Failed to store song: {e}")
+    conn.commit()
+    conn.close()
 
 def get_throwback_tracks():
     throwback_tags = ['70s', '80s', '90s', 'classic rock', 'oldies']
@@ -93,14 +112,21 @@ def get_throwback_tracks():
     tracks = []
     if response.status_code == 200:
         data = response.json()
-        top_tracks = data.get('tracks', {}).get('track', [])[:5]
-        for track in top_tracks:
-            tracks.append({'artist': track['artist']['name'], 'title': track['name'], 'url': track['url']})
+        for track in data.get('tracks', {}).get('track', [])[:5]:
+            t = {
+                'artist': track['artist']['name'],
+                'title': track['name'],
+                'url': track['url']
+            }
+            tracks.append(t)
+            store_song(t, source=f"throwback:{selected_tag}")
     return {'tag': selected_tag, 'tracks': tracks}
+
 
 def get_new_artist_recommendations(favorite_artists):
     recommendations = []
     seen_artists = set()
+
     for artist in favorite_artists:
         url = f"http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist={artist}&api_key={LASTFM_API_KEY}&format=json"
         response = requests.get(url)
@@ -110,15 +136,15 @@ def get_new_artist_recommendations(favorite_artists):
             for similar_artist in similar_artists:
                 if similar_artist not in seen_artists:
                     seen_artists.add(similar_artist)
-                    # Get top tracks for this similar artist
                     track_url = f"http://ws.audioscrobbler.com/2.0/?method=artist.gettoptracks&artist={similar_artist}&api_key={LASTFM_API_KEY}&format=json"
                     track_resp = requests.get(track_url)
                     top_tracks = []
                     if track_resp.status_code == 200:
-                        track_data = track_resp.json()
-                        tracks = track_data.get('toptracks', {}).get('track', [])[:3]
+                        tracks = track_resp.json().get('toptracks', {}).get('track', [])[:3]
                         for track in tracks:
-                            top_tracks.append({'title': track['name'], 'url': track['url']})
+                            t = {'title': track['name'], 'url': track['url']}
+                            top_tracks.append(t)
+                            store_song({'artist': similar_artist, 'title': track['name'], 'url': track['url']}, source=f"similar_to:{artist}")
                     recommendations.append({'artist': similar_artist, 'tracks': top_tracks})
     return recommendations
 
@@ -130,21 +156,21 @@ def get_similar_songs_from_liked():
         all_similar.extend(similar)
     return all_similar
 
-def filter_unused_articles(news_data):
-    conn = sqlite3.connect('user_profiles.db')
+def get_unused_articles(limit=10):
+    conn = sqlite3.connect("user_profiles.db")
     c = conn.cursor()
-    c.execute('SELECT article_title FROM covered_articles')
-    covered = set([row[0] for row in c.fetchall()])
+    c.execute("SELECT uuid, title, content, url FROM articles WHERE used = 0 LIMIT ?", (limit,))
+    results = c.fetchall()
     conn.close()
-    return [article for article in news_data if article['title'] not in covered]
+    return [{'uuid': r[0], 'title': r[1], 'content': r[2], 'url': r[3]} for r in results]
 
-def filter_unused_songs(songs):
-    conn = sqlite3.connect('user_profiles.db')
+def get_unused_songs(limit=10):
+    conn = sqlite3.connect("user_profiles.db")
     c = conn.cursor()
-    c.execute('SELECT song_title FROM played_songs')
-    played = set([row[0] for row in c.fetchall()])
+    c.execute("SELECT title, artist, url FROM songs WHERE used = 0 LIMIT ?", (limit,))
+    rows = c.fetchall()
     conn.close()
-    return [song for song in songs if song['title'] not in played]
+    return [{'title': r[0], 'artist': r[1], 'url': r[2]} for r in rows]
 
 def create_batches(items, batch_size):
     return [items[i:i + batch_size] for i in range(0, len(items), batch_size)]
@@ -177,16 +203,12 @@ def generate_radio_script(news_batches, music_batches):
     return final_script
 
 def mark_articles_and_songs_used(news_batch, music_batch):
-    timestamp = datetime.datetime.now().isoformat()
-    conn = sqlite3.connect('user_profiles.db')
+    conn = sqlite3.connect("user_profiles.db")
     c = conn.cursor()
-    for n in news_batch:
-        uuid = n.get('uuid', None)
-        c.execute('INSERT INTO covered_articles (article_title, url, timestamp, uuid) VALUES (?, ?, ?, ?)', 
-              (n['title'], n['url'], timestamp, uuid))
-    for m in music_batch:
-        c.execute('INSERT INTO played_songs (song_title, artist, timestamp) VALUES (?, ?, ?)', 
-                  (m['title'], m['artist'], timestamp))
+    for article in news_batch:
+        c.execute("UPDATE articles SET used = 1 WHERE uuid = ?", (article.get('uuid'),))
+    for song in music_batch:
+        c.execute("UPDATE songs SET used = 1 WHERE title = ? AND artist = ?", (song['title'], song['artist']))
     conn.commit()
     conn.close()
 
@@ -194,6 +216,12 @@ def mark_articles_and_songs_used(news_batch, music_batch):
 def init_db():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
+
+    # Drop legacy tables if they exist
+    c.execute("DROP TABLE IF EXISTS covered_articles")
+    c.execute("DROP TABLE IF EXISTS played_songs")
+
+    # Create profiles table
     c.execute("""
         CREATE TABLE IF NOT EXISTS profiles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -209,25 +237,47 @@ def init_db():
         )
     """)
 
+    # Create articles table
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS articles (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid TEXT UNIQUE,
+            title TEXT,
+            content TEXT,
+            url TEXT,
+            published_at TEXT,
+            source TEXT,
+            used INTEGER DEFAULT 0,
+            feedback TEXT,
+            timestamp_fetched TEXT
+        )
+    """)
+
+    # Create songs table
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS songs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            artist TEXT,
+            url TEXT,
+            source TEXT,
+            used INTEGER DEFAULT 0,
+            feedback TEXT,
+            timestamp_fetched TEXT
+        )
+    """)
+
+    # Add indexes for performance and deduplication
+    c.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_articles_uuid ON articles(uuid)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_articles_feedback ON articles(feedback)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_articles_used ON articles(used)")
+
+    c.execute("CREATE INDEX IF NOT EXISTS idx_songs_artist_title ON songs(artist, title)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_songs_feedback ON songs(feedback)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_songs_used ON songs(used)")
+
     conn.commit()
     conn.close()
-
-def update_feedback_schema():
-    conn = sqlite3.connect('user_profiles.db')
-    c = conn.cursor()
-    try:
-        c.execute("ALTER TABLE played_songs ADD COLUMN feedback TEXT")
-    except sqlite3.OperationalError:
-        pass  # Column already exists
-    try:
-        c.execute("ALTER TABLE covered_articles ADD COLUMN feedback TEXT")
-    except sqlite3.OperationalError:
-        pass  # Column already exists
-    conn.commit()
-    conn.close()
-
-
-
 
 
 
@@ -411,12 +461,11 @@ def radio():
         c = conn.cursor()
 
         # Fetch feedback on articles
-        c.execute("SELECT article_title, feedback FROM covered_articles WHERE feedback IS NOT NULL")
-        news_feedback = c.fetchall()  # → List of tuples: [(title1, 'like'), (title2, 'dislike'), ...]
-
+        c.execute("SELECT title, feedback FROM articles WHERE feedback IS NOT NULL")
+        news_feedback = c.fetchall()
         # Fetch feedback on songs
-        c.execute("SELECT song_title, artist, feedback FROM played_songs WHERE feedback IS NOT NULL")
-        song_feedback = c.fetchall()  # → List of tuples: [(title1, artist1, 'like'), ...]
+        c.execute("SELECT title, artist, feedback FROM songs WHERE feedback IS NOT NULL")
+        song_feedback = c.fetchall()
 
         conn.close()
 
@@ -486,12 +535,19 @@ def generate_script():
         top_stories = [{'title': 'Sample Top Story', 'content': 'Sample top story content'}]
     if not personalized_stories:
         personalized_stories = [{'title': 'Sample Personalized Story', 'content': 'Sample content'}]
-    if not trending_tracks:
-        trending_tracks = [{'artist': 'Sample Trending Artist', 'title': 'Sample Song', 'url': '#', 'duration': '180000'}]
-    if not throwback_tracks:
-        throwback_tracks = [{'artist': 'Sample Throwback Artist', 'title': 'Sample Song', 'url': '#', 'duration': '180000'}]
-    if not new_artist_recs:
-        new_artist_recs = [{'artist': 'Sample New Artist', 'top_tracks': [{'name': 'Sample Song', 'url': '#', 'duration': '180000'}]}]
+        
+    # Fetch backup songs if needed
+    fallback_songs = get_unused_songs(limit=10)
+
+    if not trending_tracks and fallback_songs:
+        trending_tracks = [fallback_songs.pop()]
+    if not throwback_tracks and fallback_songs:
+        throwback_tracks = [fallback_songs.pop()]
+    if not new_artist_recs and fallback_songs:
+        # Simulate one new artist with a top track from fallback
+        fallback = fallback_songs.pop()
+        new_artist_recs = [{'artist': fallback['artist'], 'top_tracks': [{'name': fallback['title'], 'url': fallback['url'], 'duration': '180000'}]}]
+
 
     max_length = max(len(top_stories), len(personalized_stories),
                      len(trending_tracks), len(throwback_tracks), len(new_artist_recs))
@@ -634,15 +690,10 @@ def feedback_song():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute("""
-        UPDATE played_songs
-        SET feedback = ?
-        WHERE rowid = (
-            SELECT rowid FROM played_songs
-            WHERE song_title = ? AND artist = ?
-            ORDER BY timestamp DESC
-            LIMIT 1
-        )
-    """, (feedback, title, artist))
+    UPDATE songs SET feedback = ?
+    WHERE title = ? AND artist = ?
+    ORDER BY timestamp_fetched DESC LIMIT 1
+""", (feedback, title, artist))
 
     conn.commit()
     conn.close()
@@ -657,11 +708,7 @@ def feedback_news():
 
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute("""
-        UPDATE covered_articles
-        SET feedback = ?
-        WHERE article_title = ?
-    """, (feedback, title))
+    c.execute("UPDATE articles SET feedback = ? WHERE title = ?", (feedback, title))
     conn.commit()
     conn.close()
     flash(f"You {feedback}d the news article '{title}'.", "info")
@@ -670,5 +717,4 @@ def feedback_news():
 
 if __name__ == '__main__':
     init_db()
-    update_feedback_schema() 
     app.run(debug=True)

@@ -22,7 +22,7 @@ def fetch_similar_articles(uuids, region):
     # Load titles already used
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute("SELECT article_title FROM covered_articles")
+    c.execute("SELECT title FROM articles WHERE used = 1")
     seen_titles = set(row[0] for row in c.fetchall())
     conn.close()
 
@@ -186,8 +186,35 @@ def process_news():
         "aggregated_news": aggregated_news
     }
 
-    with open("aggregated_news.json", "w") as f:
-        json.dump(final_data, f, indent=4)
+    def store_articles_flat(aggregated_news):
+        import sqlite3
+        from datetime import datetime
+        conn = sqlite3.connect("user_profiles.db")
+        c = conn.cursor()
+        timestamp = datetime.utcnow().isoformat()
+
+        for source, article_list in aggregated_news.items():
+            for a in article_list:
+                try:
+                    c.execute("""
+                        INSERT OR IGNORE INTO articles (uuid, title, content, url, published_at, source, timestamp_fetched)
+                        VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        a.get("uuid"),
+                        a.get("title"),
+                        a.get("content"),
+                        a.get("url"),
+                        a.get("published_at"),
+                        source,
+                        timestamp
+                    ))
+                except Exception as e:
+                    print(f"Failed to insert article: {e}")
+        conn.commit()
+        conn.close()
+
+    store_articles_flat(final_data["aggregated_news"])
+
 
     print(f"📦 Saved {len(final_data['top_stories'])} top stories and {len(final_data['aggregated_news'])} topic groups.")
     print("✅ Saved aggregated news.")
