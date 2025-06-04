@@ -535,7 +535,7 @@ def generate_script():
         top_stories = [{'title': 'Sample Top Story', 'content': 'Sample top story content'}]
     if not personalized_stories:
         personalized_stories = [{'title': 'Sample Personalized Story', 'content': 'Sample content'}]
-        
+
     # Fetch backup songs if needed
     fallback_songs = get_unused_songs(limit=10)
 
@@ -690,10 +690,16 @@ def feedback_song():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute("""
-    UPDATE songs SET feedback = ?
-    WHERE title = ? AND artist = ?
-    ORDER BY timestamp_fetched DESC LIMIT 1
-""", (feedback, title, artist))
+    UPDATE songs
+    SET feedback = ?
+    WHERE rowid = (
+        SELECT rowid FROM songs
+        WHERE title = ? AND artist = ?
+        ORDER BY timestamp_fetched DESC
+        LIMIT 1
+    )
+    """, (feedback, title, artist))
+
 
     conn.commit()
     conn.close()
