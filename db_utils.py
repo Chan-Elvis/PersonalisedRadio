@@ -4,7 +4,11 @@ import datetime
 def get_liked_articles():
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute("SELECT uuid FROM articles WHERE feedback = 'like'")
+    c.execute("""
+        SELECT uuid FROM articles
+        WHERE feedback IS NULL OR feedback = 'like'
+        ORDER BY timestamp_fetched DESC LIMIT 15
+    """)
     liked = [row[0] for row in c.fetchall()]
     conn.close()
     return liked

@@ -21,6 +21,9 @@ from similar_songs import get_similar_tracks
 from FetchNews import fetch_similar_articles
 from db_utils import store_song
 
+from FetchNews import fetch_full_article
+
+
 # Global queue for batching similarity fetches
 similarity_queue = Queue()
 
@@ -156,13 +159,40 @@ def get_similar_songs_from_liked():
             store_song(track, source=f"similar_to:{artist}:{title}")  # ✅ Save to DB
     return all_similar
 
-def get_unused_articles(limit=10):
+def get_unused_articles(limit=10, source_filter=None, exclude_sources=None):
     conn = sqlite3.connect("user_profiles.db")
     c = conn.cursor()
-    c.execute("SELECT uuid, title, content, url FROM articles WHERE used = 0 LIMIT ?", (limit,))
-    results = c.fetchall()
+
+    query = "SELECT uuid, title, content, url, published_at, source FROM articles WHERE used IS NULL OR used = 0"
+    params = []
+
+    if source_filter:
+        query += " AND source = ?"
+        params.append(source_filter)
+    elif exclude_sources:
+        placeholders = ",".join("?" for _ in exclude_sources)
+        query += f" AND source NOT IN ({placeholders})"
+        params.extend(exclude_sources)
+
+    query += " ORDER BY timestamp_fetched DESC LIMIT ?"
+    params.append(limit)
+
+    c.execute(query, params)
+    rows = c.fetchall()
     conn.close()
-    return [{'uuid': r[0], 'title': r[1], 'content': r[2], 'url': r[3]} for r in results]
+
+    return [
+        {
+            "uuid": row[0],
+            "title": row[1],
+            "content": row[2],
+            "url": row[3],
+            "published_at": row[4],
+            "source": row[5]
+        }
+        for row in rows
+    ]
+
 
 def get_unused_songs(limit=10):
     conn = sqlite3.connect("user_profiles.db")
@@ -190,6 +220,9 @@ Songs:
 Make it engaging, fun, with smooth transitions, comments, and occasional humor.
 """
     return prompt
+
+
+
 
 def generate_radio_script(news_batches, music_batches):
     final_script = ""
@@ -497,233 +530,6 @@ def refresh_news():
     subprocess.run(["python", "FetchNews.py"])
     return redirect('/radio')
 
-@app.route('/generate_script')
-def generate_script():
-    conn = sqlite3.connect('user_profiles.db')
-    c = conn.cursor()
-    c.execute('SELECT station_name, host_name FROM profiles ORDER BY id DESC LIMIT 1')
-    row = c.fetchone()
-    conn.close()
-    station_name = row[0] if row else "Your Radio Station"
-    host_name = row[1] if row else "Your Host"
-
-    # ✅ Check if we need to fetch more songs/articles
-    MIN_ITEMS_NEEDED = 10
-
-    if len(get_unused_articles(limit=MIN_ITEMS_NEEDED)) < MIN_ITEMS_NEEDED:
-        print("📥 Too few articles — fetching more.")
-        subprocess.run(["python", "FetchNews.py"])  # re-run fetch
-    if len(get_unused_songs(limit=MIN_ITEMS_NEEDED)) < MIN_ITEMS_NEEDED:
-        print("🎵 Too few songs — fetching more.")
-        # Trigger some fallback fetch, e.g. trending or throwback
-        get_trending_tracks()
-        get_throwback_tracks()
-
-    def no_feedback_given():
-        conn = sqlite3.connect('user_profiles.db')
-        c = conn.cursor()
-        c.execute("SELECT COUNT(*) FROM articles WHERE feedback IS NOT NULL")
-        articles_feedback = c.fetchone()[0]
-        c.execute("SELECT COUNT(*) FROM songs WHERE feedback IS NOT NULL")
-        songs_feedback = c.fetchone()[0]
-        conn.close()
-        return articles_feedback == 0 and songs_feedback == 0
-
-    # 📦 Enhanced pre-fetching logic
-    if no_feedback_given():
-        if len(get_unused_articles(limit=MIN_ITEMS_NEEDED)) < MIN_ITEMS_NEEDED:
-            print("📥 No feedback + too few articles — fetching.")
-            subprocess.run(["python", "FetchNews.py"])
-        if len(get_unused_songs(limit=MIN_ITEMS_NEEDED)) < MIN_ITEMS_NEEDED:
-            print("🎵 No feedback + too few songs — fetching.")
-            get_trending_tracks()
-            get_throwback_tracks()
-
-    all_articles = get_unused_articles(limit=15)
-    all_songs = get_unused_songs(limit=15)
-
-
-
-    # 🧠 Group into batches for chunked LLM generation
-    article_batches = create_batches(all_articles, batch_size=2)
-    song_batches = create_batches(all_songs, batch_size=2)
-
-    # 📜 Generate the multi-part script
-    final_script = generate_radio_script(article_batches, song_batches)
-
-    # ✅ Mark these articles/songs as used
-    used_articles = [item for batch in article_batches for item in batch]
-    used_songs = [item for batch in song_batches for item in batch]
-    mark_articles_and_songs_used(used_articles, used_songs)
-
-    try:
-        with open('aggregated_news.json', 'r') as f:
-            news_data = json.load(f)
-        top_stories = news_data.get('top_stories', [])
-        aggregated_news = news_data.get('aggregated_news', {})
-    except Exception as e:
-        print(f"Error loading news: {e}")
-        top_stories, aggregated_news = [], {}
-
-    personalized_stories = []
-    for topic, articles in aggregated_news.items():
-        for article in articles:
-            personalized_stories.append({
-                'title': f"[{topic}] {article['title']}",
-                'content': article['content'],
-                'url': article['url'],
-                'uuid': article.get('uuid')  # ✅ Preserve UUID here
-            })
-
-
-    trending_tracks = get_trending_tracks()
-    throwback_tracks = get_throwback_tracks().get('tracks', [])
-    new_artist_recs = get_new_artist_recommendations([])
-
-    # ✅ Real fallback using unused articles if needed
-    if not top_stories:
-        top_stories = get_unused_articles(limit=5)
-    if not personalized_stories:
-        personalized_stories = get_unused_articles(limit=5)
-
-
-    # Fetch backup songs if needed
-    fallback_songs = get_unused_songs(limit=10)
-
-    # ✅ Use unused songs if any playlist is empty
-    if not trending_tracks:
-        trending_tracks = get_unused_songs(limit=5)
-    if not throwback_tracks:
-        throwback_tracks = get_unused_songs(limit=5)
-    if not new_artist_recs:
-        fallback_songs = get_unused_songs(limit=3)
-        new_artist_recs = []
-        for song in fallback_songs:
-            new_artist_recs.append({
-                'artist': song['artist'],
-                'top_tracks': [{'name': song['title'], 'url': song['url'], 'duration': '180000'}]
-            })
-
-    max_length = max(len(top_stories), len(personalized_stories),
-                     len(trending_tracks), len(throwback_tracks), len(new_artist_recs))
-    combined = []
-    used_articles = []
-    used_songs = []
-
-    for i in range(max_length):
-        if i < len(top_stories):
-            combined.append(('news', top_stories[i]))
-        if i < len(personalized_stories):
-            combined.append(('news', personalized_stories[i]))
-        if i < len(trending_tracks):
-            combined.append(('song', trending_tracks[i]))
-        if i < len(throwback_tracks):
-            combined.append(('song', throwback_tracks[i]))
-        if i < len(new_artist_recs):
-            artist = new_artist_recs[i]
-            if artist.get('top_tracks'):
-                combined.append(('song', {
-                    'artist': artist['artist'],
-                    'title': artist['top_tracks'][0]['name'],
-                    'url': artist['top_tracks'][0]['url'],
-                    'duration': artist['top_tracks'][0].get('duration', '180000')
-                }))
-
-    WORDS_PER_MINUTE = 150
-    final_script = ""
-    current_time_min = 0.0
-
-    for item_type, item in combined:
-        total_seconds = int(current_time_min * 60)
-        minutes = total_seconds // 60
-        seconds = total_seconds % 60
-        timestamp_str = f"[{minutes:02d}:{seconds:02d}]"
-
-        if item_type == 'news':
-            used_articles.append(item)
-            prompt = f"""You are {host_name}, the host of {station_name}. Announce this news headline:
-News: {item['title']} - {item.get('content', '')}
-Be conversational and engaging, suitable for live radio."""
-            try:
-                response = model_longform.generate_content(prompt)
-                script_text = response.text.strip() if hasattr(response, 'text') else ''
-            except Exception as e:
-                print(f"Gemini API error: {e}")
-                script_text = f"[ERROR: Gemini API failed — {e}]"
-
-            word_count = len(script_text.split())
-            duration_min = word_count / WORDS_PER_MINUTE
-            final_script += f"""{timestamp_str} {script_text}
-            <form method="POST" action="/feedback/news" style="display:inline; margin-top: 4px;">
-                <input type="hidden" name="title" value="{item['title']}">
-                <span style="margin-right: 10px;"><strong>📰 {item['title']}</strong></span>
-                <button type="submit" name="feedback" value="like">👍 Like</button>
-                <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
-            </form>\n\n"""
-
-
-            current_time_min += duration_min
-
-        elif item_type == 'song':
-            used_songs.append(item)
-            duration_ms = item.get('duration', '180000')
-            try:
-                duration_min = int(duration_ms) / 60000 if duration_ms else 3
-            except:
-                duration_min = 3
-
-            # ✨ LLM artist/song intro
-            intro_prompt = f"""You are {host_name}, the host of {station_name}. Give a 1-2 sentence fun introduction to this artist or song before it plays:
-Artist: {item['artist']}
-Song: {item['title']}
-Be enthusiastic, light, and conversational."""
-
-            try:
-                intro_response = model.generate_content(intro_prompt)
-                intro_text = intro_response.text.strip() if hasattr(intro_response, 'text') else ''
-            except Exception as e:
-                print(f"Gemini API error: {e}")
-                intro_text = f"[ERROR: Gemini API failed on intro — {e}]"
-
-            intro_word_count = len(intro_text.split())
-            intro_duration_min = intro_word_count / WORDS_PER_MINUTE
-
-            song_marker = f'<span style="color: #ff6600; font-weight: bold;">🎵 NOW PLAYING: {item["artist"]} — {item["title"]} 🎵</span>'
-
-            final_script += f"""{timestamp_str} {intro_text}
-            <form method="POST" action="/feedback/song" style="display:inline; margin-top: 4px;">
-                <input type="hidden" name="title" value="{item['title']}">
-                <input type="hidden" name="artist" value="{item['artist']}">
-                <span style="margin-right: 10px;"><strong>🎵 {item['artist']} — {item['title']}</strong></span>
-                <button type="submit" name="feedback" value="like">👍 Like</button>
-                <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
-            </form>\n\n"""
-
-
-            current_time_min += intro_duration_min
-
-            # Recalculate timestamp after intro
-            total_seconds = int(current_time_min * 60)
-            minutes = total_seconds // 60
-            seconds = total_seconds % 60
-            song_timestamp = f"[{minutes:02d}:{seconds:02d}]"
-
-            final_script += f"{song_timestamp} {song_marker}\n\n"
-            current_time_min += duration_min
-
-    try:
-        with open('radio_script.txt', 'w') as f:
-            f.write(final_script)
-        print("✅ Script saved to radio_script.txt")
-    except Exception as e:
-        print(f"Error saving script: {e}")
-
-    print("🎯 Used articles:", [a['title'] for a in used_articles])
-    print("🎵 Used songs:", [s['title'] for s in used_songs])
-
-    mark_articles_and_songs_used(used_articles, used_songs)
-    return redirect('/show_script')
-
 
 
 
@@ -823,6 +629,197 @@ def similarity_worker():
             print(f"📰 Fetching similar articles for UUID: {a['uuid']}")
             fetch_similar_articles([a['uuid']], a['region'])
 
+from flask import Response, stream_with_context
+def ensure_minimum_content():
+            articles_left = len(get_unused_articles(limit=15))  # buffer
+            songs_left = len(get_unused_songs(limit=15))
+
+            if articles_left < 10:
+                print("📡 Fetching more articles based on liked + neutral feedback...")
+                subprocess.run(["python", "FetchNews.py"])  # already does similar fetching
+
+            if songs_left < 10:
+                print("🎵 Not enough songs — fetching similar songs from liked")
+                get_similar_songs_from_liked()
+
+@app.route('/generate_script_stream')
+def generate_script_stream():
+    def stream():
+        import time
+        conn = sqlite3.connect('user_profiles.db')
+        c = conn.cursor()
+        c.execute('SELECT station_name, host_name FROM profiles ORDER BY id DESC LIMIT 1')
+        row = c.fetchone()
+        conn.close()
+        station_name = row[0] if row else "Your Radio Station"
+        host_name = row[1] if row else "Your Host"
+
+        WORDS_PER_MINUTE = 150
+        current_time_min = 0.0
+
+        ensure_minimum_content()
+
+        def no_feedback_given():
+            conn = sqlite3.connect('user_profiles.db')
+            c = conn.cursor()
+            c.execute("SELECT COUNT(*) FROM articles WHERE feedback IS NOT NULL")
+            articles_feedback = c.fetchone()[0]
+            c.execute("SELECT COUNT(*) FROM songs WHERE feedback IS NOT NULL")
+            songs_feedback = c.fetchone()[0]
+            conn.close()
+            return articles_feedback == 0 and songs_feedback == 0
+
+
+        top_stories = get_unused_articles(limit=10, source_filter="top")
+        personalized_stories = get_unused_articles(limit=10, exclude_sources=["top"])
+
+        # Prevent overlap by UUID
+        seen_uuids = {a['uuid'] for a in top_stories}
+        personalized_stories = [a for a in personalized_stories if a['uuid'] not in seen_uuids]
+
+
+        # Collect initial tracks
+        trending_tracks = get_trending_tracks()
+        trending_set = {(t['artist'], t['title']) for t in trending_tracks}
+
+        throwback_raw = get_throwback_tracks().get('tracks', [])
+        throwback_tracks = [t for t in throwback_raw if (t['artist'], t['title']) not in trending_set]
+        throwback_set = trending_set.union({(t['artist'], t['title']) for t in throwback_tracks})
+
+        new_artist_recs_raw = get_new_artist_recommendations([])
+        new_artist_recs = []
+        for rec in new_artist_recs_raw:
+            filtered_tracks = [track for track in rec['tracks'] if (rec['artist'], track['title']) not in throwback_set]
+            if filtered_tracks:
+                new_artist_recs.append({
+                    'artist': rec['artist'],
+                    'top_tracks': filtered_tracks
+                })
+
+
+        if not top_stories:
+            top_stories = get_unused_articles(limit=5)
+        if not personalized_stories:
+            personalized_stories = get_unused_articles(limit=5)
+        if not trending_tracks:
+            trending_tracks = get_unused_songs(limit=5)
+        if not throwback_tracks:
+            throwback_tracks = get_unused_songs(limit=5)
+        if not new_artist_recs:
+            fallback_songs = get_unused_songs(limit=3)
+            new_artist_recs = [{
+                'artist': song['artist'],
+                'top_tracks': [{'name': song['title'], 'url': song['url'], 'duration': '180000'}]
+            } for song in fallback_songs]
+
+        max_length = max(len(top_stories), len(personalized_stories), len(trending_tracks), len(throwback_tracks), len(new_artist_recs))
+        combined = []
+        used_articles, used_songs = [], []
+
+        for i in range(max_length):
+            if i < len(top_stories):
+                combined.append(('news', top_stories[i]))
+            if i < len(personalized_stories):
+                combined.append(('news', personalized_stories[i]))
+            if i < len(trending_tracks):
+                combined.append(('song', trending_tracks[i]))
+            if i < len(throwback_tracks):
+                combined.append(('song', throwback_tracks[i]))
+            if i < len(new_artist_recs):
+                artist = new_artist_recs[i]
+                if artist.get('top_tracks'):
+                    combined.append(('song', {
+                        'artist': artist['artist'],
+                        'title': artist['top_tracks'][0]['name'],
+                        'url': artist['top_tracks'][0]['url'],
+                        'duration': artist['top_tracks'][0].get('duration', '180000')
+                    }))
+
+        for item_type, item in combined:
+            total_seconds = int(current_time_min * 60)
+            minutes = total_seconds // 60
+            seconds = total_seconds % 60
+            timestamp_str = f"[{minutes:02d}:{seconds:02d}]"
+
+            if item_type == 'news':
+                used_articles.append(item)
+                full_text = fetch_full_article(item['url']) or item.get('content', '')
+                prompt = f"""You are {host_name}, the host of {station_name}.
+                You're reading a real article and presenting it on radio.
+
+                Title: {item['title']}
+                Full article:
+                {full_text}
+
+                Create a spoken radio segment based on this, in an engaging, informative, friendly tone.
+                """                
+                try:
+                    response = model_longform.generate_content(prompt)
+                    script_text = response.text.strip()
+                except Exception as e:
+                    script_text = f"[ERROR: Gemini API failed — {e}]"
+
+                word_count = len(script_text.split())
+                duration_min = word_count / WORDS_PER_MINUTE
+                feedback_form = f"""
+                    <form method='POST' action='/feedback/news' style='display:inline;' onsubmit="submitFeedback(event, '/feedback/news')">
+                        <input type='hidden' name='title' value="{item['title']}">
+                        <div><strong>📰 Article:</strong> {item['title']}</div>
+                        <button type='submit' name='feedback' value='like'>👍 Like</button>
+                        <button type='submit' name='feedback' value='dislike'>👎 Dislike</button>
+                    </form>
+                """
+
+                yield f"<div class='script-chunk'>{timestamp_str} {script_text}<br>{feedback_form}</div>\n\n"
+                current_time_min += duration_min
+
+            elif item_type == 'song':
+                used_songs.append(item)
+                duration_ms = item.get('duration', '180000')
+                duration_min = int(duration_ms) / 60000 if duration_ms else 3
+
+                intro_prompt = f"""You are {host_name}, the host of {station_name}. Introduce this artist or song in 1-2 lines:\nArtist: {item['artist']}\nSong: {item['title']}\nBe enthusiastic and conversational."""
+                try:
+                    intro_response = model.generate_content(intro_prompt)
+                    intro_text = intro_response.text.strip()
+                except Exception as e:
+                    intro_text = f"[ERROR: Gemini API failed — {e}]"
+
+                intro_word_count = len(intro_text.split())
+                intro_duration_min = intro_word_count / WORDS_PER_MINUTE
+
+                song_marker = f"<span style='color: #ff6600; font-weight: bold;'>🎵 NOW PLAYING: {item['artist']} — {item['title']}</span>"
+
+                feedback_form = f"""
+                    <form method='POST' action='/feedback/song' style='display:inline;' onsubmit="submitFeedback(event, '/feedback/song')">
+                        <input type='hidden' name='title' value="{item['title']}">
+                        <input type='hidden' name='artist' value="{item['artist']}">
+                        <div><strong>🎵 Song:</strong> {item['artist']} — {item['title']}</div>
+                        <button type='submit' name='feedback' value='like'>👍 Like</button>
+                        <button type='submit' name='feedback' value='dislike'>👎 Dislike</button>
+                    </form>
+                """
+
+
+                yield f"<div class='script-chunk'>{timestamp_str} {intro_text}<br>{feedback_form}</div>\n\n"
+                current_time_min += intro_duration_min
+
+                total_seconds = int(current_time_min * 60)
+                minutes = total_seconds // 60
+                seconds = total_seconds % 60
+                song_timestamp = f"[{minutes:02d}:{seconds:02d}]"
+
+                yield f"<div class='script-chunk'>{song_timestamp} {song_marker}</div>\n\n"
+                current_time_min += duration_min
+
+        mark_articles_and_songs_used(used_articles, used_songs)
+
+    return Response(stream_with_context(stream()), content_type='text/html')
+
+
+@app.route('/show_stream_script')
+def show_stream_script():
+    return render_template('stream_script.html')
 
 if __name__ == "__main__":
     init_db()  # ✅ Create tables + indexes

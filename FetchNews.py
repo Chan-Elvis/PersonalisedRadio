@@ -9,17 +9,62 @@ import google.generativeai as genai
 import urllib.parse
 from db_utils import get_liked_articles
 
-
 load_dotenv()
 
 THENEWS_API_KEY = os.getenv("THENEWS_API_KEY")
 model = genai.GenerativeModel('gemini-2.0-flash')
 
+import trafilatura
+
+def fetch_full_article(url):
+    try:
+        downloaded = trafilatura.fetch_url(url)
+        if downloaded:
+            return trafilatura.extract(downloaded, include_comments=False, include_tables=False)
+    except Exception as e:
+        print(f"❌ Error fetching full article from {url}: {e}")
+    return None
+
+
+def is_clickbait(title, content):
+    clickbait_phrases = [
+        "you won’t believe", "what happened next", "this one trick",
+        "shocking truth", "top 10", "reasons why", "secret to", "goes viral",
+        "click here", "read more", "insane", "mind-blowing"
+    ]
+    if len(content) < 100:
+        return True
+    title_lower = title.lower()
+    if any(phrase in title_lower for phrase in clickbait_phrases):
+        return True
+    if sum(1 for w in title.split() if w.isupper()) > 3:
+        return True
+    return False
+
+def llm_quality_check(title, content):
+    prompt = f"""
+You're a journalism quality assistant. Rate the following article as 'high-quality' or 'low-quality'. Only return one of those phrases.
+
+Title: {title}
+Content: {content}
+"""
+    try:
+        response = model.generate_content(prompt)
+        result = response.text.strip().lower()
+        return result == "high-quality"
+    except Exception as e:
+        print(f"LLM check failed: {e}")
+        return True
+
+def should_store_article(title, content):
+    if not is_clickbait(title, content):
+        return True
+    return llm_quality_check(title, content)
+
 def fetch_similar_articles(uuids, region):
     similar_articles = []
     seen_titles = set()
 
-    # Load titles already used
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute("SELECT title FROM articles WHERE used = 1")
@@ -28,10 +73,7 @@ def fetch_similar_articles(uuids, region):
 
     for uuid in uuids:
         url = f"https://api.thenewsapi.com/v1/news/similar/{uuid}"
-        params = {   
-            "api_token": THENEWS_API_KEY,
-            "locale": region
-        }
+        params = {"api_token": THENEWS_API_KEY, "locale": region}
         response = fetch_news(url, params)
 
         if response and response.get("data"):
@@ -40,35 +82,34 @@ def fetch_similar_articles(uuids, region):
                     similar_articles.append(article)
         time.sleep(0.5)
 
-    # ✅ STORE them to the DB BEFORE returning
-    store_similar_articles_to_db(similar_articles)  
-
+    store_similar_articles_to_db(similar_articles)
     return similar_articles
 
-# Store them in the DB
 def store_similar_articles_to_db(articles, source_prefix="similar_liked"):
     conn = sqlite3.connect("user_profiles.db")
     c = conn.cursor()
     timestamp = datetime.utcnow().isoformat()
     for article in articles:
         try:
-            c.execute("""
-                INSERT OR IGNORE INTO articles (uuid, title, content, url, published_at, source, used, timestamp_fetched)
-                VALUES (?, ?, ?, ?, ?, ?, 0, ?)
-            """, (
-                article.get("uuid"),
-                article.get("title"),
-                article.get("content"),
-                article.get("url"),
-                article.get("published_at"),
-                source_prefix,
-                timestamp
-            ))
+            if should_store_article(article["title"], article["content"]):
+                c.execute("""
+                    INSERT OR IGNORE INTO articles (uuid, title, content, url, published_at, source, used, timestamp_fetched)
+                    VALUES (?, ?, ?, ?, ?, ?, 0, ?)
+                """, (
+                    article.get("uuid"),
+                    article.get("title"),
+                    article.get("content"),
+                    article.get("url"),
+                    article.get("published_at"),
+                    source_prefix,
+                    timestamp
+                ))
+            else:
+                print(f"❌ Rejected spammy article: {article['title']}")
         except Exception as e:
-            print(f"❌ Failed to insert similar article: {e}")
+            print(f"❌ Failed to insert article: {e}")
     conn.commit()
     conn.close()
-
 
 def suggest_alternative_topics(original_topic):
     prompt = f"""
@@ -82,7 +123,6 @@ Respond as a comma-separated list, no explanation.
     except Exception as e:
         print(f"LLM error suggesting alternatives for '{original_topic}': {e}")
     return []
-
 
 def fetch_news(api_url, params):
     try:
@@ -151,8 +191,6 @@ def process_news():
     similar_articles = fetch_similar_articles(liked_uuids, REGION)
     aggregated_news["similar_liked"] = similar_articles
 
-
-    # 🔍 Fetch news by keyword topics
     for keyword in topics_list:
         print(f"🔎 Searching news for topic: {keyword}")
         params = {
@@ -162,11 +200,11 @@ def process_news():
             "published_after": get_previous_month(),
             "search": f'"{keyword}"'
         }
-
         news_data = fetch_news("https://api.thenewsapi.com/v1/news/all", params)
 
         if news_data and news_data.get("data"):
-            aggregated_news[keyword.lower()] = extract_articles(news_data)
+            articles = extract_articles(news_data)
+            aggregated_news[keyword.lower()] = [a for a in articles if should_store_article(a['title'], a['content'])]
         else:
             print(f"⚠️ No results for '{keyword}', asking LLM for similar topics...")
             alternatives = suggest_alternative_topics(keyword)
@@ -177,14 +215,14 @@ def process_news():
                 retry_data = fetch_news("https://api.thenewsapi.com/v1/news/all", retry_params)
                 if retry_data and retry_data.get("data"):
                     print(f"✅ Replaced '{keyword}' with alternative topic '{alt}'")
-                    aggregated_news[keyword.lower()] = extract_articles(retry_data)
+                    articles = extract_articles(retry_data)
+                    aggregated_news[keyword.lower()] = [a for a in articles if should_store_article(a['title'], a['content'])]
                     found = True
                     break
             if not found:
                 print(f"❌ No useful results for '{keyword}' or any suggested alternatives.")
         time.sleep(0.5)
 
-    # 📰 Fetch news for each selected category individually
     for cat in category_list:
         print(f"📰 Fetching news for category: {cat}")
         params = {
@@ -196,22 +234,31 @@ def process_news():
         }
         category_data = fetch_news("https://api.thenewsapi.com/v1/news/all", params)
         if category_data and category_data.get("data"):
-            aggregated_news[cat.lower()] = extract_articles(category_data)
+            articles = extract_articles(category_data)
+            aggregated_news[cat.lower()] = [a for a in articles if should_store_article(a['title'], a['content'])]
         else:
             print(f"❌ No results found for category '{cat}'")
         time.sleep(0.5)
 
-    # 🌍 Top general stories
     local_stories = fetch_top_stories(REGION)
 
     if not local_stories or "data" not in local_stories:
         print("Failed to fetch top stories.")
         return False
 
+    # Filter top stories first
+    filtered_top = [a for a in extract_articles(local_stories) if should_store_article(a['title'], a['content'])]
+
+    # Filter each topic/category in aggregated_news
+    filtered_aggregated = {}
+    for key, articles in aggregated_news.items():
+        filtered_aggregated[key] = [a for a in articles if should_store_article(a['title'], a['content'])]
+
     final_data = {
-        "top_stories": extract_articles(local_stories),
-        "aggregated_news": aggregated_news
+        "top_stories": filtered_top,
+        "aggregated_news": filtered_aggregated
     }
+
 
     def store_articles_flat(aggregated_news):
         import sqlite3
@@ -241,12 +288,11 @@ def process_news():
         conn.close()
 
     store_articles_flat(final_data["aggregated_news"])
-
+    store_articles_flat({"top": final_data["top_stories"]})
 
     print(f"📦 Saved {len(final_data['top_stories'])} top stories and {len(final_data['aggregated_news'])} topic groups.")
     print("✅ Saved aggregated news.")
     return True
-
 
 if __name__ == "__main__":
     success = process_news()

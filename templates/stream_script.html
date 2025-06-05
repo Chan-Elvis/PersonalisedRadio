@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📻 Your Radio Script</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .script-chunk {
+            margin-bottom: 24px;
+            padding: 10px;
+            border-left: 4px solid #ff6600;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎙️ Live Radio Script</h1>
+    <div id="script-container">Loading script chunks...</div>
+
+    <script>
+        const container = document.getElementById('script-container');
+        fetch("/generate_script_stream")
+            .then(response => {
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+
+                function readChunk() {
+                    reader.read().then(({ done, value }) => {
+                        if (done) return;
+                        const chunk = decoder.decode(value, { stream: true });
+                        if (container.innerHTML.includes("Loading script chunks...")) {
+                            container.innerHTML = "";
+                        }
+                        container.innerHTML += chunk;
+                        readChunk();
+                    });
+                }
+
+                readChunk();
+            });
+    </script>
+
+    <script>
+        function submitFeedback(event, endpoint) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(endpoint, {
+                method: 'POST',
+                body: formData
+            }).then(() => {
+                form.innerHTML = "<span style='color: green;'>✅ Thanks for your feedback!</span>";
+            }).catch(() => {
+                form.innerHTML = "<span style='color: red;'>❌ Error sending feedback.</span>";
+            });
+        }
+        </script>
+    </body>
+</html>
