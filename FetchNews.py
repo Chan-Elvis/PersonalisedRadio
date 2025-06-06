@@ -10,6 +10,8 @@ import urllib.parse
 from db_utils import get_liked_articles
 
 load_dotenv()
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=GOOGLE_API_KEY)
 
 THENEWS_API_KEY = os.getenv("THENEWS_API_KEY")
 model = genai.GenerativeModel('gemini-2.0-flash')
@@ -26,45 +28,78 @@ def fetch_full_article(url):
     return None
 
 
-def is_clickbait(title, content):
-    clickbait_phrases = [
-        "you won’t believe", "what happened next", "this one trick",
-        "shocking truth", "top 10", "reasons why", "secret to", "goes viral",
-        "click here", "read more", "insane", "mind-blowing"
+def is_low_quality(title, content):
+    if not title or not content:
+        return True
+
+    if len(content.strip()) < 100:
+        return True
+
+    spammy_phrases = [
+        "click here", "limited time", "subscribe now", "exclusive deal",
+        "must see", "guaranteed", "buy now", "don't miss", "sponsored",
+        "order today", "you won’t believe", "what happened next", "this one trick",
+        "shocking", "secret to", "goes viral", "read more", "insane", "mind-blowing"
     ]
-    if len(content) < 100:
-        return True
     title_lower = title.lower()
-    if any(phrase in title_lower for phrase in clickbait_phrases):
+    content_lower = content.lower()
+
+    if any(p in title_lower for p in spammy_phrases) or any(p in content_lower for p in spammy_phrases):
         return True
-    if sum(1 for w in title.split() if w.isupper()) > 3:
+
+    if title.count("!") > 3:
         return True
+
     return False
+
 
 def llm_quality_check(title, content):
     prompt = f"""
-You're a journalism quality assistant. Rate the following article as 'high-quality' or 'low-quality'. Only return one of those phrases.
+        You are a journalism quality assistant. Given an article's title and content, assess whether it meets the standards of editorial-quality journalism.
 
-Title: {title}
-Content: {content}
-"""
+        Classify the article strictly as either 'high-quality' or 'low-quality'. If it is unsure or unclear, classify it as 'high-quality'. 
+
+        High-quality articles:
+        - Are well-written, informative, and fact-based
+        - Avoid exaggerated claims or sensational language
+        - Do not try to sell or promote a product or service
+        - Are suitable for inclusion in a news broadcast
+
+        Low-quality articles:
+        - Are primarily advertisements or sales pitches
+        - Contain clickbait, vague or misleading headlines
+        - Use excessive emotional language or exaggeration
+        - Include phrases like "limited time", "subscribe now", "must see", "buy this", or emoji spam
+
+        Return **only** the word: `high-quality` or `low-quality`.
+
+        Title: {title}
+
+        Content: {content}
+        """
     try:
         response = model.generate_content(prompt)
         result = response.text.strip().lower()
         return result == "high-quality"
     except Exception as e:
         print(f"LLM check failed: {e}")
-        return True
+        return False  # LLM failure = reject
+    
 
 def should_store_article(title, content):
-    if not is_clickbait(title, content):
-        return True
+    # Step 1: Heuristic filter
+    if is_low_quality(title, content):
+        return False
+
+    # Step 2: LLM quality check
     return llm_quality_check(title, content)
+
 
 def fetch_similar_articles(uuids, region):
     similar_articles = []
     seen_titles = set()
 
+    # Load previously used article titles to avoid reusing them
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
     c.execute("SELECT title FROM articles WHERE used = 1")
@@ -73,20 +108,27 @@ def fetch_similar_articles(uuids, region):
 
     for uuid in uuids:
         url = f"https://api.thenewsapi.com/v1/news/similar/{uuid}"
-        params = {"api_token": THENEWS_API_KEY, "locale": region}
+        params = {
+            "api_token": THENEWS_API_KEY,
+            "locale": region
+        }
         response = fetch_news(url, params)
 
         if response and response.get("data"):
             for article in extract_articles(response):
                 if article["title"] not in seen_titles:
+                    # ✅ Add tracking info
+                    article["source"] = f"similar_to:{uuid}"
+                    article["timestamp_fetched"] = datetime.utcnow().isoformat()
                     similar_articles.append(article)
-        time.sleep(0.5)
+
+        time.sleep(0.5)  # Be nice to the API
 
     store_similar_articles_to_db(similar_articles)
     return similar_articles
 
 def store_similar_articles_to_db(articles, source_prefix="similar_liked"):
-    conn = sqlite3.connect("user_profiles.db")
+    conn = sqlite3.connect("user_profiles.db", timeout=5.0)
     c = conn.cursor()
     timestamp = datetime.utcnow().isoformat()
     for article in articles:
@@ -101,7 +143,7 @@ def store_similar_articles_to_db(articles, source_prefix="similar_liked"):
                     article.get("content"),
                     article.get("url"),
                     article.get("published_at"),
-                    source_prefix,
+                    article.get("source", source_prefix),
                     timestamp
                 ))
             else:
@@ -263,7 +305,7 @@ def process_news():
     def store_articles_flat(aggregated_news):
         import sqlite3
         from datetime import datetime
-        conn = sqlite3.connect("user_profiles.db")
+        conn = sqlite3.connect("user_profiles.db", timeout=5.0)
         c = conn.cursor()
         timestamp = datetime.utcnow().isoformat()
 

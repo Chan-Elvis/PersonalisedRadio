@@ -10,7 +10,7 @@ import random
 import datetime
 from similar_songs import get_similar_tracks
 from FetchNews import fetch_similar_articles
-from db_utils import get_liked_articles, get_disliked_articles, get_liked_songs, get_disliked_songs
+from db_utils import get_liked_articles, get_disliked_articles, get_liked_songs, get_disliked_songs, mark_song_similar_fetched, mark_article_similar_fetched
 
 import threading
 import time
@@ -24,11 +24,13 @@ from db_utils import store_song
 from FetchNews import fetch_full_article
 
 
-# Global queue for batching similarity fetches
-similarity_queue = Queue()
+
 
 
 load_dotenv()
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+genai.configure(api_key=GOOGLE_API_KEY)
+
 SECRET_KEY = os.getenv("SECRET_KEY")
 LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
 
@@ -160,7 +162,7 @@ def get_similar_songs_from_liked():
     return all_similar
 
 def get_unused_articles(limit=10, source_filter=None, exclude_sources=None):
-    conn = sqlite3.connect("user_profiles.db")
+    conn = sqlite3.connect("user_profiles.db", timeout=5.0)
     c = conn.cursor()
 
     query = "SELECT uuid, title, content, url, published_at, source FROM articles WHERE used IS NULL OR used = 0"
@@ -195,7 +197,7 @@ def get_unused_articles(limit=10, source_filter=None, exclude_sources=None):
 
 
 def get_unused_songs(limit=10):
-    conn = sqlite3.connect("user_profiles.db")
+    conn = sqlite3.connect("user_profiles.db", timeout=5.0)
     c = conn.cursor()
     c.execute("SELECT title, artist, url FROM songs WHERE used = 0 LIMIT ?", (limit,))
     rows = c.fetchall()
@@ -236,7 +238,7 @@ def generate_radio_script(news_batches, music_batches):
     return final_script
 
 def mark_articles_and_songs_used(news_batch, music_batch):
-    conn = sqlite3.connect("user_profiles.db")
+    conn = sqlite3.connect("user_profiles.db", timeout=5.0)
     c = conn.cursor()
     for article in news_batch:
         c.execute("UPDATE articles SET used = 1 WHERE uuid = ?", (article.get('uuid'),))
@@ -440,14 +442,14 @@ def save():
     conn.commit()
     conn.close()
 
-    subprocess.run(["python", "FetchNews.py"])
+    ensure_minimum_content()
     return redirect('/radio')
 
 
 
 @app.route('/radio')
 def radio():
-    subprocess.run(["python", "FetchNews.py"])
+    ensure_minimum_content()
     with open('aggregated_news.json', 'r') as f:
         news_data = json.load(f)
     conn = sqlite3.connect('user_profiles.db')
@@ -468,9 +470,23 @@ def radio():
         throwback_playlist = get_throwback_tracks()
         new_artist_playlist = get_new_artist_recommendations(artists_list)
 
-        liked_uuids = get_liked_articles()
-        similar_articles = fetch_similar_articles(liked_uuids, location)
-        similar_songs = get_similar_songs_from_liked()
+        # Instead of re-fetching similar content:
+        # Just read already-fetched similar content
+        conn = sqlite3.connect("user_profiles.db")
+        c = conn.cursor()
+
+        c.execute("SELECT uuid, title, content, url, published_at, source FROM articles WHERE source LIKE 'similar_to:%' AND used = 0 ORDER BY timestamp_fetched DESC LIMIT 10")
+        similar_articles = [{
+            "uuid": row[0], "title": row[1], "content": row[2],
+            "url": row[3], "published_at": row[4], "source": row[5]
+        } for row in c.fetchall()]
+
+        c.execute("SELECT title, artist, source FROM songs WHERE source LIKE 'similar_to:%' AND used = 0 ORDER BY timestamp_fetched DESC LIMIT 10")
+        similar_songs = [{
+            "title": row[0], "artist": row[1], "source": row[2]
+        } for row in c.fetchall()]
+
+        conn.close()
 
         grouped_news = {}
 
@@ -565,10 +581,6 @@ def feedback_song():
 
     flash(f"You {feedback}d the song '{title}' by {artist}.", "info")
 
-    # ✅ Add to similarity queue if liked
-    if feedback == "like":
-        similarity_queue.put(('song', {'title': title, 'artist': artist}))
-
     return redirect('/show_script')
 
 
@@ -592,9 +604,6 @@ def feedback_news():
         c.execute("SELECT uuid, source FROM articles WHERE title = ? ORDER BY timestamp_fetched DESC LIMIT 1", (title,))
         row = c.fetchone()
         conn.close()
-        if row:
-            uuid, region = row
-            similarity_queue.put(('article', {'uuid': uuid, 'region': region or 'gb'}))
 
     return redirect('/show_script')
 
@@ -603,31 +612,22 @@ def similarity_worker():
     BATCH_SIZE = 10
     while True:
         time.sleep(BATCH_INTERVAL)
-        seen = set()
-        song_batch = []
-        article_batch = []
 
-        while not similarity_queue.empty() and len(seen) < BATCH_SIZE:
-            item_type, payload = similarity_queue.get()
-            key = json.dumps(payload, sort_keys=True)
-            if key in seen:
-                continue
-            seen.add(key)
-            if item_type == 'song':
-                song_batch.append(payload)
-            elif item_type == 'article':
-                article_batch.append(payload)
+        song_batch = [{'title': t, 'artist': a} for t, a in get_liked_songs()]
+        article_batch = [{'uuid': u, 'region': r} for u, r in get_liked_articles()]
 
-        # 🔁 Fetch in batch
         for s in song_batch:
             print(f"🔁 Fetching similar songs for: {s['title']} by {s['artist']}")
             similar_tracks = get_similar_tracks(s['title'], s['artist'])
             for track in similar_tracks:
                 store_song(track, source=f"similar_to:{s['artist']}:{s['title']}")
+            mark_song_similar_fetched(s['title'], s['artist'])
 
         for a in article_batch:
             print(f"📰 Fetching similar articles for UUID: {a['uuid']}")
             fetch_similar_articles([a['uuid']], a['region'])
+            mark_article_similar_fetched(a['uuid'])
+
 
 from flask import Response, stream_with_context
 def ensure_minimum_content():
@@ -640,7 +640,7 @@ def ensure_minimum_content():
 
             if songs_left < 10:
                 print("🎵 Not enough songs — fetching similar songs from liked")
-                get_similar_songs_from_liked()
+
 
 @app.route('/generate_script_stream')
 def generate_script_stream():
@@ -762,13 +762,21 @@ def generate_script_stream():
                 word_count = len(script_text.split())
                 duration_min = word_count / WORDS_PER_MINUTE
                 feedback_form = f"""
+                    <div><strong>📰 Article:</strong> {item['title']}</div>
                     <form method='POST' action='/feedback/news' style='display:inline;' onsubmit="submitFeedback(event, '/feedback/news')">
+                        <input type='hidden' name='uuid' value="{item['uuid']}">
                         <input type='hidden' name='title' value="{item['title']}">
-                        <div><strong>📰 Article:</strong> {item['title']}</div>
-                        <button type='submit' name='feedback' value='like'>👍 Like</button>
-                        <button type='submit' name='feedback' value='dislike'>👎 Dislike</button>
+                        <input type='hidden' name='feedback' value="like">
+                        <button type='submit'>👍 Like</button>
+                    </form>
+                    <form method='POST' action='/feedback/news' style='display:inline;' onsubmit="submitFeedback(event, '/feedback/news')">
+                        <input type='hidden' name='uuid' value="{item['uuid']}">
+                        <input type='hidden' name='title' value="{item['title']}">
+                        <input type='hidden' name='feedback' value="dislike">
+                        <button type='submit'>👎 Dislike</button>
                     </form>
                 """
+
 
                 yield f"<div class='script-chunk'>{timestamp_str} {script_text}<br>{feedback_form}</div>\n\n"
                 current_time_min += duration_min
@@ -791,14 +799,21 @@ def generate_script_stream():
                 song_marker = f"<span style='color: #ff6600; font-weight: bold;'>🎵 NOW PLAYING: {item['artist']} — {item['title']}</span>"
 
                 feedback_form = f"""
+                    <div><strong>🎵 Song:</strong> {item['artist']} — {item['title']}</div>
                     <form method='POST' action='/feedback/song' style='display:inline;' onsubmit="submitFeedback(event, '/feedback/song')">
                         <input type='hidden' name='title' value="{item['title']}">
                         <input type='hidden' name='artist' value="{item['artist']}">
-                        <div><strong>🎵 Song:</strong> {item['artist']} — {item['title']}</div>
-                        <button type='submit' name='feedback' value='like'>👍 Like</button>
-                        <button type='submit' name='feedback' value='dislike'>👎 Dislike</button>
+                        <input type='hidden' name='feedback' value="like">
+                        <button type='submit'>👍 Like</button>
+                    </form>
+                    <form method='POST' action='/feedback/song' style='display:inline;' onsubmit="submitFeedback(event, '/feedback/song')">
+                        <input type='hidden' name='title' value="{item['title']}">
+                        <input type='hidden' name='artist' value="{item['artist']}">
+                        <input type='hidden' name='feedback' value="dislike">
+                        <button type='submit'>👎 Dislike</button>
                     </form>
                 """
+
 
 
                 yield f"<div class='script-chunk'>{timestamp_str} {intro_text}<br>{feedback_form}</div>\n\n"
