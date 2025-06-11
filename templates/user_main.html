@@ -6,6 +6,7 @@
 </head>
 
 
+
 <body>
 
     <!-- Flash messages block -->
@@ -39,7 +40,7 @@
     <h1>🎧 Setup Your Personal Radio Station</h1>
 
 
-    <form method="POST" action="/save">
+    <form method="POST" action="/user_save">
         <label>Station Name:</label><br>
         <input type="text" name="station_name" value="{{ station_name if station_name else '' }}"><br><br>
 
@@ -87,6 +88,7 @@
         <input type="submit" value="Save Preferences">
     </form>
 </body>
+
 <script>
   // Notify parent only when user interacts
   document.addEventListener("click", function (e) {

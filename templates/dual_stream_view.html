@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Your Radio Script</title>
+  <style>
+    body {
+        display: flex;
+        margin: 0;
+        height: 100vh;
+        overflow: hidden;
+        font-family: sans-serif;
+    }
+    #dev-view, #user-view {
+        width: 50%;
+        height: 100%;
+        overflow-y: hidden;
+        box-sizing: border-box;
+    }
+    #dev-view {
+        background-color: #f9f9f9;
+        border-right: 2px solid #ccc;
+    }
+    #user-view {
+        background-color: #fff;
+    }
+    iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left: Developer Interface -->
+  <div id="dev-view">
+    <iframe id="dev-iframe" src="/"></iframe>
+  </div>
+
+  <!-- Right: User-Facing Interface -->
+  <div id="user-view">
+    <iframe id="user-iframe" src="/user_main"></iframe>
+  </div>
+
+  <script>
+const devFrame = document.getElementById("dev-iframe");
+const userFrame = document.getElementById("user-iframe");
+
+const routeMap = {
+  "/": "/user_main",
+  "/radio": "/user_radio",
+  "/show_stream_script": "/user_script_stream"
+};
+const reverseMap = Object.fromEntries(Object.entries(routeMap).map(([k, v]) => [v, k]));
+
+window.addEventListener("message", (event) => {
+  const path = event.data?.path;
+  if (!path) return;
+
+  const devPath = new URL(devFrame.contentWindow.location.href).pathname;
+  const userPath = new URL(userFrame.contentWindow.location.href).pathname;
+
+  if (routeMap[path] && !userPath.startsWith(routeMap[path])) {
+    userFrame.src = routeMap[path];
+  } else if (reverseMap[path] && !devPath.startsWith(reverseMap[path])) {
+    devFrame.src = reverseMap[path];
+  }
+});
+</script>
+
+
+
+
+</body>
+</html>

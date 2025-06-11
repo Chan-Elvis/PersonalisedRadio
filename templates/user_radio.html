@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>📻 Your Personalized Radio</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .section { margin-bottom: 20px; }
+        button { padding: 10px 15px; margin-top: 10px; }
+    </style>
+</head>
+
+
+<body>
+    <h1>🎙️ Your Radio Preferences</h1>
+
+    <div class="section">
+        <strong>Station Name:</strong> {{ station_name }}<br>
+        <strong>Host Name:</strong> {{ host_name }}
+    </div>
+
+    <div class="section">
+        <strong>News Categories:</strong> {{ selected_categories|join(', ') }}<br>
+        <strong>Topics:</strong> {{ topics }}
+    </div>
+
+    <div class="section">
+        <strong>Music Genres:</strong> {{ music_tastes|join(', ') }}<br>
+        <strong>Favorite Artists:</strong> {{ favorite_artists }}<br>
+        <strong>Music Preferences:</strong> {{ music_pref|join(', ') }}
+    </div>
+
+    <div class="section">
+        <strong>Location:</strong> {{ location }}<br>
+        <strong>News Mood:</strong> {{ news_mood }}
+    </div>
+
+    <a href="/user_main" onclick="navigate('/user_main'); return false;">✏️ Edit Preferences</a>
+    <a href="/user_script_stream" onclick="navigate('/user_script_stream'); return false;">▶️ Begin Radio Generation</a>
+
+</body>
+
+<script>
+  // Notify parent only when user interacts
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a[href]");
+    if (link && link.origin === window.location.origin) {
+      window.parent.postMessage({ path: new URL(link.href).pathname }, "*");
+    }
+  });
+
+  document.addEventListener("submit", function (e) {
+    const form = e.target;
+    if (form.action && form.method.toLowerCase() === "get") {
+      const actionPath = new URL(form.action, window.location.origin).pathname;
+      window.parent.postMessage({ path: actionPath }, "*");
+    }
+  });
+</script>
+
+<script>
+  window.onload = () => {
+    window.parent.postMessage({ path: window.location.pathname }, "*");
+  };
+</script>
+
+<script>
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a[href]");
+    if (link && link.origin === window.location.origin) {
+      // Allow the browser to navigate, then inform the parent shortly after
+      setTimeout(() => {
+        window.parent.postMessage({ path: new URL(link.href).pathname }, "*");
+      }, 10);  // Slight delay ensures location has updated
+    }
+  });
+</script>
+
+<script>
+  function navigate(path) {
+    window.parent.postMessage({ path }, "*");
+    window.location.href = path;
+  }
+</script>
+
+
+</html>
+

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Your Personalized Radio 🎵📰</title>
 </head>
+
 <body>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -174,9 +175,9 @@
 
 
     <br>
-    <a href="/refresh_news">🔄 Refresh News</a> | <a href="/">⚙️ Edit Preferences</a>
 
-    <a href="/generate_script" style="
+    <a href="/generate_script" onclick="navigate('/generate_script'); return false;"
+    style="
     display: inline-block;
     padding: 10px 20px;
     background-color: #4CAF50;
@@ -186,11 +187,37 @@
     margin: 10px 0;
 ">🎙️ Generate Radio Host Script</a>
 
-<a href="/show_stream_script">🚀 View Live Streaming Script</a>
-
+<a href="/show_stream_script" onclick="navigate('/show_stream_script'); return false;">🚀 View Live Streaming Script</a>
 
 
 </body>
+
+<script>
+  // Notify parent only when user interacts
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a[href]");
+    if (link && link.origin === window.location.origin) {
+      window.parent.postMessage({ path: new URL(link.href).pathname }, "*");
+    }
+  });
+
+  document.addEventListener("submit", function (e) {
+    const form = e.target;
+    if (form.action && form.method.toLowerCase() === "get") {
+      const actionPath = new URL(form.action, window.location.origin).pathname;
+      window.parent.postMessage({ path: actionPath }, "*");
+    }
+  });
+</script>
+
+<script>
+  function navigate(path) {
+    window.parent.postMessage({ path }, "*");
+    window.location.href = path;
+  }
+</script>
+
+
 </html>
 
 

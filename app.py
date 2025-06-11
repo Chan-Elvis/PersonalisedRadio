@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, jsonify
 import sqlite3
 import json
 import subprocess
@@ -23,6 +23,13 @@ from db_utils import store_song
 
 from FetchNews import fetch_full_article
 
+from gtts import gTTS
+import uuid        
+import glob
+import re
+
+
+
 
 
 
@@ -38,6 +45,29 @@ app = Flask(__name__)
 app.secret_key = SECRET_KEY
 model = genai.GenerativeModel('gemini-2.0-flash')
 model_longform = genai.GenerativeModel('gemini-2.0-flash-lite')    # for longer radio scripts
+
+def configure_sqlite(max_retries=5, delay=1.0):
+    for attempt in range(max_retries):
+        try:
+            conn = sqlite3.connect("user_profiles.db", timeout=5.0)
+            c = conn.cursor()
+            c.execute("PRAGMA journal_mode=WAL")
+            c.execute("PRAGMA busy_timeout=5000")
+            conn.commit()
+            conn.close()
+            print("✅ SQLite configured successfully.")
+            return
+        except sqlite3.OperationalError as e:
+            if "locked" in str(e).lower():
+                print(f"⚠️ SQLite locked on attempt {attempt+1}/{max_retries}, retrying in {delay}s...")
+                time.sleep(delay)
+            else:
+                raise
+    raise RuntimeError("❌ Failed to configure SQLite after retries.")
+
+
+configure_sqlite()
+
 
 ALLOWED_GENRES = [
     'rock', 'pop', 'jazz', 'blues', 'hip-hop', 'rap', 'indie', 'electronic',
@@ -314,6 +344,51 @@ def init_db():
     conn.commit()
     conn.close()
 
+def load_profile_context():
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM profiles ORDER BY id DESC LIMIT 1')
+    user = c.fetchone()
+    conn.close()
+
+    if user:
+        # Pad in case fewer than 10 columns
+        user = list(user) + [None] * (10 - len(user))
+        _, topics, music_tastes, favorite_artists, news_mood, location, music_pref, station_name, host_name, news_categories = user
+
+        topics_list = [t.strip() for t in topics.split(',') if t.strip()]
+        genres_list = [g.strip() for g in music_tastes.split(',') if g.strip()]
+        artists = favorite_artists
+        music_pref_list = music_pref.split(',') if music_pref else []
+        selected_categories = news_categories.split(',') if news_categories else []
+
+        return {
+            "topics": ', '.join(topics_list),
+            "music_tastes": genres_list,
+            "favorite_artists": artists,
+            "news_mood": news_mood,
+            "location": location,
+            "station_name": station_name,
+            "host_name": host_name,
+            "music_pref": music_pref_list,
+            "selected_categories": selected_categories,
+            "allowed_genres": ALLOWED_GENRES,
+            "allowed_categories": ALLOWED_CATEGORIES,
+        }
+    else:
+        return {
+            "topics": "",
+            "music_tastes": [],
+            "favorite_artists": "",
+            "news_mood": "",
+            "location": "",
+            "station_name": "",
+            "host_name": "",
+            "music_pref": [],
+            "selected_categories": [],
+            "allowed_genres": ALLOWED_GENRES,
+            "allowed_categories": ALLOWED_CATEGORIES,
+        }
 
 
 
@@ -472,7 +547,7 @@ def radio():
 
         # Instead of re-fetching similar content:
         # Just read already-fetched similar content
-        conn = sqlite3.connect("user_profiles.db")
+        conn = sqlite3.connect("user_profiles.db", timeout=5.0)
         c = conn.cursor()
 
         c.execute("SELECT uuid, title, content, url, published_at, source FROM articles WHERE source LIKE 'similar_to:%' AND used = 0 ORDER BY timestamp_fetched DESC LIMIT 10")
@@ -644,6 +719,20 @@ def ensure_minimum_content():
 
 @app.route('/generate_script_stream')
 def generate_script_stream():
+    # ✅ Clear previous script chunks BEFORE streaming starts
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM script_chunks")
+    conn.commit()
+    conn.close()
+
+    # ✅ Delete all old audio files upfront too
+    for path in glob.glob("static/audio/*.mp3"):
+        try:
+            os.remove(path)
+        except Exception as e:
+            print(f"Failed to delete {path}: {e}")
+
     def stream():
         import time
         conn = sqlite3.connect('user_profiles.db')
@@ -651,6 +740,7 @@ def generate_script_stream():
         c.execute('SELECT station_name, host_name FROM profiles ORDER BY id DESC LIMIT 1')
         row = c.fetchone()
         conn.close()
+
         station_name = row[0] if row else "Your Radio Station"
         host_name = row[1] if row else "Your Host"
 
@@ -659,15 +749,6 @@ def generate_script_stream():
 
         ensure_minimum_content()
 
-        def no_feedback_given():
-            conn = sqlite3.connect('user_profiles.db')
-            c = conn.cursor()
-            c.execute("SELECT COUNT(*) FROM articles WHERE feedback IS NOT NULL")
-            articles_feedback = c.fetchone()[0]
-            c.execute("SELECT COUNT(*) FROM songs WHERE feedback IS NOT NULL")
-            songs_feedback = c.fetchone()[0]
-            conn.close()
-            return articles_feedback == 0 and songs_feedback == 0
 
 
         top_stories = get_unused_articles(limit=10, source_filter="top")
@@ -754,10 +835,26 @@ def generate_script_stream():
                 Create a spoken radio segment based on this, in an engaging, informative, friendly tone.
                 """                
                 try:
+                    print("🧠 Calling model_longform for article:", item['title'])
                     response = model_longform.generate_content(prompt)
                     script_text = response.text.strip()
+                    print("✅ Received response from LLM:", script_text[:80])
                 except Exception as e:
                     script_text = f"[ERROR: Gemini API failed — {e}]"
+
+                # ✅ Save script chunk to DB
+                conn = sqlite3.connect('user_profiles.db')
+                c = conn.cursor()
+                c.execute("SELECT COUNT(*) FROM script_chunks WHERE title = ? AND script = ?", (item['title'], script_text))
+                if c.fetchone()[0] == 0:
+                    c.execute("""
+                        INSERT INTO script_chunks (item_type, title, artist, script)
+                        VALUES (?, ?, ?, ?)
+                    """, ('news', item['title'], '', script_text))
+
+                conn.commit()
+                conn.close()
+
 
                 word_count = len(script_text.split())
                 duration_min = word_count / WORDS_PER_MINUTE
@@ -788,10 +885,26 @@ def generate_script_stream():
 
                 intro_prompt = f"""You are {host_name}, the host of {station_name}. Introduce this artist or song in 1-2 lines:\nArtist: {item['artist']}\nSong: {item['title']}\nBe enthusiastic and conversational."""
                 try:
+                    print("🧠 Calling model for song:", item['title'])
                     intro_response = model.generate_content(intro_prompt)
                     intro_text = intro_response.text.strip()
+                    print("✅ Received song intro from LLM:", intro_text[:80])
                 except Exception as e:
                     intro_text = f"[ERROR: Gemini API failed — {e}]"
+
+                # ✅ Save script chunk to DB
+                conn = sqlite3.connect('user_profiles.db')
+                c = conn.cursor()
+                c.execute("SELECT COUNT(*) FROM script_chunks WHERE title = ? AND script = ?", (item['title'], intro_text))
+                if c.fetchone()[0] == 0:
+                    c.execute("""
+                        INSERT INTO script_chunks (item_type, title, artist, script)
+                        VALUES (?, ?, ?, ?)
+                    """, ('song', item['title'], item['artist'], intro_text))
+
+                conn.commit()
+                conn.close()
+
 
                 intro_word_count = len(intro_text.split())
                 intro_duration_min = intro_word_count / WORDS_PER_MINUTE
@@ -836,8 +949,113 @@ def generate_script_stream():
 def show_stream_script():
     return render_template('stream_script.html')
 
+@app.route('/dual_stream_view')
+def dual_stream_view():
+    return render_template('dual_stream_view.html')
+
+@app.route('/user_script_stream')
+def user_script_stream():
+    return render_template('user_script_stream.html')
+
+
+@app.route('/next_tts_chunk')
+def next_tts_chunk():
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute("SELECT id, item_type, title, artist, script FROM script_chunks WHERE used = 0 ORDER BY id LIMIT 1")
+    row = c.fetchone()
+
+    if not row:
+        conn.close()
+        return jsonify({"text": "No content.", "audio_url": ""})
+
+    chunk_id, item_type, title, artist, script = row
+
+    # Clean the script: remove stage directions like **(...)**, and speaker labels like "Jerry:"
+    cleaned_script = re.sub(r'\*\*.*?\*\*', '', script)  # remove **...**
+
+    tts = gTTS(text=cleaned_script, lang='en')
+
+    filename = f"{uuid.uuid4().hex}.mp3"
+    filepath = os.path.join("static", "audio", filename)
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+    tts.save(filepath)
+
+    c.execute("UPDATE script_chunks SET used = 1, audio_file = ? WHERE id = ?", (filename, chunk_id))
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        "text": script,
+        "title": title,
+        "artist": artist,
+        "audio_url": f"/static/audio/{filename}"
+    })
+
+@app.route('/script_ready')
+def script_ready():
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute("SELECT COUNT(*) FROM script_chunks")
+    count = c.fetchone()[0]
+    conn.close()
+    return jsonify({"ready": count > 0})
+
+@app.route("/user_main", methods=["GET", "POST"])
+def user_main():
+    return render_template("user_main.html", **load_profile_context())
+
+@app.route("/user_radio")
+def user_radio():
+    return render_template("user_radio.html", **load_profile_context())
+
+@app.route('/user_save', methods=['POST'])
+def user_save_preferences():
+    # Save the preferences from the user interface
+    station_name = request.form.get("station_name", "")
+    host_name = request.form.get("host_name", "")
+    news_categories = request.form.getlist("news_categories")
+    topics = request.form.get("topics", "")
+    music_tastes = request.form.getlist("music_tastes")
+    favorite_artists = request.form.get("favorite_artists", "")
+    music_pref = request.form.getlist("music_pref")
+    location = request.form.get("location", "")
+    news_mood = request.form.get("news_mood", "")
+
+    # Save into database — you can reuse the same logic as in /save
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO profiles (station_name, host_name, news_categories, topics, music_tastes, favorite_artists, music_pref, location, news_mood) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+              (
+                  station_name,
+                  host_name,
+                  ",".join(news_categories),
+                  topics,
+                  ",".join(music_tastes),
+                  favorite_artists,
+                  ",".join(music_pref),
+                  location,
+                  news_mood
+              ))
+    conn.commit()
+    conn.close()
+
+    return redirect('/user_radio')  # ✅ Redirect to the user-facing radio page
+
+
 if __name__ == "__main__":
     init_db()  # ✅ Create tables + indexes
-    worker_thread = threading.Thread(target=similarity_worker, daemon=True)
-    worker_thread.start()  # ✅ Launch background similarity fetcher
+
+    def delayed_start_worker():
+        time.sleep(3)
+        similarity_worker()
+
+    def delayed_sqlite_config():
+        time.sleep(3)
+        configure_sqlite()
+
+    threading.Thread(target=delayed_start_worker, daemon=True).start()
+    threading.Thread(target=delayed_sqlite_config, daemon=True).start()
+
     app.run(debug=True)
+

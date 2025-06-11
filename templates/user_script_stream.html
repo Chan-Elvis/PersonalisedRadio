@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Now Streaming</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    #current-content {
+      border: 2px solid #ccc;
+      padding: 20px;
+      margin-bottom: 20px;
+      background: #f9f9f9;
+    }
+    #status {
+      margin-bottom: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+    button {
+      padding: 10px 15px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🔊 Now Streaming</h1>
+  <div id="status">
+    Status: 
+    <span id="timer" style="margin-left: 20px;">⏱️ 00:00</span>
+    <span id="status-text">Paused</span></div>
+
+  <div id="current-content">
+    <strong>Loading...</strong>
+  </div>
+
+  <button onclick="togglePlay()">▶️ Play / ⏸️ Pause</button>
+  <form id="feedback-form" style="display:inline;">
+    <input type="hidden" name="title" id="current-title">
+    <input type="hidden" name="artist" id="current-artist">
+    <button type="submit" name="feedback" value="like">👍 Like</button>
+    <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
+  </form>
+
+  <script>
+  let audio = null;
+  let isPlaying = false;
+  let nextChunk = null;
+  const statusText = document.getElementById("status-text");
+  let clickedFeedback = null;
+
+  function setStatus(text) {
+    statusText.textContent = text;
+  }
+
+  function preloadNextChunk() {
+    fetch('/next_tts_chunk')
+      .then(res => res.json())
+      .then(data => {
+        nextChunk = data;
+      });
+  }
+
+  function playChunk(chunk) {
+    if (!chunk || !chunk.audio_url) {
+      document.getElementById('current-content').innerHTML = "No more content.";
+      setStatus("Idle");
+      return;
+    }
+
+    if (chunk.artist) {
+      document.getElementById('current-content').innerHTML = `🎵 Now playing: <strong>${chunk.artist} — ${chunk.title}</strong>`;
+    } else {
+      document.getElementById('current-content').innerHTML = `📰 Now covering: <strong>${chunk.title}</strong>`;
+    }
+
+    document.getElementById('current-title').value = chunk.title || "";
+    document.getElementById('current-artist').value = chunk.artist || "";
+
+    if (audio) audio.pause();
+    audio = new Audio(chunk.audio_url);
+    audio.play();
+    isPlaying = true;
+    setStatus("Playing");
+
+    preloadNextChunk();
+
+    audio.onended = () => {
+      isPlaying = false;
+      setStatus("Loading next...");
+      playChunk(nextChunk);
+    };
+  }
+
+  function togglePlay() {
+    if (audio && isPlaying) {
+      audio.pause();
+      isPlaying = false;
+      setStatus("Paused");
+    } else if (audio) {
+      audio.play();
+      isPlaying = true;
+      setStatus("Playing");
+    } else {
+      playChunk(nextChunk);
+    }
+  }
+
+  // New: capture which feedback button was clicked
+  document.querySelectorAll("#feedback-form button[type='submit']").forEach(btn => {
+    btn.addEventListener("click", function () {
+      clickedFeedback = this.value;
+    });
+  });
+
+  document.getElementById('feedback-form').onsubmit = function (e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    formData.set("feedback", clickedFeedback);  // Inject the value manually
+
+    const endpoint = document.getElementById("current-artist").value ? "/feedback/song" : "/feedback/news";
+
+    fetch(endpoint, {
+      method: "POST",
+      body: formData
+    }).then(() => {
+      const contentDiv = document.getElementById('current-content');
+      contentDiv.innerHTML += "<br><span style='color:green;'>✅ Feedback sent!</span>";
+    }).catch(err => {
+      console.error("❌ Feedback error:", err);
+      const contentDiv = document.getElementById('current-content');
+      contentDiv.innerHTML += "<br><span style='color:red;'>❌ Feedback failed.</span>";
+    });
+  };
+
+  window.addEventListener("DOMContentLoaded", () => {
+    function checkIfReadyAndStart() {
+      fetch('/script_ready')
+        .then(res => res.json())
+        .then(data => {
+          if (data.ready) {
+            preloadNextChunk();
+          } else {
+            setStatus("Waiting for first segment...");
+            setTimeout(checkIfReadyAndStart, 1000);
+          }
+        });
+    }
+
+    checkIfReadyAndStart();
+  });
+</script>
+
+    <a href="/user_radio" onclick="navigate('/user_radio'); return false;">Back to User Profile</a>
+
+</body>
+<script>
+  // Notify parent only when user interacts
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a[href]");
+    if (link && link.origin === window.location.origin) {
+      window.parent.postMessage({ path: new URL(link.href).pathname }, "*");
+    }
+  });
+
+  document.addEventListener("submit", function (e) {
+    const form = e.target;
+    if (form.action && form.method.toLowerCase() === "get") {
+      const actionPath = new URL(form.action, window.location.origin).pathname;
+      window.parent.postMessage({ path: actionPath }, "*");
+    }
+  });
+</script>
+
+<script>
+  function navigate(path) {
+    window.parent.postMessage({ path }, "*");
+    window.location.href = path;
+  }
+</script>
+
+
+</html>

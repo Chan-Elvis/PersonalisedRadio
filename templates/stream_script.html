@@ -16,9 +16,10 @@
         }
     </style>
 </head>
+
 <body>
     <h1>🎙️ Live Radio Script</h1>
-    <a href="/radio">Back to previous page</a>
+    <a href="/radio" onclick="navigate('/generate_script_stream'); return false;">Back to previous page</a>
     <div id="script-container">Loading script chunks...</div>
 
     <script>
@@ -61,4 +62,30 @@
         }
         </script>
     </body>
+    <script>
+  // Notify parent only when user interacts
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a[href]");
+    if (link && link.origin === window.location.origin) {
+      window.parent.postMessage({ path: new URL(link.href).pathname }, "*");
+    }
+  });
+
+  document.addEventListener("submit", function (e) {
+    const form = e.target;
+    if (form.action && form.method.toLowerCase() === "get") {
+      const actionPath = new URL(form.action, window.location.origin).pathname;
+      window.parent.postMessage({ path: actionPath }, "*");
+    }
+  });
+</script>
+
+<script>
+  function navigate(path) {
+    window.parent.postMessage({ path }, "*");
+    window.location.href = path;
+  }
+</script>
+
+
 </html>
