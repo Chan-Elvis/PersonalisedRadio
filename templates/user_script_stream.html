@@ -45,6 +45,12 @@
     <button type="submit" name="feedback" value="dislike">👎 Dislike</button>
   </form>
 
+  <div style="margin-top: 15px;">
+  <strong>🎙️ Did you like how this was presented?</strong><br>
+  <button onclick="likeScriptTone()">👍 Like Tone</button>
+</div>
+
+
   <script>
   let audio = null;
   let isPlaying = false;
@@ -152,6 +158,24 @@
 
     checkIfReadyAndStart();
   });
+
+  function likeScriptTone() {
+  const chunkTitle = document.getElementById("current-title").value;
+  
+  fetch("/like_script_chunk", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chunk_title: chunkTitle })
+  }).then(() => {
+    const contentDiv = document.getElementById('current-content');
+    contentDiv.innerHTML += "<br><span style='color:blue;'>💾 Tone saved for style learning!</span>";
+  }).catch(err => {
+    console.error("Tone like failed:", err);
+    const contentDiv = document.getElementById('current-content');
+    contentDiv.innerHTML += "<br><span style='color:red;'>❌ Tone save failed.</span>";
+  });
+}
+
 </script>
 
     <a href="/user_radio" onclick="navigate('/user_radio'); return false;">Back to User Profile</a>

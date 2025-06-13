@@ -52,12 +52,28 @@ def is_low_quality(title, content):
 
     return False
 
+def load_examples(filepath="quality_examples.json"):
+    with open(filepath, "r", encoding="utf-8") as f:
+        return json.load(f)
+    
+def format_examples(examples):
+    formatted = []
+    for i, ex in enumerate(examples, start=1):
+        formatted.append(
+            f"Example {i} ({ex['label']}):\n"
+            f"Title: {ex['title']}\n"
+            f"Content includes: {ex['content']}\n"
+        )
+    return "\n".join(formatted)
 
 def llm_quality_check(title, content):
+    examples = load_examples()  # load from JSON file
+    examples_text = format_examples(examples)
+
     prompt = f"""
         You are a journalism quality assistant. Given an article's title and content, assess whether it meets the standards of editorial-quality journalism.
 
-        Classify the article strictly as either 'high-quality' or 'low-quality'. If it is unsure or unclear, classify it as 'high-quality'. 
+        Classify the article strictly as either 'high-quality' or 'low-quality'. If it is unsure or unclear, classify it as 'high-quality'.
 
         High-quality articles:
         - Are well-written, informative, and fact-based
@@ -73,17 +89,23 @@ def llm_quality_check(title, content):
 
         Return **only** the word: `high-quality` or `low-quality`.
 
+        {examples_text}
+
+        Now classify the following article:
+
         Title: {title}
 
         Content: {content}
-        """
+    """
+
     try:
         response = model.generate_content(prompt)
         result = response.text.strip().lower()
         return result == "high-quality"
     except Exception as e:
         print(f"LLM check failed: {e}")
-        return False  # LLM failure = reject
+        return False
+
     
 
 def should_store_article(title, content):
@@ -153,9 +175,9 @@ def store_similar_articles_to_db(articles, source_prefix="similar_liked"):
     conn.commit()
     conn.close()
 
-def suggest_alternative_topics(original_topic):
+def suggest_alternative_topics(original_keyword):
     prompt = f"""
-The topic '{original_topic}' returned no recent news articles. Suggest 2 to 3 alternative but related news topics that might yield more results.
+The keyword '{original_keyword}' returned no recent news articles. Suggest 2 to 3 alternative but related news topics that might yield more results.
 Respond as a comma-separated list, no explanation.
 """
     try:
@@ -163,7 +185,7 @@ Respond as a comma-separated list, no explanation.
         if response and hasattr(response, 'text'):
             return [t.strip() for t in response.text.split(',')]
     except Exception as e:
-        print(f"LLM error suggesting alternatives for '{original_topic}': {e}")
+        print(f"LLM error suggesting alternatives for '{original_keyword}': {e}")
     return []
 
 def fetch_news(api_url, params):

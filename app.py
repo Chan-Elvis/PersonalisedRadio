@@ -80,6 +80,69 @@ ALLOWED_CATEGORIES = [
     'entertainment', 'tech', 'politics', 'food', 'travel'
 ]
 
+STYLE_SAMPLES = {
+    "positive": (
+        "Welcome back to your happy place on the airwaves! Here, the tunes are good, the vibes are better, "
+        "and we always find a silver lining in the news."
+    ),
+    "neutral": (
+        "Here’s your midday news and music update. We bring you facts and insights"
+        "to keep your day moving."
+    ),
+    "serious": (
+        "This is your trusted news source. Our goal is to inform you with clarity and respect, "
+        "no fluff, no filler, just the stories that matter."
+    ),
+    "funny": (
+        "Alright folks, buckle up! We’ve got news with a side of chuckles, and music to keep your spirits high."
+    )
+}
+
+STYLE_PRIMING_TEMPLATE = """
+You are a radio host. Here's how you usually talk:
+
+"{sample_style}"
+
+Now, using the same tone and style, generate a new segment based on this:
+
+{context_prompt}
+"""
+
+
+
+
+def store_liked_segment(segment_text, mood):
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO tone_examples (mood, segment) VALUES (?, ?)", (mood, segment_text))
+    conn.commit()
+    conn.close()
+
+
+def clean_and_validate_topic(topic):
+    prompt = f"""
+    You are a smart input filter.
+
+    Given the topic: "{topic}"
+
+    - If the topic is inappropriate, offensive, or doesn't make sense, return: "REJECT"
+    - If the topic is valid but has spelling issues, correct the spelling.
+    - If the topic is valid and already correct, return it unchanged.
+
+    Only return the cleaned topic or the word "REJECT" — no explanation.
+    """
+    try:
+        response = model.generate_content(prompt)
+        if response and hasattr(response, 'text'):
+            result = response.text.strip(' "\'.')
+            if result.upper() == "REJECT":
+                return None
+            return result
+    except Exception as e:
+        flash(f"Error processing topic '{topic}': {e}", "error")
+    return None
+
+
 
 def check_spelling(word):
     prompt = f"Correct the spelling of the word '{word}'. If already correct, return as-is. No explanation."
@@ -90,6 +153,20 @@ def check_spelling(word):
     except Exception as e:
         flash(f"Error spellchecking '{word}': {e}", "error")
     return word
+
+def is_safe_input(text):
+    prompt = f"""
+    Is the following input free of hate speech, slurs, profanity, or other offensive content? Reply only with 'yes' or 'no'.
+
+    Input: {text}
+    """
+    try:
+        response = model.generate_content(prompt)
+        if response and hasattr(response, 'text'):
+            return response.text.strip().lower().startswith("yes")
+    except Exception as e:
+        flash(f"Content safety check failed: {e}", "error")
+    return False
 
 def validate_artist_with_llm(artist_name):
     prompt = f"Is '{artist_name}' a real music artist or band? If yes, return corrected name. If no, return 'invalid'. No explanation."
@@ -237,31 +314,88 @@ def get_unused_songs(limit=10):
 def create_batches(items, batch_size):
     return [items[i:i + batch_size] for i in range(0, len(items), batch_size)]
 
-def build_prompt(news_batch, music_batch):
-    news_text = "\n".join([f"- {n['title']}: {n['content']}" for n in news_batch])
-    music_text = "\n".join([f"- {m['artist']} — {m['title']}" for m in music_batch])
-    prompt = f"""
-You are a lively radio host.
-Create a ~3-minute radio script segment introducing:
-News:
-{news_text}
+import sqlite3
 
-Songs:
-{music_text}
+def get_style_examples(mood, limit=5, db_path="your_database.db"):
+    """Fetch the most recent tone examples for a given mood."""
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
 
-Make it engaging, fun, with smooth transitions, comments, and occasional humor.
+    cursor.execute("""
+        SELECT segment FROM tone_examples
+        WHERE mood = ?
+        ORDER BY created_at DESC
+        LIMIT ?
+    """, (mood, limit))
+
+    results = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    return results
+
+
+def build_prompt(news_batch, music_batch, news_mood):
+    # 1. Get the predefined style tone
+    sample_style = STYLE_SAMPLES.get(news_mood, STYLE_SAMPLES["neutral"])
+
+    # 2. Retrieve recent liked tone examples (limit to 5)
+    examples = get_style_examples(news_mood, limit=5)
+
+    def truncate(segment, max_chars=1000):
+        return segment[:max_chars].strip() + ("…" if len(segment) > max_chars else "")
+
+    examples_text = "\n\n".join(
+        f"Example {i+1}:\n{truncate(ex)}" for i, ex in enumerate(examples)
+    )
+
+    # 3. Interleave: 2 songs, then 1 news — until both lists are exhausted
+    interleaved_items = []
+    song_idx = 0
+    news_idx = 0
+    while song_idx < len(music_batch) or news_idx < len(news_batch):
+        # Add up to 2 songs
+        for _ in range(2):
+            if song_idx < len(music_batch):
+                m = music_batch[song_idx]
+                interleaved_items.append(f"- SONG: {m['artist']} — {m['title']}")
+                song_idx += 1
+        # Add 1 news
+        if news_idx < len(news_batch):
+            n = news_batch[news_idx]
+            interleaved_items.append(f"- NEWS: {n['title']}: {n['content']}")
+            news_idx += 1
+
+    interleaved_text = "\n".join(interleaved_items)
+
+    # 4. Prompt with interleaved flow
+    context_prompt = f"""{examples_text}
+
+You're hosting a ~3-minute radio segment that alternates between 2 songs and 1 news story.
+
+Content:
+{interleaved_text}
+
+Make it flow naturally like a live host: include transitions, small talk, reactions, and rhythm.
 """
-    return prompt
+
+    # 5. Final prompt construction
+    full_prompt = STYLE_PRIMING_TEMPLATE.format(
+        sample_style=sample_style,
+        context_prompt=context_prompt.strip()
+    )
+
+    return full_prompt
 
 
 
 
-def generate_radio_script(news_batches, music_batches):
+
+
+def generate_radio_script(news_batches, music_batches, news_mood):
     final_script = ""
     for i in range(len(news_batches)):
         news_batch = news_batches[i]
         music_batch = music_batches[i] if i < len(music_batches) else []
-        prompt = build_prompt(news_batch, music_batch)
+        prompt = build_prompt(news_batch, music_batch, news_mood)
         response = model_longform.generate_content(prompt)
         script_text = response.text.strip() if hasattr(response, 'text') else ''
         final_script += script_text + "\n\n"
@@ -450,7 +584,14 @@ def save():
     news_categories = ','.join(news_categories_list)  # Convert to comma-separated string
 
 
-    corrected_topics = [check_spelling(t).strip() for t in raw_topics_list]
+    corrected_topics = []
+    for t in raw_topics_list:
+        cleaned = clean_and_validate_topic(t)
+        if cleaned:
+            corrected_topics.append(cleaned)
+        else:
+            flash(f"Topic '{t}' was removed due to being inappropriate or unclear.", "warning")
+
 
     def detect_topic_changes(original_list, corrected_list):
         return [(orig.strip(), corr.strip()) for orig, corr in zip(original_list, corrected_list) if orig.strip().lower() != corr.strip().lower()]
@@ -737,12 +878,14 @@ def generate_script_stream():
         import time
         conn = sqlite3.connect('user_profiles.db')
         c = conn.cursor()
-        c.execute('SELECT station_name, host_name FROM profiles ORDER BY id DESC LIMIT 1')
+        c.execute('SELECT station_name, host_name, news_mood FROM profiles ORDER BY id DESC LIMIT 1')
         row = c.fetchone()
         conn.close()
 
         station_name = row[0] if row else "Your Radio Station"
         host_name = row[1] if row else "Your Host"
+        news_mood = row[2] if row else "neutral"
+
 
         WORDS_PER_MINUTE = 150
         current_time_min = 0.0
@@ -825,15 +968,17 @@ def generate_script_stream():
             if item_type == 'news':
                 used_articles.append(item)
                 full_text = fetch_full_article(item['url']) or item.get('content', '')
-                prompt = f"""You are {host_name}, the host of {station_name}.
+                sample_style = STYLE_SAMPLES.get(news_mood, STYLE_SAMPLES["neutral"])
+                context_prompt = f"""You are {host_name}, the host of {station_name}.
                 You're reading a real article and presenting it on radio.
 
                 Title: {item['title']}
                 Full article:
                 {full_text}
 
-                Create a spoken radio segment based on this, in an engaging, informative, friendly tone.
-                """                
+                Generate a spoken radio segment for your listeners."""
+                prompt = STYLE_PRIMING_TEMPLATE.format(sample_style=sample_style, context_prompt=context_prompt.strip())
+         
                 try:
                     print("🧠 Calling model_longform for article:", item['title'])
                     response = model_longform.generate_content(prompt)
@@ -1041,6 +1186,29 @@ def user_save_preferences():
     conn.close()
 
     return redirect('/user_radio')  # ✅ Redirect to the user-facing radio page
+
+@app.route('/like_script_chunk', methods=['POST'])
+def like_script_chunk():
+    data = request.get_json()
+    chunk_title = data.get("chunk_title")
+
+    conn = sqlite3.connect('user_profiles.db')
+    c = conn.cursor()
+
+    # Find the latest script chunk matching the title
+    c.execute("SELECT id, chunk_text FROM script_chunks WHERE title = ? ORDER BY id DESC LIMIT 1", (chunk_title,))
+    row = c.fetchone()
+    if row:
+        chunk_id, chunk_text = row
+        c.execute("UPDATE script_chunks SET liked = 1 WHERE id = ?", (chunk_id,))
+        c.execute("SELECT news_mood FROM profiles ORDER BY id DESC LIMIT 1")
+        mood_row = c.fetchone()
+        if mood_row:
+            store_liked_segment(chunk_text, mood_row[0])
+        conn.commit()
+
+    conn.close()
+    return jsonify({"status": "success"})
 
 
 if __name__ == "__main__":
