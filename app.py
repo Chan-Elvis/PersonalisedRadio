@@ -28,11 +28,11 @@ import uuid
 import glob
 import re
 
+import pyttsx3
+import subprocess
 
 
-
-
-
+tts_lock = threading.Lock()
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
@@ -43,6 +43,7 @@ LASTFM_API_KEY = os.getenv("LASTFM_API_KEY")
 
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+
 model = genai.GenerativeModel('gemini-2.0-flash')
 model_longform = genai.GenerativeModel('gemini-2.0-flash-lite')    # for longer radio scripts
 
@@ -108,6 +109,34 @@ Now, using the same tone and style, generate a new segment based on this:
 {context_prompt}
 """
 
+import shutil
+
+def is_valid_wav(filepath):
+    try:
+        result = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration",
+             "-of", "default=noprint_wrappers=1:nokey=1", filepath],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=2
+        )
+        duration = float(result.stdout.decode().strip())
+        return duration > 0.5
+    except Exception as e:
+        print(f"🔍 ffprobe check failed: {e}")
+        return False
+
+
+def clear_audio_directory():
+    audio_dir = os.path.join(app.root_path, "static", "audio")
+    if os.path.exists(audio_dir):
+        for filename in os.listdir(audio_dir):
+            file_path = os.path.join(audio_dir, filename)
+            try:
+                if os.path.isfile(file_path):
+                    os.remove(file_path)
+            except Exception as e:
+                print(f"⚠️ Failed to delete {file_path}: {e}")
 
 
 
@@ -121,16 +150,12 @@ def store_liked_segment(segment_text, mood):
 
 def clean_and_validate_topic(topic):
     prompt = f"""
-    You are a smart input filter.
+    Return only one of the following:
+- The corrected spelling of the input word (no quotes).
+- "REJECT" if the input word is inappropriate, offensive, or doesn't make sense.
 
-    Given the topic: "{topic}"
-
-    - If the topic is inappropriate, offensive, or doesn't make sense, return: "REJECT"
-    - If the topic is valid but has spelling issues, correct the spelling.
-    - If the topic is valid and already correct, return it unchanged.
-
-    Only return the cleaned topic or the word "REJECT" — no explanation.
-    """
+Input: {topic}
+Output:"""
     try:
         response = model.generate_content(prompt)
         if response and hasattr(response, 'text'):
@@ -169,17 +194,25 @@ def is_safe_input(text):
     return False
 
 def validate_artist_with_llm(artist_name):
-    prompt = f"Is '{artist_name}' a real music artist or band? If yes, return corrected name. If no, return 'invalid'. No explanation."
+    prompt = f"""
+Return only one of the following:
+- The corrected name of a real music artist or band (no quotes).
+- "INVALID" if the input is not a valid artist.
+
+Input: {artist_name}
+Output:"""
     try:
         response = model.generate_content(prompt)
         if response and hasattr(response, 'text'):
-            result = response.text.strip()
-            if result.lower() == 'invalid':
+            result = response.text.strip().strip('"\'. ')
+            if result.upper() == "INVALID":
                 return None
-            return result.strip(' "\'.')
+            return result
     except Exception as e:
         flash(f"Error validating artist '{artist_name}': {e}", "error")
     return None
+
+
 
 def get_recommended_tracks(artists, genres):
     tracks = []
@@ -867,12 +900,12 @@ def generate_script_stream():
     conn.commit()
     conn.close()
 
-    # ✅ Delete all old audio files upfront too
-    for path in glob.glob("static/audio/*.mp3"):
-        try:
-            os.remove(path)
-        except Exception as e:
-            print(f"Failed to delete {path}: {e}")
+    # ✅ Clear all audio files before starting new script generation
+    audio_dir = os.path.join(app.root_path, "static", "audio")
+    os.makedirs(audio_dir, exist_ok=True)
+
+    clear_audio_directory()
+
 
     def stream():
         import time
@@ -1102,12 +1135,18 @@ def dual_stream_view():
 def user_script_stream():
     return render_template('user_script_stream.html')
 
-
 @app.route('/next_tts_chunk')
 def next_tts_chunk():
+    # Step 1: Fetch next unused script chunk
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute("SELECT id, item_type, title, artist, script FROM script_chunks WHERE used = 0 ORDER BY id LIMIT 1")
+    c.execute("""
+        SELECT id, item_type, title, artist, script 
+        FROM script_chunks 
+        WHERE used = 0 
+        ORDER BY id 
+        LIMIT 1
+    """)
     row = c.fetchone()
 
     if not row:
@@ -1115,18 +1154,88 @@ def next_tts_chunk():
         return jsonify({"text": "No content.", "audio_url": ""})
 
     chunk_id, item_type, title, artist, script = row
+    cleaned_script = re.sub(r'\*\*.*?\*\*', '', script).strip()
 
-    # Clean the script: remove stage directions like **(...)**, and speaker labels like "Jerry:"
-    cleaned_script = re.sub(r'\*\*.*?\*\*', '', script)  # remove **...**
+    if not cleaned_script or len(cleaned_script.split()) < 2:
+        print(f"⚠️ Skipping invalid script chunk: {repr(cleaned_script)}")
+        conn.close()
+        return jsonify({"text": "Skipped: empty or invalid script.", "audio_url": ""})
 
-    tts = gTTS(text=cleaned_script, lang='en')
+    # Step 2: Set file paths
+    wav_filename = f"{uuid.uuid4().hex}.wav"
+    fixed_wav_filename = wav_filename.replace(".wav", "_fixed.wav")
+    mp3_filename = wav_filename.replace(".wav", ".mp3")
 
-    filename = f"{uuid.uuid4().hex}.mp3"
-    filepath = os.path.join("static", "audio", filename)
-    os.makedirs(os.path.dirname(filepath), exist_ok=True)
-    tts.save(filepath)
+    wav_filepath = os.path.join(app.root_path, "static", "audio", wav_filename)
+    fixed_wav_filepath = os.path.join(app.root_path, "static", "audio", fixed_wav_filename)
+    mp3_filepath = os.path.join(app.root_path, "static", "audio", mp3_filename)
 
-    c.execute("UPDATE script_chunks SET used = 1, audio_file = ? WHERE id = ?", (filename, chunk_id))
+    os.makedirs(os.path.dirname(wav_filepath), exist_ok=True)
+
+    # Step 3: Generate WAV using pyttsx3 with thread lock
+    if not hasattr(app, 'tts_lock'):
+        app.tts_lock = threading.Lock()
+
+    try:
+        with app.tts_lock:
+            print(f"🗣️ Generating WAV with pyttsx3 for chunk {chunk_id}")
+            engine = pyttsx3.init()
+            engine.setProperty('rate', 180)
+            engine.save_to_file(cleaned_script, wav_filepath)
+            engine.runAndWait()
+            time.sleep(0.5)  # ⏳ Allow disk flush
+            print(f"✅ WAV saved: {wav_filepath}")
+
+        # Ensure file is written and non-empty
+        for attempt in range(15):
+            if os.path.exists(wav_filepath) and os.path.getsize(wav_filepath) > 10000:
+                if is_valid_wav(wav_filepath):
+                    break
+            time.sleep(0.2)
+        else:
+            raise Exception("WAV file too small or invalid")
+
+
+    except Exception as e:
+        print(f"❌ pyttsx3 failed or WAV incomplete: {e}")
+        conn.close()
+        return jsonify({"text": "TTS generation failed.", "audio_url": ""})
+
+    print(f"🧪 WAV file size: {os.path.getsize(wav_filepath)} bytes")
+
+    # Step 4: Fix WAV format using ffmpeg
+    try:
+        print(f"🛠️ Re-encoding WAV for compatibility: {fixed_wav_filepath}")
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", wav_filepath, "-ar", "22050", "-ac", "1", "-sample_fmt", "s16", fixed_wav_filepath],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+    except Exception as e:
+        print(f"❌ Failed to fix WAV: {e}")
+        conn.close()
+        return jsonify({"text": "WAV fix failed", "audio_url": ""})
+
+    # Step 5: Convert fixed WAV to MP3
+    try:
+        print(f"🎛️ Converting to MP3: {mp3_filename}")
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", fixed_wav_filepath, "-codec:a", "libmp3lame", "-qscale:a", "5", mp3_filepath],
+            check=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+        print(f"✅ MP3 created: {mp3_filepath}")
+        os.remove(wav_filepath)
+        os.remove(fixed_wav_filepath)
+    except Exception as e:
+        print(f"❌ ffmpeg conversion failed: {e}")
+        conn.close()
+        return jsonify({"text": "MP3 conversion failed.", "audio_url": ""})
+
+    # Step 6: Update DB and return result
+    c.execute("UPDATE script_chunks SET used = 1, audio_file = ? WHERE id = ?", (mp3_filename, chunk_id))
     conn.commit()
     conn.close()
 
@@ -1134,17 +1243,30 @@ def next_tts_chunk():
         "text": script,
         "title": title,
         "artist": artist,
-        "audio_url": f"/static/audio/{filename}"
+        "audio_url": f"/static/audio/{mp3_filename}"
     })
+
+
+
+
+
+
+
+
 
 @app.route('/script_ready')
 def script_ready():
+    print("📦 Checking if any script chunks are ready...")
+
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute("SELECT COUNT(*) FROM script_chunks")
-    count = c.fetchone()[0]
+    c.execute("SELECT COUNT(*) FROM script_chunks WHERE used = 0")
+    count_unused = c.fetchone()[0]
     conn.close()
-    return jsonify({"ready": count > 0})
+
+    print(f"🔍 {count_unused} unused script chunks found.")
+    return jsonify({"ready": count_unused > 0})
+
 
 @app.route("/user_main", methods=["GET", "POST"])
 def user_main():
@@ -1156,36 +1278,81 @@ def user_radio():
 
 @app.route('/user_save', methods=['POST'])
 def user_save_preferences():
-    # Save the preferences from the user interface
     station_name = request.form.get("station_name", "")
     host_name = request.form.get("host_name", "")
     news_categories = request.form.getlist("news_categories")
-    topics = request.form.get("topics", "")
-    music_tastes = request.form.getlist("music_tastes")
-    favorite_artists = request.form.get("favorite_artists", "")
-    music_pref = request.form.getlist("music_pref")
+    raw_topics_list = [t.strip() for t in request.form.get("topics", "").split(',') if t.strip()]
+    raw_genres_list = request.form.getlist("music_tastes")
+    raw_artists_list = [a.strip() for a in request.form.get("favorite_artists", "").split(',') if a.strip()]
+    music_pref_list = request.form.getlist("music_pref")
     location = request.form.get("location", "")
     news_mood = request.form.get("news_mood", "")
 
-    # Save into database — you can reuse the same logic as in /save
+    # 🧠 Spellcheck and filter topics
+    corrected_topics = []
+    for t in raw_topics_list:
+        cleaned = clean_and_validate_topic(t)
+        if cleaned:
+            corrected_topics.append(cleaned)
+        else:
+            flash(f"Topic '{t}' was removed due to being inappropriate or unclear.", "warning")
+
+    def detect_topic_changes(original_list, corrected_list):
+        return [(orig.strip(), corr.strip()) for orig, corr in zip(original_list, corrected_list) if orig.strip().lower() != corr.strip().lower()]
+
+    topic_changes = detect_topic_changes(raw_topics_list, corrected_topics)
+    topic_corrections = [f"'{orig}' → '{corr}'" for orig, corr in topic_changes]
+
+    # 🧠 Validate artists
+    corrected_artists, valid_artists, artist_corrections = [], True, []
+    for artist in raw_artists_list:
+        validated = validate_artist_with_llm(artist)
+        if validated:
+            if validated.lower() != artist.lower():
+                artist_corrections.append(f"Artist '{artist}' → '{validated}'")
+            corrected_artists.append(validated)
+        else:
+            flash(f"Artist '{artist}' is invalid and was removed.", "warning")
+            valid_artists = False
+
+    if not valid_artists:
+        flash("Some invalid artists were removed. Please review and resubmit.", "warning")
+        return redirect('/user_main')
+
+    messages = []
+    if topic_corrections:
+        messages.append("Topic corrections: " + "; ".join(topic_corrections))
+    if artist_corrections:
+        messages.append("Artist corrections: " + "; ".join(artist_corrections))
+
+    if messages:
+        flash("Corrections made: " + " | ".join(messages), "info")
+    else:
+        flash("Preferences saved successfully!", "success")
+
+    # Save into database
     conn = sqlite3.connect('user_profiles.db')
     c = conn.cursor()
-    c.execute("INSERT INTO profiles (station_name, host_name, news_categories, topics, music_tastes, favorite_artists, music_pref, location, news_mood) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-              (
-                  station_name,
-                  host_name,
-                  ",".join(news_categories),
-                  topics,
-                  ",".join(music_tastes),
-                  favorite_artists,
-                  ",".join(music_pref),
-                  location,
-                  news_mood
-              ))
+    c.execute("""
+        INSERT INTO profiles 
+        (station_name, host_name, news_categories, topics, music_tastes, favorite_artists, music_pref, location, news_mood)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        station_name,
+        host_name,
+        ",".join(news_categories),
+        ",".join(corrected_topics),
+        ",".join(raw_genres_list),
+        ",".join(corrected_artists),
+        ",".join(music_pref_list),
+        location,
+        news_mood
+    ))
     conn.commit()
     conn.close()
 
-    return redirect('/user_radio')  # ✅ Redirect to the user-facing radio page
+    return redirect('/user_radio')
+
 
 @app.route('/like_script_chunk', methods=['POST'])
 def like_script_chunk():

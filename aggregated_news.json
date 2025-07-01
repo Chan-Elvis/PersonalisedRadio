@@ -1,162 +1,69 @@
 {
     "top_stories": [
         {
-            "title": "Leeroy Jenkins clip celebrates its 20th anniversary",
-            "content": "HQ\n\nIt is now 20 years since one of the internet's most iconic moments was created with \"LEEEEROOOY JENKINS!\". It was on 11 May 2005 when the guild Pals for Lif...",
-            "url": "https://www.gamereactor.eu/leeroy-jenkins-clip-celebrates-its-20th-anniversary-1543623/",
-            "published_at": "2025-05-15T08:31:00.000000Z",
-            "uuid": "dc11aeb0-b2ca-4aa6-99aa-e0378023cdc1"
+            "title": "Arsenal's Declan Rice call for 'magic moments' to beat PSG",
+            "content": "Gab Marcotti and Julien Laurens wonder if Mikel Arteta made the right call in playing all of his stars in Arsenal's 2-1 defeat to Bournemouth before facing PSG ...",
+            "url": "https://www.espn.co.uk/football/story/_/id/45026529/arsenal-declan-rice-moments-psg",
+            "published_at": "2025-05-07T01:40:15.000000Z"
         },
         {
-            "title": "Germany and Philippines sign new defence pact",
-            "content": "HQ\n\nThe latest news on Germany and Philippines . We now know that both countries have formalised on Wednesday a defence cooperation agreement covering cybersecu...",
-            "url": "https://www.gamereactor.eu/germany-and-the-philippines-sign-new-defence-pact-1543843/",
-            "published_at": "2025-05-15T08:23:43.000000Z",
-            "uuid": "536ee406-05f2-4117-9570-a98119931de5"
+            "title": "Get a free weapon skin for Borderlands 4",
+            "content": "HQ\n\nIt was recently confirmed that Borderlands 4 will be released for PC, PlayStation 5, Switch 2 and Xbox Series S/X on September 12th, and Gearbox Software ha...",
+            "url": "https://www.gamereactor.eu/get-a-free-weapon-skin-for-borderlands-4-1538783/",
+            "published_at": "2025-05-07T01:18:57.000000Z"
         },
         {
-            "title": "Deal between Real Madrid and Dean Huijsen is \"99% done\", sources say",
-            "content": "HQ\n\nReal Madrid needs a lot of reinforcements this summer transfer market in order to be competitive against FC Barcelona next year, specially in defence. And w...",
-            "url": "https://www.gamereactor.eu/deal-between-real-madrid-and-dean-huijsen-is-99-done-sources-say-1543823/",
-            "published_at": "2025-05-15T08:15:30.000000Z",
-            "uuid": "c505eccf-24b0-44b0-b02d-e398f97497a7"
+            "title": "James Gunn shows a heartwarming clip of his dog watching Krypto in Superman",
+            "content": "HQ\n\nWe've known for a long time that James Gunn's upcoming Superman movie will be quite different from what Zack Snyder offered in the now-defunct DC universe, ...",
+            "url": "https://www.gamereactor.eu/james-gunn-shows-a-heartwarming-clip-of-his-dog-watching-krypto-in-superman-1538773/",
+            "published_at": "2025-05-07T01:16:06.000000Z"
         }
     ],
     "aggregated_news": {
-        "similar_liked": [
+        "sports": [
             {
-                "title": "The Dichotomous Nature of Pruritus",
-                "content": "The sensation of itch, and the subsequent act of scratching, presents a complex interplay of positive and negative consequences. While scratching provides tempo...",
-                "url": "https://commstrader.com/science/the-dichotomous-nature-of-pruritus/",
-                "published_at": "2025-01-30T19:48:42.000000Z",
-                "uuid": "029bc104-6ec0-40b1-ba87-ae7233deee74"
+                "source": "TheNewsAPI",
+                "title": "Saudi Arabia: Which sports events are happening there in 2025?",
+                "content": "The Kingdom of Saudi Arabia has no plans to scale back its rapidly growing sports portfolio.\n\nSince 2019, Saudi Arabia has hosted more than 100 elite internatio...",
+                "url": "https://www.bbc.com/sport/articles/c209vp7p9r9o",
+                "published_at": "2025-04-16T14:00:30.000000Z"
             },
             {
-                "title": "Dr. Oz says probiotic supplements have wide-ranging health benefits. Here\u2019s what science says",
-                "content": "Click to discover leading experts on 50,000+ topics for media, events & more.\n\nOur bodies\u2014and guts, specifically\u2014depend on a balance of bacteria to \u201cmaint...",
-                "url": "https://biztoc.com/x/0dd2ab7ec327554d?ref=ff",
-                "published_at": "2025-03-14T20:20:12.000000Z",
-                "uuid": "3910bd0d-e807-4f37-b7fc-06b0b99e04b6"
+                "source": "TheNewsAPI",
+                "title": "EA Sports FC 25 Team of the Season schedule revealed",
+                "content": "Open Extended Reactions\n\nA perennial favorite among EA Sports FC fans, the Team of the Season (TOTS) program will be available soon in EA FC 25 for a total of s...",
+                "url": "https://www.espn.co.uk/gaming/story/_/id/44799249/ea-fc-25-team-season-full-schedule",
+                "published_at": "2025-04-22T20:44:18.000000Z"
             },
             {
-                "title": "Students and the science of feedback",
-                "content": "Feedback for students should be constructive, positive, and timely to augment the interlinked, symbiotic relationship between learning and teaching.\n\nFeedback f...",
-                "url": "https://www.thehindu.com/education/students-and-the-science-of-feedback/article65529151.ece",
-                "published_at": "2022-06-18T07:34:57.000000Z",
-                "uuid": "5d1c120c-fd11-4ab6-a3bb-75f03d587b7f"
-            },
-            {
-                "title": "Avianca mulls 5 new routes from US to Latin America in 2025",
-                "content": "Colombian airline Avianca is plotting a big U.S. expansion in 2025.\n\nThe Bogota-based carrier announced five new proposed routes Thursday, each of which would b...",
-                "url": "https://thepointsguy.com/news/avianca-new-routes-florida-latin-america/",
-                "published_at": "2024-12-27T17:00:42.000000Z",
-                "uuid": "9c9121a0-6b98-4ce0-8c7b-2c184256401a"
-            },
-            {
-                "title": "Avianca Launches Two New Routes Connecting South Florida to Guatemala and Nicaragua",
-                "content": "Photo Courtesy of Avianca\n\nAvianca (Colombia) \u2013 TACA Airbus A320-214 N567AV (msn 4567) (TACA) LAX (Michael B. Ing). Image: 962446.\n\nWith the launch of the new...",
-                "url": "https://worldairlinenews.com/2025/05/14/avianca-launches-two-new-routes-connecting-south-florida-to-guatemala-and-nicaragua/",
-                "published_at": "2025-05-14T15:17:41.000000Z",
-                "uuid": "b3d6bdf1-4475-4e9d-824a-207b1ad7537a"
-            },
-            {
-                "title": "Frontier Airlines Adds 18 New Nonstop Routes and Two Destinations",
-                "content": "This post may contain affiliate links; please read our advertiser disclosure for more information.\n\nFrontier Airlines Adds 18 New Nonstop Routes and Two Destina...",
-                "url": "https://milestomemories.com/frontier-new-routes/",
-                "published_at": "2021-12-03T20:19:42.000000Z",
-                "uuid": "62be7a35-e4e1-4763-b3eb-ff9e306bd6d2"
+                "source": "TheNewsAPI",
+                "title": "The Laureus Awards are handed tonight: all the nominees of the \"sports Oscars\"",
+                "content": "HQ\n\nAmong all sports awards, the one that most resembles a a \"Sports Oscar\", honouring every sport at the same level, are the Laureus World Sports Awards. They ...",
+                "url": "https://www.gamereactor.eu/the-laureus-awards-are-handed-tonight-all-the-nominees-of-the-sports-oscars-1531553/",
+                "published_at": "2025-04-21T10:18:43.000000Z"
             }
         ],
-        "nature": [
+        "politics": [
             {
-                "title": "Science of Nature",
-                "content": "Science of Nature\n\nThe Story of the Lost World Disrupting the Twin Balance of Virus Bacteria and the Negative Positive Relationship of Twin Minerals\n\nThe Story ...",
-                "url": "https://www.rakimuniversity.com/blog/science-of-nature",
-                "published_at": "2025-05-06T00:18:54.000000Z",
-                "uuid": "b77a1be9-641c-48e3-a4f1-4a23fb128ca6"
+                "source": "TheNewsAPI",
+                "title": "Vicki Young Announced as New Politics Live Presenter",
+                "content": "After Jo Coburn\u2019s departure Young will start in June. The BBC says:\n\n\u201cVicki is well known to audiences as the BBC\u2019s Deputy Political Editor, a role she ha...",
+                "url": "https://order-order.com/2025/04/03/vicki-young-announced-as-new-politics-live-presenter/",
+                "published_at": "2025-04-03T13:24:47.000000Z"
             },
             {
-                "title": "Nature is beautiful",
-                "content": "I Can Has Cheezburger?\n\nI Can Has Cheezburger?",
-                "url": "https://cheezburger.com/9871667456/nature-is-beautiful",
-                "published_at": "2025-05-05T22:00:00.000000Z",
-                "uuid": "e27ec578-5f3a-48d0-9049-529e9d62d9d6"
+                "source": "TheNewsAPI",
+                "title": "Multi-party politics heightens danger for muddled Labour",
+                "content": "This article is an on-site version of our Inside Politics newsletter. Subscribers can sign up here to get the newsletter delivered every weekday. If you\u2019re no...",
+                "url": "https://www.ft.com/content/593e8e6c-8d08-47a5-8550-9920cc7a211a",
+                "published_at": "2025-05-02T08:52:34.000000Z"
             },
             {
-                "title": "Celebrating Art and Nature",
-                "content": "In a time of accelerating climate anxiety and ecological crisis, The Power of Trees invites us to pause, look closely and reconnect with the natural world \u2013 n...",
-                "url": "https://aestheticamagazine.com/celebrating-art-and-nature/",
-                "published_at": "2025-05-02T08:00:40.000000Z",
-                "uuid": "8cc77bb0-a9fb-4cf8-b81d-ce27a90d0cbc"
-            }
-        ],
-        "gaming": [
-            {
-                "title": "Inside Gaming: Las Vegas gaming company launches new partnership, more gaming news",
-                "content": "Las Vegas-based Golden Entertainment reported year-over-year declines from the company\u2019s continued operations stemming almost entirely from the lack of Super ...",
-                "url": "https://www.reviewjournal.com/business/casinos-gaming/inside-gaming-las-vegas-gaming-company-launches-new-partnership-more-gaming-news-3371651/",
-                "published_at": "2025-05-13T13:00:34.000000Z",
-                "uuid": "1b4c72bf-2499-4c41-83b8-342792f2a25f"
-            },
-            {
-                "title": "ASUS Announces TUF Gaming T500 Gaming PC",
-                "content": "Powered by up to an Intel Core i7-13620H processor with six Performance cores and eight Efficiency cores and a max boost of 5.0GHz, T500 can drive incredible ga...",
-                "url": "https://www.vortez.net/news_story/asus_announces_tuf_gaming_t500_gaming_pc.html",
-                "published_at": "2025-05-02T14:13:13.000000Z",
-                "uuid": "f1857131-e9de-4fb8-b931-5a9445cca3c2"
-            },
-            {
-                "title": "Gaming Upgrade",
-                "content": "Author(s): Pete Metcalfe\n\nAdding custom firmware to a handheld gaming device enhances your gaming experience and lets you write custom apps. We show you how wit...",
-                "url": "https://www.linux-magazine.com/Issues/2025/295/Onion-OS",
-                "published_at": "2025-05-05T12:10:36.000000Z",
-                "uuid": "9cad7589-baf3-47d6-a7db-7c3721fe020c"
-            }
-        ],
-        "business": [
-            {
-                "title": "Reserve Bank of India",
-                "content": "(Amount in \u20b9 crore, Rate in Per cent) MONEY MARKETS@ Volume\n\n(One Leg) Weighted\n\nAverage Rate Range A. Overnight Segment (I+II+III+IV) 5,74,116.64 5.68 0.01-6...",
-                "url": "https://www.rbi.org.in/scripts/BS_PressReleaseDisplay.aspx?prid=60440",
-                "published_at": "2025-05-15T09:00:00.000000Z",
-                "uuid": "bc1b176d-79b1-4932-97ef-725d0d3456b4"
-            },
-            {
-                "title": "Court rejects European Commission\u2019s refusal to share texts between von der Leyen and Pfizer CEO during COVID pandemic",
-                "content": "\u00a9 2025 Fortune Media IP Limited. All Rights Reserved. Use of this site constitutes acceptance of our Terms of Use and Privacy Policy | CA Notice at Collection ...",
-                "url": "https://fortune.com/europe/2025/05/15/court-rejects-european-comissions-refusal-texts-covid-vaccine-von-der-leyen-pfizer-ceo-new-york-times/",
-                "published_at": "2025-05-15T08:48:59.000000Z",
-                "uuid": "3f84c473-32c3-4a5a-8517-b44dd6e7be79"
-            },
-            {
-                "title": "\ud83d\udd39Digital Dharma: Technology\u2019s Role in Human Evolution and Global Consciousness\ud83d\udd39",
-                "content": "\ud83d\udd39Digital Dharma: Technology\u2019s Role in Human Evolution and Global Consciousness\ud83d\udd39 Arjun Follow 4 min read \u00b7 Just now Just now -- Listen Share\n\nIn an age ...",
-                "url": "https://medium.com/@i.arjungaikwad73/digital-dharma-technologys-role-in-human-evolution-and-global-consciousness-cd9a74cd4fb0",
-                "published_at": "2025-05-15T08:46:25.000000Z",
-                "uuid": "042e5858-5659-4152-b9fd-48ab2c4d6a6c"
-            }
-        ],
-        "travel": [
-            {
-                "title": "Cheap British Airways flights from the UK to Saint Lucia for \u00a3447!",
-                "content": "British Airways offers fairly priced off-season non-stop flights from London Gatwick Airport to Saint Lucia! The cheapest return flights are available for \u00a3447...",
-                "url": "https://www.flynous.com/british-airways-cheap-flights-uk-saint-lucia/",
-                "published_at": "2025-05-15T08:50:22.000000Z",
-                "uuid": "679e7d1b-d0d0-4dfe-9ea1-46ea917ebb33"
-            },
-            {
-                "title": "Hyatt marks brand entry into Croatia with the opening of Hyatt Regency Zadar",
-                "content": "The first Hyatt branded hotel in the country reflects the company's progress for scaled growth of the Hyatt Regency brand by 70% on the Balkan Peninsula by 2027...",
-                "url": "https://www.hospitalitynet.org/announcement/41012615.html",
-                "published_at": "2025-05-15T08:36:47.000000Z",
-                "uuid": "7e609673-d36c-4921-ac6b-d48947fedd43"
-            },
-            {
-                "title": "GetJet Airlines and Tez Tour expand long-term charter partnership",
-                "content": "GetJet Airlines, a Lithuanian ACMI and charter service provider, has signed a long-term agreement with Tez Tour, one of the largest travel organisers in the Bal...",
-                "url": "https://aircargoweek.com/getjet-airlines-and-tez-tour-expand-long-term-charter-partnership/",
-                "published_at": "2025-05-15T08:35:11.000000Z",
-                "uuid": "68576554-bf77-427a-8435-7fb6b4074e92"
+                "source": "TheNewsAPI",
+                "title": "\u2018We Are Witnessing the Slow Death of Two Party Politics\u2019",
+                "content": "Byline Times is an independent, reader-funded investigative newspaper, outside of the system of the established press, reporting on \u2018what the papers don\u2019t s...",
+                "url": "https://bylinetimes.com/2025/04/23/we-are-witnessing-the-slow-death-of-two-party-politics/",
+                "published_at": "2025-04-23T09:02:54.000000Z"
             }
         ]
     }

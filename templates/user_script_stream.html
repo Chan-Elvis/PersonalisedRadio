@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Now Streaming</title>
+  <title>User Interface: Now Streaming</title>
   <style>
     body {
       font-family: sans-serif;
@@ -27,7 +27,7 @@
 
 <body>
 
-  <h1>🔊 Now Streaming</h1>
+  <h1>User Interface: Now Streaming</h1>
   <div id="status">
     Status: 
     <span id="timer" style="margin-left: 20px;">⏱️ 00:00</span>
@@ -38,6 +38,7 @@
   </div>
 
   <button onclick="togglePlay()">▶️ Play / ⏸️ Pause</button>
+  <strong>Do you like the content?</strong><br>
   <form id="feedback-form" style="display:inline;">
     <input type="hidden" name="title" id="current-title">
     <input type="hidden" name="artist" id="current-artist">
@@ -46,7 +47,7 @@
   </form>
 
   <div style="margin-top: 15px;">
-  <strong>🎙️ Did you like how this was presented?</strong><br>
+  <strong>Do you like the tone of delivery?</strong><br>
   <button onclick="likeScriptTone()">👍 Like Tone</button>
 </div>
 
@@ -54,6 +55,7 @@
   <script>
   let audio = null;
   let isPlaying = false;
+  let currentChunk = null;
   let nextChunk = null;
   const statusText = document.getElementById("status-text");
   let clickedFeedback = null;
@@ -67,38 +69,78 @@
       .then(res => res.json())
       .then(data => {
         nextChunk = data;
+        console.log("🔮 Preloaded next chunk:", nextChunk?.title);
+      })
+      .catch(err => {
+        console.error("❌ Failed to preload next chunk:", err);
       });
   }
+  function updateNowPlaying(chunk) {
+  const div = document.getElementById("current-content");
+  if (chunk.artist) {
+    div.innerHTML = `🎵 Now playing: <strong>${chunk.artist} — ${chunk.title}</strong>`;
+  } else {
+    div.innerHTML = `📰 Now covering: <strong>${chunk.title}</strong>`;
+  }
+
+  // Update feedback form fields
+  document.getElementById("current-title").value = chunk.title || "";
+  document.getElementById("current-artist").value = chunk.artist || "";
+}
+
 
   function playChunk(chunk) {
     if (!chunk || !chunk.audio_url) {
-      document.getElementById('current-content').innerHTML = "No more content.";
-      setStatus("Idle");
-      return;
-    }
+        setStatus("⏳ Waiting for next chunk...");
+        setTimeout(() => {
+            fetch('/next_tts_chunk')
+            .then(res => res.json())
+            .then(playChunk);
+        }, 1000);  // retry after 1 second
+        return;
+        }
 
-    if (chunk.artist) {
-      document.getElementById('current-content').innerHTML = `🎵 Now playing: <strong>${chunk.artist} — ${chunk.title}</strong>`;
-    } else {
-      document.getElementById('current-content').innerHTML = `📰 Now covering: <strong>${chunk.title}</strong>`;
-    }
-
-    document.getElementById('current-title').value = chunk.title || "";
-    document.getElementById('current-artist').value = chunk.artist || "";
-
-    if (audio) audio.pause();
     audio = new Audio(chunk.audio_url);
-    audio.play();
+    currentChunk = chunk;
     isPlaying = true;
-    setStatus("Playing");
 
-    preloadNextChunk();
+    setStatus(`🎧 Playing: ${chunk.title || "Untitled"}`);
+    updateNowPlaying(chunk);
+
+    // Optional debug player
+    const debug = document.getElementById("debug-player");
+    if (debug) {
+      debug.src = chunk.audio_url;
+      debug.load();
+    }
+
+    audio.ontimeupdate = () => {
+      const seconds = Math.floor(audio.currentTime);
+      document.getElementById("timer").textContent = `Runtime: ${seconds}s`;
+    };
 
     audio.onended = () => {
       isPlaying = false;
-      setStatus("Loading next...");
-      playChunk(nextChunk);
+      setStatus("⏭️ Moving to next...");
+      const chunkToPlay = nextChunk;
+      nextChunk = null;  // Clear it to avoid stale reuse
+      playChunk(chunkToPlay);  // Play preloaded next
     };
+
+    audio.onerror = (e) => {
+      console.error("❌ Audio error:", e);
+      setStatus("Audio failed to load.");
+    };
+
+    audio.play()
+      .then(() => {
+        console.log("🔊 Playback started:", chunk.title);
+        preloadNextChunk();  // Start preloading while playing
+      })
+      .catch(err => {
+        console.warn("🚫 Playback blocked by browser:", err);
+        setStatus("Click to enable audio playback.");
+      });
   }
 
   function togglePlay() {
@@ -115,7 +157,7 @@
     }
   }
 
-  // New: capture which feedback button was clicked
+  // Wait for user feedback clicks
   document.querySelectorAll("#feedback-form button[type='submit']").forEach(btn => {
     btn.addEventListener("click", function () {
       clickedFeedback = this.value;
@@ -125,7 +167,7 @@
   document.getElementById('feedback-form').onsubmit = function (e) {
     e.preventDefault();
     const formData = new FormData(this);
-    formData.set("feedback", clickedFeedback);  // Inject the value manually
+    formData.set("feedback", clickedFeedback);
 
     const endpoint = document.getElementById("current-artist").value ? "/feedback/song" : "/feedback/news";
 
@@ -148,9 +190,15 @@
         .then(res => res.json())
         .then(data => {
           if (data.ready) {
-            preloadNextChunk();
+            console.log("✅ Script ready. Starting playback...");
+            fetch('/next_tts_chunk')
+              .then(res => res.json())
+              .then(chunk => {
+                nextChunk = null;  // Clear preload slot before use
+                playChunk(chunk);  // Start playback immediately
+              });
           } else {
-            setStatus("Waiting for first segment...");
+            setStatus("⏳ Waiting for first segment...");
             setTimeout(checkIfReadyAndStart, 1000);
           }
         });
@@ -160,23 +208,23 @@
   });
 
   function likeScriptTone() {
-  const chunkTitle = document.getElementById("current-title").value;
-  
-  fetch("/like_script_chunk", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chunk_title: chunkTitle })
-  }).then(() => {
-    const contentDiv = document.getElementById('current-content');
-    contentDiv.innerHTML += "<br><span style='color:blue;'>💾 Tone saved for style learning!</span>";
-  }).catch(err => {
-    console.error("Tone like failed:", err);
-    const contentDiv = document.getElementById('current-content');
-    contentDiv.innerHTML += "<br><span style='color:red;'>❌ Tone save failed.</span>";
-  });
-}
+    const chunkTitle = document.getElementById("current-title").value;
 
+    fetch("/like_script_chunk", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chunk_title: chunkTitle })
+    }).then(() => {
+      const contentDiv = document.getElementById('current-content');
+      contentDiv.innerHTML += "<br><span style='color:blue;'>💾 Tone saved for style learning!</span>";
+    }).catch(err => {
+      console.error("Tone like failed:", err);
+      const contentDiv = document.getElementById('current-content');
+      contentDiv.innerHTML += "<br><span style='color:red;'>❌ Tone save failed.</span>";
+    });
+  }
 </script>
+
 
     <a href="/user_radio" onclick="navigate('/user_radio'); return false;">Back to User Profile</a>
 
@@ -198,6 +246,12 @@
     }
   });
 </script>
+<script>
+  window.addEventListener("load", () => {
+    window.parent?.postMessage({ path: window.location.pathname }, "*");
+  });
+</script>
+
 
 <script>
   function navigate(path) {

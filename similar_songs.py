@@ -13,7 +13,7 @@ def get_similar_tracks(title, artist):
     response = requests.get(url)
     
     # Fetch previously played song titles
-    conn = sqlite3.connect("user_profiles.db")
+    conn = sqlite3.connect("user_profiles.db", timeout=5.0)
     c = conn.cursor()
     c.execute("SELECT title, artist FROM songs WHERE feedback = 'like'")
     seen_titles = set(row[0] for row in c.fetchall())

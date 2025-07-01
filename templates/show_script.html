@@ -23,11 +23,17 @@
         {% endif %}
     {% endwith %}
 
-    <h1>🎙️ Radio Host Script</h1>
+    <h1>Developer Interface: Radio Script</h1>
     <pre style="white-space: pre-wrap; background: #f9f9f9; padding: 10px; border: 1px solid #ccc;">
 {{ script|safe }}
     </pre>
     <br>
     <a href="/radio" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">⬅️ Back to Radio</a>
 </body>
+<script>
+  window.addEventListener("load", () => {
+    window.parent?.postMessage({ path: window.location.pathname }, "*");
+  });
+</script>
+
 </html>

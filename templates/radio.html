@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Your Personalized Radio 🎵📰</title>
+    <title>Developer Interface: Personalised Data</title>
 </head>
 
 <body>
@@ -35,20 +35,18 @@
     {% endwith %}
 
     <h1>🎵 Welcome to {{ station_name }} with your host {{ host_name }}!</h1>
-    <p> Currently shuffling {{ music_tastes|random }} songs</p>
-
     <hr>
 
-    <h2>🎯 Your Preferences</h2>
-    <p><strong>Favorite Topics:</strong> {{ topics|join(', ') }}</p>
+    <h2>Developer Interface: Personalised Data</h2>
+    <p><strong>Favourite Topics:</strong> {{ topics|join(', ') }}</p>
     <p><strong>Music Tastes:</strong> {{ music_tastes|join(', ') }}</p>
-    <p><strong>Favorite Artists:</strong> {{ favorite_artists|join(', ') }}</p>
+    <p><strong>Favourite Artists:</strong> {{ favorite_artists|join(', ') }}</p>
     <p><strong>Location:</strong> {{ location }}</p>
     <p><strong>Preferred News Mood:</strong> {{ news_mood }}</p>
 
 
     <hr>
-    <h2>🎵 Top Songs from Your Favorite Artists and Genres</h2>
+    <h2>🎵 Top Songs from Your Favourite Artists and Genres</h2>
     {% if top_tracks_playlist %}
         {% for track in top_tracks_playlist %}
             <div>
@@ -81,7 +79,7 @@
     <p>No throwback tracks available.</p>
 {% endif %}
 
-    <h2>🌱 Related Artist Recommendations</h2>
+    <h2>Related Artist Recommendations</h2>
 {% if new_artist_playlist %}
     {% for artist_data in new_artist_playlist %}
         <h3>{{ artist_data.artist }}</h3>
@@ -103,7 +101,7 @@
 
     <hr>
 
-    <h2>📰 Personalized News:</h2>
+    <h2>📰 Personalised News:</h2>
     {% for topic, articles in grouped_news.items() %}
         {% if topic in allowed_categories %}
             <h3>📂 Category: {{ topic|capitalize }}</h3>
@@ -187,7 +185,8 @@
     margin: 10px 0;
 ">🎙️ Generate Radio Host Script</a>
 
-<a href="/show_stream_script" onclick="navigate('/show_stream_script'); return false;">🚀 View Live Streaming Script</a>
+<a href="/show_stream_script" onclick="navigate('/show_stream_script'); return false;">View Live Streaming Script</a>
+<a href="/user_main" onclick="navigate('/'); return false;">Back to Edit Preferences</a>
 
 
 </body>
@@ -209,6 +208,12 @@
     }
   });
 </script>
+<script>
+  window.addEventListener("load", () => {
+    window.parent?.postMessage({ path: window.location.pathname }, "*");
+  });
+</script>
+
 
 <script>
   function navigate(path) {

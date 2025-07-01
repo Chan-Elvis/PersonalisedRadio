@@ -41,7 +41,7 @@ def get_disliked_songs():
     return disliked
 
 def store_song(track, source):
-    conn = sqlite3.connect("user_profiles.db")
+    conn = sqlite3.connect("user_profiles.db", timeout=5.0)
     c = conn.cursor()
 
     title = track['title']
@@ -89,7 +89,7 @@ def store_song(track, source):
 
 
 def mark_song_similar_fetched(title, artist):
-    conn = sqlite3.connect("user_profiles.db")
+    conn = sqlite3.connect("user_profiles.db", timeout=5.0)
     c = conn.cursor()
     c.execute("""
         UPDATE songs SET similar_fetched = 1
@@ -99,7 +99,7 @@ def mark_song_similar_fetched(title, artist):
     conn.close()
 
 def mark_article_similar_fetched(uuid):
-    conn = sqlite3.connect("user_profiles.db")
+    conn = sqlite3.connect("user_profiles.db", timeout=5.0)
     c = conn.cursor()
     c.execute("UPDATE articles SET similar_fetched = 1 WHERE uuid = ?", (uuid,))
     conn.commit()
